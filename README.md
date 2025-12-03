@@ -68,7 +68,7 @@ graph TD
     B --> E[@orderbook-visualizer/web]
     B --> F[@orderbook-visualizer/storybook]
     C --> G[@orderbook-visualizer/ui]
-    C --> H[@orderbook-visualizer/utils]
+    C --> H[@orderbook-visualizer/sdk]
     C --> I[@orderbook-visualizer/tsconfig]
 ```
 
@@ -77,7 +77,7 @@ graph TD
 | `@orderbook-visualizer/docs` | Documentation site powered by [Nextra 3 alpha](https://the-guild.dev/blog/nextra-3) |
 | `@orderbook-visualizer/web` | Main Next.js web application |
 | `@orderbook-visualizer/ui` | Core React components and design system shared by both `web` and `docs` applications (powered by shadcn/ui) |
-| `@orderbook-visualizer/utils` | Shared React utilities |
+| `@orderbook-visualizer/sdk` | Shared React utilities |
 | `@orderbook-visualizer/tsconfig` | Shared `tsconfig.json` configurations |
 
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).

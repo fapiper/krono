@@ -1,5 +1,5 @@
 {
-  "name": "@orderbook-visualizer/utils",
+  "name": "@orderbook-visualizer/sdk",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
