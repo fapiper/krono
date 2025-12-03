@@ -8,8 +8,8 @@
   "private": true,
   "files": ["dist/**"],
   "scripts": {
-    "build": "tsup src/index.tsx --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.tsx --format esm,cjs --watch --dts --external react",
+    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
     "lint": "biome check .",
     "lint:fix": "biome check . --apply",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
@@ -27,6 +27,8 @@
     "access": "public"
   },
   "dependencies": {
-    "ts-kraken": "^4.0.14"
+    "@tanstack/react-query": "^5.90.11",
+    "ts-kraken": "^4.0.14",
+    "usehooks-ts": "^3.1.1"
   }
 }
