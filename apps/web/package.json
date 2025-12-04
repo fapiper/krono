@@ -16,6 +16,7 @@
     "test:cov:ui": "vitest --ui --coverage"
   },
   "dependencies": {
+    "@orderbook-visualizer/sdk": "workspace:*",
     "@orderbook-visualizer/ui": "workspace:*",
     "@t3-oss/env-nextjs": "0.10.1",
     "next": "14.2.33",

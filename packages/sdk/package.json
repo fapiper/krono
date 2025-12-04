@@ -7,9 +7,21 @@
   "sideEffects": false,
   "private": true,
   "files": ["dist/**"],
+  "exports": {
+    "./core": {
+      "import": "./dist/core/index.mjs",
+      "require": "./dist/core/index.js",
+      "types": "./dist/core/index.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react/index.mjs",
+      "require": "./dist/react/index.js",
+      "types": "./dist/react/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+    "build": "tsup src/index.ts src/core/index.ts src/react/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.ts src/core/index.ts src/react/index.ts --format esm,cjs --watch --dts --external react",
     "lint": "biome check .",
     "lint:fix": "biome check . --apply",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
