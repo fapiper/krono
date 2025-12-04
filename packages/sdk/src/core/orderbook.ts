@@ -25,7 +25,7 @@ const defaultConfig = {
   depth: 25,
   maxHistoryLength: 1000,
   debug: false,
-  throttleMs: undefined,
+  throttleMs: 1_000, // 1 second
   debounceMs: undefined,
   reconnect: {
     enabled: true,
