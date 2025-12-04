@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.11",
-    "ts-kraken": "^4.0.14",
-    "usehooks-ts": "^3.1.1"
+    "usehooks-ts": "^3.1.1",
+    "websocket-ts": "^2.2.1"
   }
 }

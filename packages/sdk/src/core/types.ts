@@ -1,5 +1,3 @@
-import type { PublicWsTypes } from 'ts-kraken';
-
 export type PriceLevel = [price: number, volume: number];
 
 export interface OrderbookSnapshot {
@@ -56,6 +54,3 @@ export type OrderbookEventMap = {
 
 // biome-ignore lint/suspicious/noExplicitAny:
 export type EventListener<T = any> = (data: T) => void;
-
-export type OrderbookUpdateItem =
-  PublicWsTypes.PublicChannels.Book.Update['data'][0];

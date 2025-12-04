@@ -1,16 +1,23 @@
-import type { Subscription } from 'rxjs';
-import { PublicWsTypes, publicWsSubscription } from 'ts-kraken';
-
 import type {
   ConnectionStatus,
   InternalOrderbookConfig,
   OrderbookConfig,
   OrderbookEventMap,
   OrderbookSnapshot,
-  OrderbookUpdateItem,
 } from './types';
 
-import { HistoryBuffer, PriceMapManager, TypedEventEmitter } from './base';
+import {
+  HistoryBuffer,
+  Logger,
+  PriceMapManager,
+  TypedEventEmitter,
+} from './base';
+import {
+  type KrakenBookMessageDataItem,
+  type KrakenMessage,
+  type KrakenSubscription,
+  KrakenWebSocket,
+} from './kraken-ws';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
 import { mergeDeep } from './utils';
 
@@ -35,11 +42,12 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
   private asksMap = new PriceMapManager();
   private bidsMap = new PriceMapManager();
   private history: HistoryBuffer<OrderbookSnapshot>;
-  private subscription: Subscription | null = null;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private reconnectAttempts = 0;
   private status: ConnectionStatus = 'disconnected';
   private lastUpdateTime = 0;
+  private wsInstance: KrakenWebSocket | null = null;
+  private logger: Logger;
 
   private pipeline: UpdatePipeline<OrderbookSnapshot>;
 
@@ -48,6 +56,10 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
 
     this.config = Orderbook.buildConfig(config);
 
+    this.logger = new Logger({
+      enabled: this.config.debug,
+      prefix: 'Orderbook',
+    });
     this.history = new HistoryBuffer(this.config.maxHistoryLength);
 
     this.pipeline = new UpdatePipeline();
@@ -99,7 +111,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     };
   }
 
-  private handleSnapshot(data: OrderbookUpdateItem) {
+  private handleSnapshot(data: KrakenBookMessageDataItem) {
     this.asksMap.clear();
     this.bidsMap.clear();
 
@@ -113,7 +125,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     if (snapshot) this.emit('snapshot', snapshot);
   }
 
-  private handleUpdate(data: OrderbookUpdateItem) {
+  private handleUpdate(data: KrakenBookMessageDataItem) {
     if (data.asks) this.asksMap.batchUpdate(data.asks);
     if (data.bids) this.bidsMap.batchUpdate(data.bids);
 
@@ -126,41 +138,53 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     this.pipeline.push(snapshot);
   }
 
-  connect() {
+  async connect() {
     this.disconnect();
     this.setStatus('connecting');
 
-    try {
-      const observable = publicWsSubscription({
+    const subscriptionMessage: KrakenSubscription = {
+      method: 'subscribe',
+      params: {
         channel: 'book',
-        params: {
-          symbol: [this.config.symbol],
-          depth: this.config.depth,
-          snapshot: true,
-        },
-      });
+        symbol: [this.config.symbol],
+        snapshot: true,
+        depth: this.config.depth,
+      },
+    };
 
-      this.subscription = observable.subscribe({
-        next: (message) => {
-          if (message.channel !== 'book' || !message.data) return;
+    const ws = new KrakenWebSocket(
+      'wss://ws.kraken.com/v2',
+      subscriptionMessage,
+    );
 
-          const data = message.data[0];
-          if (!data || data.symbol !== this.config.symbol) return;
+    ws.on('message', (message: KrakenMessage) => {
+      if (message.channel !== 'book' || !message.data) return;
 
-          if (message.type === 'snapshot') this.handleSnapshot(data);
-          else if (message.type === 'update') this.handleUpdate(data);
-        },
-        error: (err) => {
-          this.setStatus('error');
-          this.emit(
-            'error',
-            err instanceof Error ? err : new Error(String(err)),
-          );
-          this.tryReconnect();
-        },
-        complete: () => this.setStatus('disconnected'),
-      });
+      const data = message.data[0];
+      if (!data || data.symbol !== this.config.symbol) return;
+
+      if (message.type === 'snapshot') this.handleSnapshot(data);
+      else if (message.type === 'update') this.handleUpdate(data);
+    });
+
+    ws.on('error', (e: Error) => {
+      this.logger.error('websocket error', e);
+      this.setStatus('error');
+      this.emit('error', e);
+      this.tryReconnect();
+    });
+
+    ws.on('close', () => {
+      this.setStatus('disconnected');
+      this.tryReconnect();
+    });
+
+    try {
+      await ws.connect();
+      this.setStatus('connected');
+      this.wsInstance = ws;
     } catch (e) {
+      this.logger.error('websocket connect error', e);
       this.setStatus('error');
       this.emit('error', e instanceof Error ? e : new Error(String(e)));
     }
@@ -188,9 +212,9 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
   }
 
   disconnect() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-      this.subscription = null;
+    if (this.wsInstance) {
+      this.wsInstance.disconnect();
+      this.wsInstance = null;
     }
 
     if (this.reconnectTimer) {
