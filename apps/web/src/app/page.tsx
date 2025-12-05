@@ -1,9 +1,9 @@
-import WelcomeCard from '@/app/components/WelcomeCard';
+import { OrderbookPanel } from '@/components/orderbook/Panel';
 
 export default function HomePage() {
   return (
     <>
-      <WelcomeCard />
+      <OrderbookPanel />
     </>
   );
 }

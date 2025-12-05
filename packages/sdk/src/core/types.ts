@@ -1,3 +1,5 @@
+import type { HistoryBuffer } from './base';
+
 export type ReconnectConfig = {
   enabled?: boolean;
   maxRetries?: number;
@@ -47,9 +49,20 @@ export type InternalOrderbookConfig = {
   };
 };
 
+const OrderbookEvent = {
+  snapshot: 'snapshot',
+  updateSnapshot: 'update:snapshot',
+  updateHistory: 'update:history',
+  updateRaw: 'update:raw',
+  statusChange: 'statusChange',
+  error: 'error',
+  reconnect: 'reconnect',
+};
+
 export type OrderbookEventMap = {
   snapshot: OrderbookSnapshot;
   update: OrderbookSnapshot;
+  'update:history': OrderbookSnapshot[];
   rawUpdate: OrderbookSnapshot;
   statusChange: ConnectionStatus;
   error: Error;
