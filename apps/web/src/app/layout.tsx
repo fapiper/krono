@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import type React from 'react';
-import { Providers } from './providers';
+import type { PropsWithChildren } from 'react';
 
 import '@orderbook-visualizer/ui/globals.css';
+
+import LayoutRoot from '@/components/layout/Root';
+import Providers from '@/providers';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,15 +18,13 @@ export const metadata: Metadata = {
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <LayoutRoot>{children} </LayoutRoot>
+        </Providers>
       </body>
     </html>
   );
