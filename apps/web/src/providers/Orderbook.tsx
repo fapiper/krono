@@ -1,6 +1,6 @@
 'use client';
 
-import { OrderbookProvider } from '@orderbook-visualizer/sdk/react';
+import { OrderbookProvider } from '@krono/sdk/react';
 import type { PropsWithChildren } from 'react';
 
 export default function SOrderbookProvider({ children }: PropsWithChildren) {

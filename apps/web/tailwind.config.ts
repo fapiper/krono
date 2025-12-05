@@ -1,1 +1,1 @@
-export * from '@orderbook-visualizer/ui/tailwind.config';
+export * from '@krono/ui/tailwind.config';

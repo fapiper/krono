@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { PropsWithChildren } from 'react';
 
-import '@orderbook-visualizer/ui/globals.css';
+import '@krono/ui/globals.css';
 
 import LayoutRoot from '@/components/layout/Root';
 import Providers from '@/providers';

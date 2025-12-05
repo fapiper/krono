@@ -1,5 +1,5 @@
 {
-  "extends": "@orderbook-visualizer/tsconfig/react-library.json",
+  "extends": "@krono/tsconfig/react-library.json",
   "compilerOptions": {
     "verbatimModuleSyntax": false
   },

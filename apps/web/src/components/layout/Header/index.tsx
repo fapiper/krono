@@ -17,14 +17,14 @@ export default function LayoutHeader({
   return (
     <header
       className={cn(
-        'px-4 lg:px-6 h-14 flex items-center justify-between border-b',
+        'z-10 sticky top-0 left-0 w-full px-4 lg:px-6 h-12 flex items-center justify-between border-b bg-background',
         className,
       )}
       {...props}
     >
       <div className="flex items-center">
         <MountainIcon className="h-6 w-6" />
-        <span className="sr-only">Acme Inc</span>
+        <span className="sr-only">Orderbook Visualizer</span>
       </div>
       <ThemeSwitcher />
       {children}

@@ -1,11 +1,11 @@
 {
-  "name": "orderbook-visualizer",
+  "name": "krono",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fapiper/orderbook-visualizer"
+    "url": "https://github.com/fapiper/krono"
   },
   "keywords": ["turborepo", "biome", "shadcn/cn", "nextjs"],
   "scripts": {
@@ -17,10 +17,10 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo build --filter=docs^... && changeset publish",
-    "ui:add:component": "turbo ui:add --filter=@orderbook-visualizer/ui --",
+    "ui:add:component": "turbo ui:add --filter=@krono/ui --",
     "prepare": "lefthook install",
-    "storybook": "turbo dev --filter=@orderbook-visualizer/storybook",
-    "build:storybook": "turbo build --filter=@orderbook-visualizer/storybook",
+    "storybook": "turbo dev --filter=@krono/storybook",
+    "build:storybook": "turbo build --filter=@krono/storybook",
     "test": "turbo test",
     "test:build": "turbo test:with-build",
     "test:e2e": "turbo test:e2e",

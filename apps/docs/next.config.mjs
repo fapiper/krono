@@ -3,7 +3,7 @@
 import nextra from 'nextra';
 
 const nextConfig = {
-  transpilePackages: ['@orderbook-visualizer/ui'],
+  transpilePackages: ['@krono/ui'],
   reactStrictMode: true,
 };
 

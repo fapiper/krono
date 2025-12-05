@@ -7,7 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@orderbook-visualizer/ui'],
+  transpilePackages: ['@krono/ui'],
   reactStrictMode: true,
   experimental: {
     turbo: {

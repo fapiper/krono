@@ -3,7 +3,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-app-theme/use-theme';
 
-import { Button } from '@orderbook-visualizer/ui/components/ui/button';
+import { Button } from '@krono/ui/components/ui/button';
 
 export default function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();

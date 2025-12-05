@@ -1,5 +1,5 @@
 {
-  "name": "@orderbook-visualizer/web",
+  "name": "@krono/web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -16,8 +16,8 @@
     "test:cov:ui": "vitest --ui --coverage"
   },
   "dependencies": {
-    "@orderbook-visualizer/sdk": "workspace:*",
-    "@orderbook-visualizer/ui": "workspace:*",
+    "@krono/sdk": "workspace:*",
+    "@krono/ui": "workspace:*",
     "@t3-oss/env-nextjs": "0.10.1",
     "next": "14.2.33",
     "next-app-theme": "0.1.11",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@next/bundle-analyzer": "14.2.33",
-    "@orderbook-visualizer/tsconfig": "workspace:*",
+    "@krono/tsconfig": "workspace:*",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "16.0.1",
     "@types/node": "20.14.15",

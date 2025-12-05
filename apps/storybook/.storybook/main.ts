@@ -46,14 +46,8 @@ const config: StorybookConfig = {
     if (config.resolve) {
       config.resolve.alias = {
         ...config.resolve.alias,
-        '@orderbook-visualizer/ui': path.resolve(
-          __dirname,
-          '../../../packages/ui/src',
-        ),
-        '@orderbook-visualizer/web': path.resolve(
-          __dirname,
-          '../../../apps/web/src',
-        ),
+        '@krono/ui': path.resolve(__dirname, '../../../packages/ui/src'),
+        '@krono/web': path.resolve(__dirname, '../../../apps/web/src'),
       };
     }
     return config;
