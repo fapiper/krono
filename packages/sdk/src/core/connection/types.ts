@@ -1,3 +1,33 @@
+import type { Backoff, Queue } from 'websocket-ts';
+
+export type ReconnectConfig = {
+  backoff?: Backoff;
+};
+
+export type BufferConfig<
+  E extends string | ArrayBufferLike | Blob | ArrayBufferView,
+> = {
+  queue?: Queue<E>;
+};
+
+export type WebsocketConnectionConfig = {
+  debug?: boolean;
+  reconnect?: ReconnectConfig;
+  buffer?: BufferConfig<string | ArrayBufferLike | Blob | ArrayBufferView>;
+};
+
+export type InternalWebsocketConnectionConfig =
+  Required<WebsocketConnectionConfig>;
+
+export type KrakenWebsocketConfig = {
+  debug?: boolean;
+  connection?: WebsocketConnectionConfig;
+};
+
+export type InternalKrakenWebsocketConfig = Required<
+  Omit<KrakenWebsocketConfig, 'connection'>
+>;
+
 export type KrakenSubscription = {
   method: 'subscribe' | 'unsubscribe';
   params: {
@@ -44,10 +74,10 @@ export type KrakenHandlerMap = {
   close: () => void;
 };
 
-export type WebSocketManager = {
+export interface WebsocketManager {
   connect(): Promise<void>;
   disconnect(): void;
   on(event: 'message', handler: (message: KrakenMessage) => void): void;
   on(event: 'error', handler: (error: Error) => void): void;
   on(event: 'close', handler: () => void): void;
-};
+}
