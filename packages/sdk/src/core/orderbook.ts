@@ -250,6 +250,31 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     return Date.now() - this.lastUpdateTime;
   }
 
+  onStatusChange(listener: (status: ConnectionStatus) => void) {
+    this.on('statusChange', listener);
+    return () => this.off('statusChange', listener);
+  }
+
+  onSnapshot(listener: (snapshot: OrderbookSnapshot) => void) {
+    this.on('snapshot', listener);
+    return () => this.off('snapshot', listener);
+  }
+
+  onHistoryUpdate(listener: (history: OrderbookSnapshot[]) => void) {
+    this.on('update:history', listener);
+    return () => this.off('update:history', listener);
+  }
+
+  onUpdate(listener: (snapshot: OrderbookSnapshot) => void) {
+    this.on('update', listener);
+    return () => this.off('update', listener);
+  }
+
+  onError(listener: (error: Error) => void) {
+    this.on('error', listener);
+    return () => this.off('error', listener);
+  }
+
   /**
    * Builds orderbook snapshot from internal state.
    */
@@ -320,6 +345,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     this.pipeline.on('update', (snapshot) => {
       if (this.config.historyEnabled) {
         this.history.push(snapshot);
+        this.emit('update:history', this.history.getAll());
       }
       this.emit('update', snapshot);
     });
