@@ -4,7 +4,7 @@ export type LoggerOptions = {
 };
 
 export class Logger {
-  private enabled: boolean;
+  enabled: boolean;
   private readonly prefix?: string;
 
   constructor(options?: LoggerOptions) {
