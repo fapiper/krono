@@ -12,12 +12,12 @@ export default function LayoutFooter({
   return (
     <footer
       className={cn(
-        'flex items-center justify-center h-16 px-4 lg:px-6 border-t',
+        'z-10 sticky bottom-0 left-0 w-full bg-background flex items-center justify-center h-12 px-4 lg:px-6 border-t',
         className,
       )}
       {...props}
     >
-      <p className="text-sm">Environment: {env.NODE_ENV}</p>
+      <p className="text-xs">Environment: {env.NODE_ENV}</p>
       {children}
     </footer>
   );

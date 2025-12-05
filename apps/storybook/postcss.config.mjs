@@ -1,3 +1,3 @@
-import postcssConfig from '@orderbook-visualizer/ui/postcss.config';
+import postcssConfig from '@krono/ui/postcss.config';
 
 export default postcssConfig;

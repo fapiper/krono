@@ -15,4 +15,4 @@ const config: Config = {
 
 export default config;
 
-// export * from '@orderbook-visualizer/ui/tailwind.config'; -- Uncomment this line if you want to extend the UI package's Tailwind config and use its styles and components
+// export * from '@krono/ui/tailwind.config'; -- Uncomment this line if you want to extend the UI package's Tailwind config and use its styles and components

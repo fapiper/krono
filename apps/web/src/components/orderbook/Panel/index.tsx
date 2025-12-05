@@ -1,15 +1,15 @@
 'use client';
 
-import { useOrderbook } from '@orderbook-visualizer/sdk/react';
-import { Button } from '@orderbook-visualizer/ui/components/ui/button';
+import { useOrderbook } from '@krono/sdk/react';
+import { Button } from '@krono/ui/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@orderbook-visualizer/ui/components/ui/card';
-import { Separator } from '@orderbook-visualizer/ui/components/ui/separator';
-import { Switch } from '@orderbook-visualizer/ui/components/ui/switch';
+} from '@krono/ui/components/ui/card';
+import { Separator } from '@krono/ui/components/ui/separator';
+import { Switch } from '@krono/ui/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@orderbook-visualizer/ui/components/ui/table';
+} from '@krono/ui/components/ui/table';
 import { Label } from '@ui/components/ui/label';
 
 export function OrderbookPanel() {

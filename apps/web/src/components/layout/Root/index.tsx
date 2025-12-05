@@ -12,7 +12,10 @@ export default function LayoutRoot({
   ...props
 }: LayoutRootProps) {
   return (
-    <div className={cn('flex flex-col min-h-screen', className)} {...props}>
+    <div
+      className={cn('flex flex-col min-h-screen items-stretch', className)}
+      {...props}
+    >
       <LayoutHeader />
       <LayoutMain>{children}</LayoutMain>
       <LayoutFooter />
