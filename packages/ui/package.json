@@ -4,7 +4,7 @@
   "description": "UI",
   "private": true,
   "scripts": {
-    "ui:add": "bunx shadcn-ui@latest add",
+    "ui:add": "bunx shadcn@latest add",
     "lint": "biome check .",
     "lint:fix": "biome check . --apply",
     "clean": "rm -rf .turbo && rm -rf node_modules"
@@ -22,7 +22,9 @@
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "2.1.16",
+    "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "1.1.2",
+    "@radix-ui/react-switch": "^1.2.6",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "0.408.0",
@@ -33,7 +35,7 @@
     "./globals.css": "./src/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./tailwind.config": "./tailwind.config.ts",
-    "./lib/*": "./src/lib/*.ts",
+    "./lib/*": "./src/lib/index.ts",
     "./components/*": "./src/components/*.tsx"
   }
 }
