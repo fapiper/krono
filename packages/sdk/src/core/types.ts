@@ -1,3 +1,9 @@
+export type ReconnectConfig = {
+  enabled?: boolean;
+  maxRetries?: number;
+  delayMs?: number;
+};
+
 export type PriceLevel = [price: number, volume: number];
 
 export interface OrderbookSnapshot {
@@ -19,20 +25,18 @@ export type OrderbookConfig = {
   symbol: string;
   depth?: 100 | 10 | 25 | 500 | 1000;
   maxHistoryLength?: number;
+  historyEnabled?: boolean;
   debug?: boolean;
   throttleMs?: number;
   debounceMs?: number;
-  reconnect?: {
-    enabled: boolean;
-    maxAttempts?: number;
-    delayMs?: number;
-  };
+  reconnect?: ReconnectConfig;
 };
 
 export type InternalOrderbookConfig = {
   symbol: string;
   depth: 100 | 10 | 25 | 500 | 1000;
   maxHistoryLength: number;
+  historyEnabled: boolean;
   debug: boolean;
   throttleMs?: number;
   debounceMs?: number;
