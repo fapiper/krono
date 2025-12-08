@@ -4,6 +4,7 @@ import type {
   OrderbookConfig,
   OrderbookEventMap,
   OrderbookSnapshot,
+  PriceLevel,
 } from './types';
 
 import {
@@ -25,6 +26,7 @@ const defaultConfig = {
   depth: 25,
   maxHistoryLength: 1000,
   historyEnabled: true,
+  spreadGrouping: 0.1,
   debug: false,
   throttleMs: 500,
   debounceMs: undefined,
@@ -106,6 +108,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
 
       this.config.symbol = newSymbol;
       this.logger.debug(`Symbol updated to ${newSymbol}.`);
+      this.emit('update:config', this.config);
 
       // Clear old data since it's from a different symbol
       this.asksMap.clear();
@@ -135,6 +138,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     if (this.config.depth !== newDepth) {
       this.config.depth = newDepth;
       this.logger.debug(`Depth updated to ${newDepth}. Resubscribing...`);
+      this.emit('update:config', this.config);
 
       // Only reconnect if we're actively connected
       if (this.status === 'connected' || this.status === 'connecting') {
@@ -159,6 +163,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     if (this.config.throttleMs !== value) {
       this.config.throttleMs = value;
       this.logger.debug(`Throttle updated to ${value}.`);
+      this.emit('update:config', this.config);
       this.reconfigurePipeline();
     }
   }
@@ -177,6 +182,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     if (this.config.debounceMs !== value) {
       this.config.debounceMs = value;
       this.logger.debug(`Debounce updated to ${value}.`);
+      this.emit('update:config', this.config);
       this.reconfigurePipeline();
     }
   }
@@ -197,6 +203,29 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
       this.logger.debug(
         `History recording ${enabled ? 'enabled' : 'disabled'}.`,
       );
+      this.emit('update:config', this.config);
+    }
+  }
+
+  /**
+   * Returns spread grouping percentage.
+   */
+  get spreadGrouping(): number {
+    return this.config.spreadGrouping;
+  }
+
+  /**
+   * Updates spread grouping for visual display.
+   */
+  set spreadGrouping(value: number) {
+    if (this.config.spreadGrouping !== value) {
+      this.config.spreadGrouping = value;
+      this.logger.debug(`Spread grouping updated to ${value}.`);
+      this.emit('update:config', this.config);
+      const snapshot = this.createSnapshot();
+      if (snapshot) {
+        this.emit('update', snapshot);
+      }
     }
   }
 
@@ -215,6 +244,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
       this.config.maxHistoryLength = value;
       this.history.setMaxLength(value);
       this.logger.debug(`Max history length updated to ${value}.`);
+      this.emit('update:config', this.config);
     }
   }
 
@@ -233,6 +263,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
       this.config.debug = enabled;
       this.logger.debug(`Debug mode ${enabled ? 'enabled' : 'disabled'}.`);
       this.logger.enabled = enabled;
+      this.emit('update:config', this.config);
     }
   }
 
@@ -265,6 +296,11 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     return () => this.off('update:history', listener);
   }
 
+  onConfigUpdate(listener: (config: InternalOrderbookConfig) => void) {
+    this.on('update:config', listener);
+    return () => this.off('update:config', listener);
+  }
+
   onUpdate(listener: (snapshot: OrderbookSnapshot) => void) {
     this.on('update', listener);
     return () => this.off('update', listener);
@@ -284,9 +320,13 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
 
     if (!asks.length || !bids.length) return null;
 
-    const bestAsk = asks[0]?.[0] ?? -1;
-    const bestBid = bids[0]?.[0] ?? -1;
+    const bestAsk = asks[0]?.price ?? -1;
+    const bestBid = bids[0]?.price ?? -1;
     const spread = bestAsk - bestBid;
+
+    const maxAskTotal = asks[asks.length - 1]?.total ?? 0;
+    const maxBidTotal = bids[bids.length - 1]?.total ?? 0;
+    const maxTotal = Math.max(maxAskTotal, maxBidTotal);
 
     return {
       timestamp: Date.now(),
@@ -294,6 +334,9 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
       bids,
       spread,
       spreadPct: bestAsk ? (spread / bestAsk) * 100 : 0,
+      maxAskTotal,
+      maxBidTotal,
+      maxTotal,
     };
   }
 

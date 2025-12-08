@@ -1,15 +1,4 @@
-import { UseQueryResult } from '@tanstack/react-query';
-
-export type PriceLevel = [price: number, volume: number];
-
-export type OrderbookSnapshot = {
-  timestamp: number;
-  asks: PriceLevel[];
-  bids: PriceLevel[];
-  spread: number;
-  spreadPct: number;
-  checksum?: number;
-};
+import type { OrderbookSnapshot } from '../core';
 
 export type OrderbookState = {
   data: OrderbookSnapshot | null;

@@ -9,7 +9,13 @@ export default function LayoutMain({
   ...props
 }: LayoutMainProps) {
   return (
-    <main className={cn('flex flex-1 items-stretch', className)} {...props}>
+    <main
+      className={cn(
+        'flex shrink grow items-stretch overflow-hidden',
+        className,
+      )}
+      {...props}
+    >
       {children}
     </main>
   );

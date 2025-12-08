@@ -6,16 +6,23 @@ export type ReconnectConfig = {
   delayMs?: number;
 };
 
-export type PriceLevel = [price: number, volume: number];
+export type PriceLevel = {
+  price: number;
+  quantity: number;
+  total: number;
+};
 
-export interface OrderbookSnapshot {
+export type OrderbookSnapshot = {
   timestamp: number;
   asks: PriceLevel[];
   bids: PriceLevel[];
   spread: number;
   spreadPct: number;
+  maxAskTotal: number;
+  maxBidTotal: number;
+  maxTotal: number;
   checksum?: number;
-}
+};
 
 export type ConnectionStatus =
   | 'disconnected'
@@ -28,6 +35,7 @@ export type OrderbookConfig = {
   depth?: 100 | 10 | 25 | 500 | 1000;
   maxHistoryLength?: number;
   historyEnabled?: boolean;
+  spreadGrouping?: number;
   debug?: boolean;
   throttleMs?: number;
   debounceMs?: number;
@@ -39,6 +47,7 @@ export type InternalOrderbookConfig = {
   depth: 100 | 10 | 25 | 500 | 1000;
   maxHistoryLength: number;
   historyEnabled: boolean;
+  spreadGrouping: number;
   debug: boolean;
   throttleMs?: number;
   debounceMs?: number;
@@ -65,6 +74,7 @@ export type OrderbookEventMap = {
   'update:history': OrderbookSnapshot[];
   rawUpdate: OrderbookSnapshot;
   statusChange: ConnectionStatus;
+  'update:config': InternalOrderbookConfig;
   error: Error;
   reconnect: { attempt: number; maxAttempts: number };
 };

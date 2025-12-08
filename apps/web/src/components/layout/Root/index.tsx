@@ -13,7 +13,7 @@ export default function LayoutRoot({
 }: LayoutRootProps) {
   return (
     <div
-      className={cn('flex flex-col min-h-screen items-stretch', className)}
+      className={cn('flex flex-col h-screen overflow-hidden', className)}
       {...props}
     >
       <LayoutHeader />

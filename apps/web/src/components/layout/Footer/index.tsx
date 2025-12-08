@@ -12,7 +12,7 @@ export default function LayoutFooter({
   return (
     <footer
       className={cn(
-        'z-10 sticky bottom-0 left-0 w-full bg-background flex items-center justify-center h-12 px-4 lg:px-6 border-t',
+        'shrink-0 flex w-full bg-background h-12 px-4 lg:px-6 border-t',
         className,
       )}
       {...props}

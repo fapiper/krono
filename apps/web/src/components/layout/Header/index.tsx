@@ -17,7 +17,7 @@ export default function LayoutHeader({
   return (
     <header
       className={cn(
-        'z-10 sticky top-0 left-0 w-full px-4 lg:px-6 h-12 flex items-center justify-between border-b bg-background',
+        'shrink-0 flex items-center justify-between w-full px-4 lg:px-6 h-12 border-b bg-background',
         className,
       )}
       {...props}
