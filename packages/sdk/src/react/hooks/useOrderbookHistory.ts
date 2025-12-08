@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { OrderbookSnapshot } from '../../core';
 import { useOrderbookInstance } from '../context';
-import type { OrderbookSnapshot } from '../types';
 
 export function useOrderbookHistory(maxAutoClamp = true) {
   const ob = useOrderbookInstance();
@@ -24,7 +24,10 @@ export function useOrderbookHistory(maxAutoClamp = true) {
     return () => unsubscribe();
   }, [ob, maxAutoClamp]);
 
-  const current = useMemo(() => history[index] ?? null, [history, index]);
+  const current = useMemo<OrderbookSnapshot | null>(
+    () => history[index] ?? null,
+    [history, index],
+  );
 
   const next = useCallback(
     () => setIndex((i) => Math.min(i + 1, history.length - 1)),

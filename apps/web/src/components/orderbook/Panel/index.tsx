@@ -1,138 +1,138 @@
 'use client';
 
+import { OrderbookPanelRow } from '@/components/orderbook/Panel/Row';
+import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
 import { useOrderbook } from '@krono/sdk/react';
 import { Button } from '@krono/ui/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@krono/ui/components/ui/card';
+import { ButtonGroup } from '@krono/ui/components/ui/button-group';
 import { Separator } from '@krono/ui/components/ui/separator';
-import { Switch } from '@krono/ui/components/ui/switch';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@krono/ui/components/ui/table';
-import { Label } from '@ui/components/ui/label';
+import { ScrollArea } from '@ui/components/ui/scroll-area';
+import { Slider } from '@ui/components/ui/slider';
+
+const formatUSD = (value: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value);
+};
+
+const formatDigits = (value: number, digits = 8) => {
+  if (value === 0) return '0';
+  if (!Number.isFinite(value)) return String(value);
+
+  const rounded = Number(value.toPrecision(digits));
+
+  const integerDigits = Math.floor(Math.abs(rounded)).toString().length;
+  const decimalPlaces = Math.max(0, digits - integerDigits);
+
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+    useGrouping: false,
+  }).format(rounded);
+};
 
 export function OrderbookPanel() {
-  const { symbol, status, debug, setDebug, connect, disconnect, data } =
-    useOrderbook();
+  const { debug, setDebug, bids, asks, history: data } = useOrderbook();
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Orderbook — {symbol}</span>
-          <span
-            className={`text-sm font-normal ${
-              status === 'connected' ? 'text-green-500' : 'text-red-500'
-            }`}
-          >
-            {status}
-          </span>
-        </CardTitle>
-      </CardHeader>
-
-      <Separator />
-
-      <CardContent className="space-y-4">
+    <ScrollArea
+      className="flex flex-col grow-1 shrink-1 w-full"
+      type={'always'}
+    >
+      <div className="flex items-center justify-between gap-4 lg:gap-6 px-4 lg:px-6">
         <div>
-          {/* CONFIG / CONTROLS */}
-          <div className="flex flex-wrap items-center gap-3">
-            <Button onClick={connect}>Connect</Button>
-            <Button variant="outline" onClick={disconnect}>
-              Disconnect
+          <OrderbookPanelSelect />
+        </div>
+        <div className={'flex justify-end items-center gap-4 lg:gap-6 py-2'}>
+          <span className="text-sm">Live</span>
+
+          <div className={'flex gap-1'}>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={() => setDebug(!debug)}
+            >
+              {debug ? 'Disable debug' : 'Enable debug'}
             </Button>
 
-            <div className="flex items-center gap-2">
-              <Label htmlFor={'debug'}>Debug</Label>
-              <Switch
-                id={'debug'}
-                checked={!!debug}
-                onCheckedChange={(enabled: boolean) => setDebug(enabled)}
-              />
-            </div>
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={data.prev}
+              disabled={!data.prev}
+            >
+              Back
+            </Button>
+
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={data.next}
+              disabled={!data.next}
+            >
+              Forward
+            </Button>
           </div>
-
-          <Button variant="outline" onClick={data.prev} disabled={!data.prev}>
-            Back
-          </Button>
-
-          <Button variant="outline" onClick={data.next} disabled={!data.next}>
-            Forward
-          </Button>
-
-          <span className="text-xs opacity-60">Live?</span>
         </div>
+      </div>
 
-        {/* ERRORS */}
-        {/*
-        {error && (
-          <p className="text-red-500 text-sm uppercase">{error.message}</p>
-        )}
-*/}
-
-        {/* ORDERBOOK TABLE */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* BIDS */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-green-500">Bids</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Quantity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data?.bids?.map((bid, i) => (
-                    <TableRow key={`${bid[0]}-${bid[1]}`}>
-                      <TableCell>
-                        {bid[0]} ({data?.timestamp})
-                      </TableCell>
-                      <TableCell>{bid[1]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* ASKS */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-red-500">Asks</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Volume</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data?.asks?.map((ask, i) => (
-                    <TableRow key={`${ask[0]}-${ask[1]}`}>
-                      <TableCell>{ask[0]}</TableCell>
-                      <TableCell>{ask[1]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 p-4 lg:p-6 text-sm gap-6">
+        <div className={'text-right'}>
+          <OrderbookPanelRow
+            className={
+              'text-xs font-semibold uppercase tracking-wider text-foreground/50'
+            }
+            cells={['Total', 'Quantity', 'Price']}
+          />
+          {data.current?.bids.map((bid) => (
+            <OrderbookPanelRow
+              className={'font-mono'}
+              key={`${bid.total}-${bid.quantity}-${bid.price}`}
+              cells={[
+                formatDigits(bid.total),
+                formatDigits(bid.quantity),
+                formatUSD(bid.price),
+              ]}
+            />
+          ))}
         </div>
-      </CardContent>
-    </Card>
+        <div className={'text-left'}>
+          <OrderbookPanelRow
+            className={
+              'text-xs font-semibold uppercase tracking-wider text-foreground/50'
+            }
+            cells={['Price', 'Quantity', 'Total']}
+          />
+          {data.current?.asks.map((ask) => (
+            <OrderbookPanelRow
+              className={'font-mono'}
+              key={`${ask.price}-${ask.quantity}-${ask.total}`}
+              cells={[
+                formatUSD(ask.price),
+                formatDigits(ask.quantity),
+                formatDigits(ask.total),
+              ]}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className={'sticky bottom-0 left-0 w-full p-2'}>
+        <div
+          className={
+            'w-full max-w-2xl mx-auto p-0.5 lg:p-4 bg-black/50 rounded-lg'
+          }
+        >
+          <Slider
+            step={1}
+            min={0}
+            max={1000}
+            value={[data.index]}
+            onValueChange={(values) => data.select(values[0] ?? 0)}
+          />
+        </div>
+      </div>
+    </ScrollArea>
   );
 }

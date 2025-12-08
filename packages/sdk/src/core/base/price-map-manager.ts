@@ -51,8 +51,17 @@ export class PriceMapManager {
     const sorted = entries.sort((a, b) =>
       ascending ? a[0] - b[0] : b[0] - a[0],
     );
-    const result = limit ? sorted.slice(0, limit) : sorted;
-    return result.map(([price, volume]) => [price, volume]);
+    const limited = limit ? sorted.slice(0, limit) : sorted;
+
+    let cumulativeTotal = 0;
+    return limited.map(([price, quantity]) => {
+      cumulativeTotal += quantity;
+      return {
+        price,
+        quantity,
+        total: cumulativeTotal,
+      };
+    });
   }
 
   /**

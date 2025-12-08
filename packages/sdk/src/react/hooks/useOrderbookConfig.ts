@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useOrderbookInstance } from '../context';
 
 export function useOrderbookConfig() {
   const ob = useOrderbookInstance();
 
-  return {
+  const [config, setConfig] = useState(() => ({
     symbol: ob.symbol,
     depth: ob.depth,
     throttleMs: ob.throttleMs,
@@ -11,7 +12,25 @@ export function useOrderbookConfig() {
     historyEnabled: ob.historyEnabled,
     maxHistoryLength: ob.maxHistoryLength,
     debug: ob.debug,
+  }));
 
+  useEffect(() => {
+    const unsubscribe = ob.onConfigUpdate((newConfig) => {
+      setConfig({
+        symbol: newConfig.symbol,
+        depth: newConfig.depth,
+        throttleMs: newConfig.throttleMs,
+        debounceMs: newConfig.debounceMs,
+        historyEnabled: newConfig.historyEnabled,
+        maxHistoryLength: newConfig.maxHistoryLength,
+        debug: newConfig.debug,
+      });
+    });
+    return () => unsubscribe();
+  }, [ob]);
+
+  return {
+    ...config,
     setSymbol: (v: string) => {
       ob.symbol = v;
     },

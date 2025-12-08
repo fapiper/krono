@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { OrderbookSnapshot } from '../../core';
 import { useOrderbookInstance } from '../context';
-import type { OrderbookSnapshot } from '../types';
 
 export function useOrderbookSnapshot() {
   const ob = useOrderbookInstance();
@@ -12,6 +12,9 @@ export function useOrderbookSnapshot() {
     bids: [],
     spread: 0,
     spreadPct: 0,
+    maxAskTotal: 0,
+    maxBidTotal: 0,
+    maxTotal: 0,
   });
 
   useEffect(() => {
