@@ -19,11 +19,13 @@
     "@krono/sdk": "workspace:*",
     "@krono/ui": "workspace:*",
     "@t3-oss/env-nextjs": "0.10.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.556.0",
     "next": "14.2.33",
     "next-app-theme": "0.1.11",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-use": "^17.6.0",
     "zod": "3.23.8"
   },
   "devDependencies": {

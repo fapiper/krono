@@ -24,11 +24,11 @@ import { mergeDeep } from './utils';
 
 const defaultConfig = {
   depth: 25,
-  maxHistoryLength: 1000,
+  maxHistoryLength: 86_400,
   historyEnabled: true,
   spreadGrouping: 0.1,
   debug: false,
-  throttleMs: 500,
+  throttleMs: 1_000,
   debounceMs: undefined,
   reconnect: {
     enabled: true,
@@ -270,7 +270,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
   /**
    * Returns the latest snapshot.
    */
-  get currentSnapshot(): OrderbookSnapshot | null {
+  get currentSnapshot(): OrderbookSnapshot {
     return this.createSnapshot();
   }
 
@@ -314,11 +314,22 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
   /**
    * Builds orderbook snapshot from internal state.
    */
-  private createSnapshot(): OrderbookSnapshot | null {
+  private createSnapshot(): OrderbookSnapshot {
     const asks = this.asksMap.getSorted(true, this.config.depth);
     const bids = this.bidsMap.getSorted(false, this.config.depth);
 
-    if (!asks.length || !bids.length) return null;
+    if (!asks.length || !bids.length) {
+      return {
+        timestamp: Date.now(),
+        asks: [],
+        bids: [],
+        spread: 0,
+        spreadPct: 0,
+        maxAskTotal: 0,
+        maxBidTotal: 0,
+        maxTotal: 0,
+      };
+    }
 
     const bestAsk = asks[0]?.price ?? -1;
     const bestBid = bids[0]?.price ?? -1;
