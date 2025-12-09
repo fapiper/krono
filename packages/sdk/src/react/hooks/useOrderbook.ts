@@ -8,18 +8,20 @@ import { useOrderbookStatus } from './useOrderbookStatus';
 export function useOrderbook() {
   const status = useOrderbookStatus();
   const { connect, disconnect } = useOrderbookConnection();
-  const history = useOrderbookHistory();
-  const snapshot = useOrderbookSnapshot();
+  const { history, length: historyLength, getSnapshot } = useOrderbookHistory();
+  const { snapshot: currentSnapshot } = useOrderbookSnapshot();
   const lifecycle = useOrderbookLifecycle();
   const config = useOrderbookConfig();
 
   return {
     status,
-    history,
     connect,
     disconnect,
     ...lifecycle,
     ...config,
-    ...snapshot,
+    currentSnapshot,
+    history,
+    historyLength,
+    getSnapshot,
   };
 }

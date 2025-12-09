@@ -1,58 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { OrderbookSnapshot } from '../../core';
 import { useOrderbookInstance } from '../context';
 
-export function useOrderbookHistory(maxAutoClamp = true) {
+export function useOrderbookHistory() {
   const ob = useOrderbookInstance();
 
-  const initial = useMemo(() => ob.getHistory().getAll(), [ob]);
-
-  const [history, setHistory] = useState<OrderbookSnapshot[]>(initial);
-
-  const [index, setIndex] = useState<number>(initial.length - 1);
+  const initialHistory = useMemo(() => ob.getHistory().getAll(), [ob]);
+  const [history, setHistory] = useState<OrderbookSnapshot[]>(initialHistory);
 
   useEffect(() => {
-    const handler = (newHistory: OrderbookSnapshot[]) => {
-      setHistory(newHistory);
-
-      if (maxAutoClamp) {
-        setIndex((i) => Math.min(i, newHistory.length - 1));
-      }
-    };
-
-    const unsubscribe = ob.onHistoryUpdate(handler);
+    const unsubscribe = ob.onHistoryUpdate(setHistory);
     return () => unsubscribe();
-  }, [ob, maxAutoClamp]);
-
-  const current = useMemo<OrderbookSnapshot | null>(
-    () => history[index] ?? null,
-    [history, index],
-  );
-
-  const next = useCallback(
-    () => setIndex((i) => Math.min(i + 1, history.length - 1)),
-    [history.length],
-  );
-
-  const prev = useCallback(() => setIndex((i) => Math.max(i - 1, 0)), []);
-
-  const reset = useCallback(
-    () => setIndex(history.length - 1),
-    [history.length],
-  );
-
-  const select = useCallback(
-    (i: number) => setIndex(Math.max(0, Math.min(i, history.length - 1))),
-    [history.length],
-  );
+  }, [ob]);
 
   return {
     history,
-    index,
-    current,
-    next,
-    prev,
-    reset,
-    select,
+    length: history.length,
+    getSnapshot: (index: number) => history[index] ?? null,
   };
 }

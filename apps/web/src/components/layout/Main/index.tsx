@@ -11,7 +11,7 @@ export default function LayoutMain({
   return (
     <main
       className={cn(
-        'flex shrink grow items-stretch overflow-hidden',
+        'flex flex-col shrink grow overflow-hidden px-4 pb-4',
         className,
       )}
       {...props}

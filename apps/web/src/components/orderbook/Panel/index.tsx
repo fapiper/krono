@@ -1,138 +1,173 @@
 'use client';
 
-import { OrderbookPanelRow } from '@/components/orderbook/Panel/Row';
+import { OrderbookPanelChart } from '@/components/orderbook/Panel/Chart';
 import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
-import { useOrderbook } from '@krono/sdk/react';
+import {
+  useOrderbookConfig,
+  useOrderbookPlayback,
+  useOrderbookStatus,
+} from '@krono/sdk/react';
 import { Button } from '@krono/ui/components/ui/button';
-import { ButtonGroup } from '@krono/ui/components/ui/button-group';
-import { Separator } from '@krono/ui/components/ui/separator';
-import { ScrollArea } from '@ui/components/ui/scroll-area';
+import { Card, CardContent, CardHeader } from '@ui/components/ui/card';
 import { Slider } from '@ui/components/ui/slider';
+import { format } from 'date-fns';
 
-const formatUSD = (value: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(value);
-};
+import { Badge } from '@ui/components/ui/badge';
+import { cn } from '@ui/lib';
+import {
+  ArrowRightCircle,
+  Pause,
+  Play,
+  StepBack,
+  StepForward,
+} from 'lucide-react';
+import { createBreakpoint } from 'react-use';
 
-const formatDigits = (value: number, digits = 8) => {
-  if (value === 0) return '0';
-  if (!Number.isFinite(value)) return String(value);
-
-  const rounded = Number(value.toPrecision(digits));
-
-  const integerDigits = Math.floor(Math.abs(rounded)).toString().length;
-  const decimalPlaces = Math.max(0, digits - integerDigits);
-
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: decimalPlaces,
-    maximumFractionDigits: decimalPlaces,
-    useGrouping: false,
-  }).format(rounded);
-};
+const useBreakpoint = createBreakpoint({
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536,
+  '3xl': 1800,
+  '4xl': 2600,
+});
 
 export function OrderbookPanel() {
-  const { debug, setDebug, bids, asks, history: data } = useOrderbook();
+  const status = useOrderbookStatus();
+  const { debug, setDebug, maxHistoryLength } = useOrderbookConfig();
+  const {
+    isLive,
+    canGoBack,
+    goBack,
+    canGoForward,
+    goForward,
+    isPaused,
+    togglePaused,
+    goToLive,
+    index: currentIndex,
+    currentSnapshot,
+    goToIndex,
+  } = useOrderbookPlayback();
+
+  const breakpoint = useBreakpoint();
+  const n =
+    { md: 11, lg: 22, xl: 22, '2xl': 36, '3xl': 44, '4xl': 99 }[breakpoint] ??
+    15;
 
   return (
-    <ScrollArea
-      className="flex flex-col grow-1 shrink-1 w-full"
-      type={'always'}
-    >
-      <div className="flex items-center justify-between gap-4 lg:gap-6 px-4 lg:px-6">
-        <div>
-          <OrderbookPanelSelect />
-        </div>
-        <div className={'flex justify-end items-center gap-4 lg:gap-6 py-2'}>
-          <span className="text-sm">Live</span>
+    <>
+      <Card className={'relative flex flex-1 flex-col overflow-hidden group'}>
+        {status === 'connecting' ? (
+          <>Connecting</>
+        ) : (
+          <>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 pb-px pt-2 text-xs gap-[2px] flex-1 overflow-hidden">
+              <OrderbookPanelChart
+                key={`bids-${currentIndex}`}
+                data={currentSnapshot.bids.slice(
+                  0,
+                  n - currentSnapshot.bids.length,
+                )}
+                maxTotal={currentSnapshot.maxBidTotal}
+                type="bids"
+              />
 
-          <div className={'flex gap-1'}>
-            <Button
-              size="xs"
+              <OrderbookPanelChart
+                key={`asks-${currentIndex}`}
+                data={currentSnapshot.asks.slice(
+                  0,
+                  n - currentSnapshot.asks.length,
+                )}
+                maxTotal={currentSnapshot.maxAskTotal}
+                type="asks"
+              />
+
+              <div
+                className={
+                  'absolute flex flex-col gap-y-2 bottom-0 left-0 w-full pb-2 px-4 lg:px-6 backdrop-blur-sm bg-white/25 dark:bg-black/25 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-opacity ease-in duration-200'
+                }
+              >
+                <div className={'w-full'}>
+                  <Slider
+                    step={1}
+                    min={0}
+                    max={maxHistoryLength}
+                    value={[currentIndex]}
+                    onValueChange={(values) => goToIndex(values[0] ?? 0)}
+                  />
+                </div>
+
+                <div className={'flex flex-row items-center gap-2'}>
+                  <Button
+                    size={'icon-sm'}
+                    variant={'default'}
+                    className={'rounded-full'}
+                    onClick={() => goBack()}
+                    disabled={!canGoBack}
+                  >
+                    <StepBack />
+                  </Button>
+
+                  <Button
+                    size={'icon-sm'}
+                    variant={'default'}
+                    className={'rounded-full'}
+                    onClick={() => togglePaused()}
+                  >
+                    {isPaused ? <Play /> : <Pause />}
+                  </Button>
+
+                  <Button
+                    size={'icon-sm'}
+                    variant={'default'}
+                    className={'rounded-full'}
+                    onClick={() => goForward()}
+                    disabled={!canGoForward}
+                  >
+                    <StepForward />
+                  </Button>
+                  <Badge
+                    size={'sm'}
+                    className={
+                      'font-normal hover:bg-background rounded-full bg-background tabular-nums'
+                    }
+                    variant={'secondary'}
+                  >
+                    {format(currentSnapshot.timestamp, 'PPpp')}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+
+            <Badge
               variant="outline"
-              onClick={() => setDebug(!debug)}
+              size={'xs'}
+              className={cn(
+                'absolute right-4 lg:right-6 bottom-3 bg-background',
+                !isLive &&
+                  'opacity-50 hover:opacity-100 cursor-pointer transition-opacity',
+              )}
+              onClick={() => !isLive && goToLive()}
             >
-              {debug ? 'Disable debug' : 'Enable debug'}
-            </Button>
-
-            <Button
-              size="xs"
-              variant="outline"
-              onClick={data.prev}
-              disabled={!data.prev}
-            >
-              Back
-            </Button>
-
-            <Button
-              size="xs"
-              variant="outline"
-              onClick={data.next}
-              disabled={!data.next}
-            >
-              Forward
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 p-4 lg:p-6 text-sm gap-6">
-        <div className={'text-right'}>
-          <OrderbookPanelRow
-            className={
-              'text-xs font-semibold uppercase tracking-wider text-foreground/50'
-            }
-            cells={['Total', 'Quantity', 'Price']}
-          />
-          {data.current?.bids.map((bid) => (
-            <OrderbookPanelRow
-              className={'font-mono'}
-              key={`${bid.total}-${bid.quantity}-${bid.price}`}
-              cells={[
-                formatDigits(bid.total),
-                formatDigits(bid.quantity),
-                formatUSD(bid.price),
-              ]}
-            />
-          ))}
-        </div>
-        <div className={'text-left'}>
-          <OrderbookPanelRow
-            className={
-              'text-xs font-semibold uppercase tracking-wider text-foreground/50'
-            }
-            cells={['Price', 'Quantity', 'Total']}
-          />
-          {data.current?.asks.map((ask) => (
-            <OrderbookPanelRow
-              className={'font-mono'}
-              key={`${ask.price}-${ask.quantity}-${ask.total}`}
-              cells={[
-                formatUSD(ask.price),
-                formatDigits(ask.quantity),
-                formatDigits(ask.total),
-              ]}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className={'sticky bottom-0 left-0 w-full p-2'}>
-        <div
-          className={
-            'w-full max-w-2xl mx-auto p-0.5 lg:p-4 bg-black/50 rounded-lg'
-          }
-        >
-          <Slider
-            step={1}
-            min={0}
-            max={1000}
-            value={[data.index]}
-            onValueChange={(values) => data.select(values[0] ?? 0)}
-          />
-        </div>
-      </div>
-    </ScrollArea>
+              <span className="relative flex size-1.5">
+                {isLive ? (
+                  <>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                    <span className="relative inline-flex size-1.5 rounded-full bg-red-600" />
+                  </>
+                ) : (
+                  <>
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-gray-500 opacity-75" />
+                    <span className="relative inline-flex size-1.5 rounded-full bg-gray-600" />
+                  </>
+                )}
+              </span>
+              Live
+            </Badge>
+          </>
+        )}
+      </Card>
+    </>
   );
 }

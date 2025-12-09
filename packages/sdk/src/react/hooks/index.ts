@@ -4,7 +4,7 @@ export * from './useOrderbook';
 export * from './useOrderbookHistory';
 export * from './useOrderbookConfig';
 export * from './useOrderbookConnection';
-export * from './useOrderbookData';
 export * from './useOrderbookLifecycle';
 export * from './useOrderbookSnapshot';
 export * from './useOrderbookStatus';
+export * from './useOrderbookPlayback';
