@@ -6,7 +6,7 @@ import { UpdateProcessingStrategy } from './update-processing-strategy';
  */
 export class DebounceStrategy extends UpdateProcessingStrategy<OrderbookSnapshot> {
   private pending: OrderbookSnapshot | null = null;
-  private timer: NodeJS.Timeout | null = null;
+  private timer: number | null = null;
 
   constructor(private readonly delay: number) {
     super();

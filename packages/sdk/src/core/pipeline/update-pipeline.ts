@@ -1,4 +1,4 @@
-import { TypedEventEmitter } from '../base';
+import { TypedEventEmitter } from '../events';
 import type { UpdateProcessingStrategy } from './update-processing-strategy';
 
 /**
@@ -8,7 +8,7 @@ export class UpdatePipeline<T> extends TypedEventEmitter<{ update: T }> {
   private readonly strategies: UpdateProcessingStrategy<T>[] = [];
 
   add(strategy: UpdateProcessingStrategy<T>) {
-    strategy.on('update', (snapshot) => this.emit('update', snapshot));
+    strategy.on('update', (snapshot: T) => this.emit('update', snapshot));
     this.strategies.push(strategy);
   }
 
