@@ -10,7 +10,8 @@ import {
   type KrakenSubscription,
   KrakenWebsocket,
 } from './connection';
-import { OrderbookEventEmitter } from './orderbook-event-emitter';
+import { TypedEventEmitter } from './events';
+import { OrderbookEventKey, type OrderbookEventMap } from './orderbook-events';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
 import type { ConnectionStatus, OrderbookData } from './types';
 
@@ -18,7 +19,7 @@ import type { ConnectionStatus, OrderbookData } from './types';
  * Orderbook manages market depth updates from Kraken.
  */
 export class Orderbook
-  extends OrderbookEventEmitter
+  extends TypedEventEmitter<OrderbookEventMap>
   implements IOrderbookConfig
 {
   private config: OrderbookConfig;
@@ -91,7 +92,7 @@ export class Orderbook
       // Spread grouping change: emit new data
       const data = this.createData();
       if (data) {
-        this.emitDataUpdate(data);
+        this.emit(OrderbookEventKey.DataUpdate, data);
       }
     });
 
@@ -105,9 +106,9 @@ export class Orderbook
       this.logger.enabled = value;
     });
 
-    this.config.onUpdateConfig((newConfig) => {
+    this.config.onUpdateConfig((value) => {
       // Emit all config updates
-      this.emitConfigUpdate(newConfig);
+      this.emit(OrderbookEventKey.ConfigUpdate, value);
     });
   }
 
@@ -196,7 +197,7 @@ export class Orderbook
   set status(value: ConnectionStatus) {
     if (this._status !== value) {
       this._status = value;
-      this.emitStatusUpdate(value);
+      this.emit(OrderbookEventKey.StatusUpdate, value);
     }
   }
 
@@ -291,7 +292,7 @@ export class Orderbook
       return;
     }
 
-    this.emitRawUpdate(data);
+    this.emit(OrderbookEventKey.RawDataUpdate, data);
     this.pipeline.push(data);
   }
 
@@ -311,9 +312,9 @@ export class Orderbook
     this.pipeline.on('update', (data) => {
       if (this.config.historyEnabled) {
         this.history.push(data);
-        this.emitHistoryUpdate(this.history.getAll());
+        this.emit(OrderbookEventKey.HistoryUpdate, this.history.getAll());
       }
-      this.emitDataUpdate(data);
+      this.emit(OrderbookEventKey.DataUpdate, data);
     });
   }
 
@@ -368,7 +369,7 @@ export class Orderbook
     krakenWebsocket.on('error', (e: Error) => {
       this.logger.error('websocket error', e);
       this.status = 'error';
-      this.emitError(e);
+      this.emit(OrderbookEventKey.Error, e);
     });
 
     krakenWebsocket.on('close', () => {
@@ -382,7 +383,10 @@ export class Orderbook
     } catch (e) {
       this.logger.error('websocket connect error', e);
       this.status = 'error';
-      this.emitError(e instanceof Error ? e : new Error(String(e)));
+      this.emit(
+        OrderbookEventKey.Error,
+        e instanceof Error ? e : new Error(String(e)),
+      );
     }
   }
 
@@ -430,4 +434,12 @@ export class Orderbook
   clearHistory() {
     this.history.clear();
   }
+
+  onData = this.createListener(OrderbookEventKey.Data);
+  onDataUpdate = this.createListener(OrderbookEventKey.DataUpdate);
+  onHistoryUpdate = this.createListener(OrderbookEventKey.HistoryUpdate);
+  onRawDataUpdate = this.createListener(OrderbookEventKey.RawDataUpdate);
+  onStatusUpdate = this.createListener(OrderbookEventKey.StatusUpdate);
+  onConfigUpdate = this.createListener(OrderbookEventKey.ConfigUpdate);
+  onError = this.createListener(OrderbookEventKey.Error);
 }

@@ -1,18 +1,5 @@
-import { OrderbookEventKey } from '../orderbook-event-emitter';
+import { OrderbookEventKey } from '../orderbook-events';
 import type { DeepPartial } from '../types';
-
-export type OrderbookConfigEventMap = {
-  [OrderbookEventKey.UpdateConfig]: IOrderbookConfig;
-  [OrderbookEventKey.UpdateConfigSymbol]: IOrderbookConfig['symbol'];
-  [OrderbookEventKey.UpdateConfigDepth]: IOrderbookConfig['depth'];
-  [OrderbookEventKey.UpdateConfigMaxHistoryLength]: IOrderbookConfig['maxHistoryLength'];
-  [OrderbookEventKey.UpdateConfigHistoryEnabled]: IOrderbookConfig['historyEnabled'];
-  [OrderbookEventKey.UpdateConfigSpreadGrouping]: IOrderbookConfig['spreadGrouping'];
-  [OrderbookEventKey.UpdateConfigDebug]: IOrderbookConfig['debug'];
-  [OrderbookEventKey.UpdateConfigThrottleMs]: IOrderbookConfig['throttleMs'];
-  [OrderbookEventKey.UpdateConfigDebounceMs]: IOrderbookConfig['debounceMs'];
-  [OrderbookEventKey.UpdateConfigReconnect]: IOrderbookConfig['reconnect'];
-};
 
 export interface IOrderbookConfig {
   symbol: string;
