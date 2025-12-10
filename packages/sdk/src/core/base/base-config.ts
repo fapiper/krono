@@ -1,14 +1,14 @@
-import { TypedEventEmitter } from '../events';
+import { BaseManager, type Logger } from '../base';
 
-export abstract class ConfigBase<
+export abstract class BaseConfig<
   TConfig,
   TEventMap extends Record<string, unknown>,
-> extends TypedEventEmitter<TEventMap> {
+> extends BaseManager<TEventMap> {
   protected _config: TConfig;
   protected abstract readonly updateAllEventKey: keyof TEventMap;
 
-  constructor(config: TConfig) {
-    super();
+  constructor(logger: Logger, prefix: string, config: TConfig) {
+    super(logger, prefix);
     this._config = config;
   }
 

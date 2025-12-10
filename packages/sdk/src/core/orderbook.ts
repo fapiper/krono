@@ -1,9 +1,9 @@
 import { HistoryBuffer, Logger, PriceMapManager } from './base';
 import {
   type IOrderbookConfig,
-  OrderbookConfig,
+  OrderbookConfigManager,
   type OrderbookConfigOptions,
-} from './config';
+} from './config-manager';
 import {
   type KrakenBookMessageDataItem,
   type KrakenMessage,
@@ -11,6 +11,10 @@ import {
   KrakenWebsocket,
 } from './connection';
 import { TypedEventEmitter } from './events';
+import {
+  type IOrderbookLifecycle,
+  OrderbookLifecycleManager,
+} from './lifecycle-manager';
 import { OrderbookEventKey, type OrderbookEventMap } from './orderbook-events';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
 import type { ConnectionStatus, OrderbookData } from './types';
@@ -20,14 +24,13 @@ import type { ConnectionStatus, OrderbookData } from './types';
  */
 export class Orderbook
   extends TypedEventEmitter<OrderbookEventMap>
-  implements IOrderbookConfig
+  implements IOrderbookConfig, IOrderbookLifecycle
 {
-  private config: OrderbookConfig;
+  private configManager: OrderbookConfigManager;
+  private lifecycleManager: OrderbookLifecycleManager;
   private asksMap = new PriceMapManager();
   private bidsMap = new PriceMapManager();
-  private readonly history: HistoryBuffer<OrderbookData>;
-  private _status: ConnectionStatus = 'disconnected';
-  private lastUpdateTime = 0;
+  private history: HistoryBuffer<OrderbookData>;
   private krakenWebsocket: KrakenWebsocket | null = null;
   private logger: Logger;
   private pipeline: UpdatePipeline<OrderbookData>;
@@ -35,27 +38,32 @@ export class Orderbook
   constructor(config: OrderbookConfigOptions) {
     super();
 
-    this.config = new OrderbookConfig(config);
     this.logger = new Logger({
-      enabled: this.config.debug,
+      enabled: config.debug,
       prefix: 'Orderbook',
     });
+    this.configManager = new OrderbookConfigManager(this.logger, config);
+    this.logger.enabled = this.configManager.debug;
 
-    this.history = new HistoryBuffer(this.config.maxHistoryLength);
-
+    this.lifecycleManager = new OrderbookLifecycleManager(this.logger);
+    this.history = new HistoryBuffer(this.configManager.maxHistoryLength);
     this.pipeline = new UpdatePipeline();
     this.setupPipeline();
-    this.setupConfigListeners();
+    this.setupEventListeners();
   }
 
   /**
    * Sets up listeners for config changes
    */
-  private setupConfigListeners() {
-    this.config.onUpdateConfigSymbol(() => {
+  private setupEventListeners() {
+    this.lifecycleManager.onUpdateStatus((value) => {
+      this.emit(OrderbookEventKey.StatusUpdate, value);
+    });
+
+    this.configManager.onUpdateConfigSymbol(() => {
       // Symbol change: clear data and reconnect if needed
       const wasConnected =
-        this.status === 'connected' || this.status === 'connecting';
+        this.lifecycleManager.connected || this.lifecycleManager.connecting;
 
       this.asksMap.clear();
       this.bidsMap.clear();
@@ -68,7 +76,7 @@ export class Orderbook
       }
     });
 
-    this.config.onUpdateConfigDepth(() => {
+    this.configManager.onUpdateConfigDepth(() => {
       // Depth change: reconnect if needed
 
       if (this.status === 'connected' || this.status === 'connecting') {
@@ -78,127 +86,136 @@ export class Orderbook
       }
     });
 
-    this.config.onUpdateConfigThrottleMs(() => {
+    this.configManager.onUpdateConfigThrottleMs(() => {
       // Throttle change: rebuild pipeline
       this.reconfigurePipeline();
     });
 
-    this.config.onUpdateConfigDebounceMs(() => {
+    this.configManager.onUpdateConfigDebounceMs(() => {
       // Debounce change: rebuild pipeline
       this.reconfigurePipeline();
     });
 
-    this.config.onUpdateConfigSpreadGrouping(() => {
+    this.configManager.onUpdateConfigSpreadGrouping(() => {
       // Spread grouping change: emit new data
       const data = this.createData();
-      if (data) {
-        this.emit(OrderbookEventKey.DataUpdate, data);
-      }
+      this.emit(OrderbookEventKey.DataUpdate, data);
     });
 
-    this.config.onUpdateConfigMaxHistoryLength((value) => {
+    this.configManager.onUpdateConfigMaxHistoryLength((value) => {
       // Max history length change: resize buffer
       this.history.setMaxLength(value);
     });
 
-    this.config.onUpdateConfigDebug((value) => {
+    this.configManager.onUpdateConfigDebug((value) => {
       // Debug mode change: update logger
       this.logger.enabled = value;
     });
 
-    this.config.onUpdateConfig((value) => {
+    this.configManager.onUpdateConfig((value) => {
       // Emit all config updates
       this.emit(OrderbookEventKey.ConfigUpdate, value);
     });
   }
 
   get symbol() {
-    return this.config.symbol;
+    return this.configManager.symbol;
   }
 
   set symbol(value) {
-    this.config.symbol = value;
+    this.configManager.symbol = value;
   }
 
   get depth() {
-    return this.config.depth;
+    return this.configManager.depth;
   }
 
   set depth(value) {
-    this.config.depth = value;
+    this.configManager.depth = value;
   }
 
   get throttleMs() {
-    return this.config.throttleMs;
+    return this.configManager.throttleMs;
   }
 
   set throttleMs(value) {
-    this.config.throttleMs = value;
+    this.configManager.throttleMs = value;
   }
 
   get debounceMs() {
-    return this.config.debounceMs;
+    return this.configManager.debounceMs;
   }
 
   set debounceMs(value) {
-    this.config.debounceMs = value;
+    this.configManager.debounceMs = value;
   }
 
   get historyEnabled() {
-    return this.config.historyEnabled;
+    return this.configManager.historyEnabled;
   }
 
   set historyEnabled(value) {
-    this.config.historyEnabled = value;
+    this.configManager.historyEnabled = value;
   }
 
   get spreadGrouping() {
-    return this.config.spreadGrouping;
+    return this.configManager.spreadGrouping;
   }
 
   set spreadGrouping(value) {
-    this.config.spreadGrouping = value;
+    this.configManager.spreadGrouping = value;
   }
 
   get maxHistoryLength() {
-    return this.config.maxHistoryLength;
+    return this.configManager.maxHistoryLength;
   }
 
   set maxHistoryLength(value) {
-    this.config.maxHistoryLength = value;
+    this.configManager.maxHistoryLength = value;
   }
 
   get debug() {
-    return this.config.debug;
+    return this.configManager.debug;
   }
 
   set debug(value) {
-    this.config.debug = value;
+    this.configManager.debug = value;
   }
 
   get reconnect() {
-    return this.config.reconnect;
+    return this.configManager.reconnect;
   }
 
   set reconnect(value) {
-    this.config.reconnect = value;
+    this.configManager.reconnect = value;
   }
 
-  /**
-   * Returns connection state.
-   */
   get status(): ConnectionStatus {
-    return this._status;
+    return this.lifecycleManager.status;
   }
 
-  /**
-   * Updates status and emits event when changed.
-   */
-  set status(value: ConnectionStatus) {
-    if (this._status !== value) {
-      this._status = value;
-      this.emit(OrderbookEventKey.StatusUpdate, value);
-    }
+  set status(value) {
+    this.lifecycleManager.status = value;
+  }
+
+  get connected() {
+    return this.lifecycleManager.connected;
+  }
+
+  get connecting() {
+    return this.lifecycleManager.connecting;
+  }
+
+  get disconnected() {
+    return this.lifecycleManager.disconnected;
+  }
+
+  get error() {
+    return this.lifecycleManager.error;
+  }
+
+  set error(value) {
+    this.lifecycleManager.error = value;
   }
 
   /**
@@ -209,18 +226,11 @@ export class Orderbook
   }
 
   /**
-   * Returns milliseconds elapsed since last market update.
-   */
-  get timeSinceLastUpdate(): number {
-    return Date.now() - this.lastUpdateTime;
-  }
-
-  /**
    * Builds orderbook data from internal state.
    */
   private createData(): OrderbookData {
-    const asks = this.asksMap.getSorted(true, this.config.depth);
-    const bids = this.bidsMap.getSorted(false, this.config.depth);
+    const asks = this.asksMap.getSorted(true, this.configManager.depth);
+    const bids = this.bidsMap.getSorted(false, this.configManager.depth);
 
     if (!asks.length || !bids.length) {
       return {
@@ -262,7 +272,7 @@ export class Orderbook
     this.asksMap.clear();
     this.bidsMap.clear();
 
-    this.status = 'connected';
+    this.lifecycleManager.status = 'connected';
 
     this.processMessageData(messageData);
   }
@@ -285,8 +295,6 @@ export class Orderbook
       this.bidsMap.batchUpdate(messageData.bids);
     }
 
-    this.lastUpdateTime = Date.now();
-
     const data = this.createData();
     if (!data) {
       return;
@@ -302,15 +310,15 @@ export class Orderbook
   private setupPipeline() {
     this.pipeline.removeAllListeners();
 
-    if (typeof this.config.throttleMs === 'number') {
-      this.pipeline.add(new ThrottleStrategy(this.config.throttleMs));
+    if (typeof this.configManager.throttleMs === 'number') {
+      this.pipeline.add(new ThrottleStrategy(this.configManager.throttleMs));
     }
-    if (typeof this.config.debounceMs === 'number') {
-      this.pipeline.add(new DebounceStrategy(this.config.debounceMs));
+    if (typeof this.configManager.debounceMs === 'number') {
+      this.pipeline.add(new DebounceStrategy(this.configManager.debounceMs));
     }
 
     this.pipeline.on('update', (data) => {
-      if (this.config.historyEnabled) {
+      if (this.configManager.historyEnabled) {
         this.history.push(data);
         this.emit(OrderbookEventKey.HistoryUpdate, this.history.getAll());
       }
@@ -332,15 +340,15 @@ export class Orderbook
    */
   async connect() {
     this.disconnect();
-    this.status = 'connecting';
+    this.lifecycleManager.status = 'connecting';
 
     const subscriptionMessage: KrakenSubscription = {
       method: 'subscribe',
       params: {
         channel: 'book',
-        symbol: [this.config.symbol],
+        symbol: [this.configManager.symbol],
         snapshot: true,
-        depth: this.config.depth,
+        depth: this.configManager.depth,
       },
     };
 
@@ -352,7 +360,7 @@ export class Orderbook
       }
 
       const messageData = message.data[0];
-      if (!messageData || messageData.symbol !== this.config.symbol) {
+      if (!messageData || messageData.symbol !== this.configManager.symbol) {
         return;
       }
 
@@ -368,7 +376,7 @@ export class Orderbook
 
     krakenWebsocket.on('error', (e: Error) => {
       this.logger.error('websocket error', e);
-      this.status = 'error';
+      this.lifecycleManager.error = e;
       this.emit(OrderbookEventKey.Error, e);
     });
 
@@ -382,11 +390,8 @@ export class Orderbook
       this.krakenWebsocket = krakenWebsocket;
     } catch (e) {
       this.logger.error('websocket connect error', e);
-      this.status = 'error';
-      this.emit(
-        OrderbookEventKey.Error,
-        e instanceof Error ? e : new Error(String(e)),
-      );
+      this.lifecycleManager.error =
+        e instanceof Error ? e : new Error(String(e));
     }
   }
 

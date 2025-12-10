@@ -5,7 +5,7 @@ export type LoggerOptions = {
 
 export class Logger {
   enabled: boolean;
-  private readonly prefix?: string;
+  public prefix?: string;
 
   constructor(options?: LoggerOptions) {
     this.enabled = options?.enabled ?? false;
