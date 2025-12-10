@@ -7,7 +7,14 @@ const ThemeSwitcher = dynamic(() => import('./ThemeSwitcher'), {
 });
 import MountainIcon from '@/components/icons/MountainIcon';
 import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
-import { useOrderbookData, useOrderbookStatus } from '@krono/sdk/react';
+import {
+  useOrderbookConfig,
+  useOrderbookData,
+  useOrderbookStatus,
+} from '@krono/sdk/react';
+import { Button } from '@ui/components/ui/button';
+import { Label } from '@ui/components/ui/label';
+import { Switch } from '@ui/components/ui/switch';
 import { cn } from '@ui/lib';
 import { format } from 'date-fns';
 import type { HTMLAttributes } from 'react';
@@ -19,6 +26,7 @@ export default function LayoutHeader({
   children,
   ...props
 }: LayoutHeaderProps) {
+  const { debug, setDebug } = useOrderbookConfig();
   const status = useOrderbookStatus();
   const { timestamp: currentTimestamp } = useOrderbookData();
 
@@ -38,7 +46,17 @@ export default function LayoutHeader({
           {format(currentTimestamp, 'PPpp')}
         </div>
       </div>
-      <div className={'flex justify-end items-center gap-4 lg:gap-6'}>
+      <div className={'flex justify-end items-center gap-2'}>
+        <div className="flex items-center gap-1">
+          <Button
+            size={'xs'}
+            variant={'outline'}
+            onClick={() => setDebug(!debug)}
+          >
+            {debug ? 'Disable Debug' : 'Enable Debug'}
+          </Button>
+        </div>
+
         <div className={'flex gap-1'}>
           <ThemeSwitcher />
         </div>

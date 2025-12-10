@@ -6,10 +6,9 @@ export abstract class BaseManager<
 > extends TypedEventEmitter<TEventMap> {
   protected readonly log: Logger;
 
-  constructor(logger: Logger, prefix: string) {
+  protected constructor(logger: Logger, prefix: string) {
     super();
 
-    this.log = logger;
-    this.log.prefix = prefix;
+    this.log = logger.build({ prefix });
   }
 }

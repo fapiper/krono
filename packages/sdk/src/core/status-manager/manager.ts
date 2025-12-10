@@ -1,23 +1,22 @@
 import { BaseManager, type Logger } from '../base';
-import { TypedEventEmitter } from '../events';
 import {
-  OrderbookLifecycleEventKey,
-  type OrderbookLifecycleEventMap,
+  OrderbookStatusEventKey,
+  type OrderbookStatusEventMap,
 } from './events';
-import type { ConnectionStatus, IOrderbookLifecycle } from './types';
+import type { ConnectionStatus, IOrderbookStatus } from './types';
 
 /**
  * Orderbook manages market depth updates from Kraken.
  */
-export class OrderbookLifecycleManager
-  extends BaseManager<OrderbookLifecycleEventMap>
-  implements IOrderbookLifecycle
+export class OrderbookStatusManager
+  extends BaseManager<OrderbookStatusEventMap>
+  implements IOrderbookStatus
 {
   private _status: ConnectionStatus;
   private _error?: Error;
 
   constructor(logger: Logger) {
-    super(logger, 'OrderbookLifecycle');
+    super(logger, 'OrderbookStatus');
     this._status = 'disconnected';
   }
 
@@ -75,43 +74,43 @@ export class OrderbookLifecycleManager
     if (this._error !== value) {
       this._error = value;
       this.log.debug(`Error updated to ${JSON.stringify(value)}.`);
-      this.emit(OrderbookLifecycleEventKey.Error, value);
+      this.emit(OrderbookStatusEventKey.Error, value);
     }
   }
 
   private emitStatusUpdate(value: ConnectionStatus) {
-    this.emit(OrderbookLifecycleEventKey.StatusUpdate, value);
+    this.emit(OrderbookStatusEventKey.StatusUpdate, value);
     switch (value) {
       case 'connecting':
         this.emit(
-          OrderbookLifecycleEventKey.StatusConnectingUpdate,
+          OrderbookStatusEventKey.StatusConnectingUpdate,
           this.connecting,
         );
         break;
       case 'connected':
         this.emit(
-          OrderbookLifecycleEventKey.StatusConnectedUpdate,
+          OrderbookStatusEventKey.StatusConnectedUpdate,
           this.connected,
         );
         break;
       case 'disconnected':
         this.emit(
-          OrderbookLifecycleEventKey.StatusDisconnectedUpdate,
+          OrderbookStatusEventKey.StatusDisconnectedUpdate,
           this.disconnected,
         );
         break;
     }
   }
 
-  onUpdateStatus = this.createListener(OrderbookLifecycleEventKey.StatusUpdate);
+  onUpdateStatus = this.createListener(OrderbookStatusEventKey.StatusUpdate);
   onUpdateStatusConnected = this.createListener(
-    OrderbookLifecycleEventKey.StatusConnectedUpdate,
+    OrderbookStatusEventKey.StatusConnectedUpdate,
   );
   onUpdateStatusDisconnected = this.createListener(
-    OrderbookLifecycleEventKey.StatusDisconnectedUpdate,
+    OrderbookStatusEventKey.StatusDisconnectedUpdate,
   );
   onUpdateStatusConnecting = this.createListener(
-    OrderbookLifecycleEventKey.StatusConnectingUpdate,
+    OrderbookStatusEventKey.StatusConnectingUpdate,
   );
-  onError = this.createListener(OrderbookLifecycleEventKey.Error);
+  onError = this.createListener(OrderbookStatusEventKey.Error);
 }
