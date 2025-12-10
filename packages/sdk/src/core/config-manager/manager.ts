@@ -1,18 +1,18 @@
-import { Logger } from '../base';
-import { OrderbookEventKey } from '../orderbook-events';
+import { BaseConfig, type Logger } from '../base';
 import { mergeDeep } from '../utils';
-import { ConfigBase } from './config-base';
-import type { OrderbookConfigEventMap } from './orderbook-config-events';
+import {
+  OrderbookConfigEventKey,
+  type OrderbookConfigEventMap,
+} from './events';
 import type { IOrderbookConfig, OrderbookConfigOptions } from './types';
 
 /**
  * Orderbook manages market depth updates from Kraken.
  */
-export class OrderbookConfig
-  extends ConfigBase<IOrderbookConfig, OrderbookConfigEventMap>
+export class OrderbookConfigManager
+  extends BaseConfig<IOrderbookConfig, OrderbookConfigEventMap>
   implements IOrderbookConfig
 {
-  private _logger: Logger;
   private static readonly _defaultConfig = {
     depth: 25,
     maxHistoryLength: 86_400,
@@ -27,15 +27,14 @@ export class OrderbookConfig
       delayMs: 3000,
     },
   };
-  protected readonly updateAllEventKey = OrderbookEventKey.ConfigUpdate;
+  protected readonly updateAllEventKey = OrderbookConfigEventKey.ConfigUpdate;
 
-  constructor(config: OrderbookConfigOptions) {
-    super(mergeDeep(OrderbookConfig._defaultConfig, config));
-
-    this._logger = new Logger({
-      prefix: 'OrderbookConfig',
-      enabled: this._config.debug,
-    });
+  constructor(logger: Logger, config: OrderbookConfigOptions) {
+    super(
+      logger,
+      'OrderbookConfig',
+      mergeDeep(OrderbookConfigManager._defaultConfig, config),
+    );
   }
 
   /**
@@ -51,8 +50,8 @@ export class OrderbookConfig
   set symbol(value: string) {
     if (this._config.symbol !== value) {
       this._config.symbol = value;
-      this._logger.debug(`Symbol updated to ${value}.`);
-      this.emit(OrderbookEventKey.ConfigSymbolUpdate, value);
+      this.log.debug(`Symbol updated to ${value}.`);
+      this.emit(OrderbookConfigEventKey.ConfigSymbolUpdate, value);
     }
   }
 
@@ -69,8 +68,8 @@ export class OrderbookConfig
   set depth(value) {
     if (this._config.depth !== value) {
       this._config.depth = value;
-      this._logger.debug(`Depth updated to ${value}`);
-      this.emit(OrderbookEventKey.ConfigDepthUpdate, value);
+      this.log.debug(`Depth updated to ${value}`);
+      this.emit(OrderbookConfigEventKey.ConfigDepthUpdate, value);
     }
   }
 
@@ -87,8 +86,8 @@ export class OrderbookConfig
   set throttleMs(value) {
     if (this._config.throttleMs !== value) {
       this._config.throttleMs = value;
-      this._logger.debug(`Throttle updated to ${value}.`);
-      this.emit(OrderbookEventKey.ConfigThrottleMsUpdate, value);
+      this.log.debug(`Throttle updated to ${value}.`);
+      this.emit(OrderbookConfigEventKey.ConfigThrottleMsUpdate, value);
     }
   }
 
@@ -105,8 +104,8 @@ export class OrderbookConfig
   set debounceMs(value) {
     if (this._config.debounceMs !== value) {
       this._config.debounceMs = value;
-      this._logger.debug(`Debounce updated to ${value}.`);
-      this.emit(OrderbookEventKey.ConfigDebounceMsUpdate, value);
+      this.log.debug(`Debounce updated to ${value}.`);
+      this.emit(OrderbookConfigEventKey.ConfigDebounceMsUpdate, value);
     }
   }
 
@@ -123,10 +122,8 @@ export class OrderbookConfig
   set historyEnabled(value) {
     if (this._config.historyEnabled !== value) {
       this._config.historyEnabled = value;
-      this._logger.debug(
-        `History recording ${value ? 'enabled' : 'disabled'}.`,
-      );
-      this.emit(OrderbookEventKey.ConfigHistoryEnabledUpdate, value);
+      this.log.debug(`History recording ${value ? 'enabled' : 'disabled'}.`);
+      this.emit(OrderbookConfigEventKey.ConfigHistoryEnabledUpdate, value);
     }
   }
 
@@ -143,8 +140,8 @@ export class OrderbookConfig
   set spreadGrouping(value) {
     if (this._config.spreadGrouping !== value) {
       this._config.spreadGrouping = value;
-      this._logger.debug(`Spread grouping updated to ${value}.`);
-      this.emit(OrderbookEventKey.ConfigSpreadGroupingUpdate, value);
+      this.log.debug(`Spread grouping updated to ${value}.`);
+      this.emit(OrderbookConfigEventKey.ConfigSpreadGroupingUpdate, value);
     }
   }
 
@@ -161,8 +158,8 @@ export class OrderbookConfig
   set maxHistoryLength(value) {
     if (this._config.maxHistoryLength !== value) {
       this._config.maxHistoryLength = value;
-      this._logger.debug(`Max history length updated to ${value}.`);
-      this.emit(OrderbookEventKey.ConfigMaxHistoryLengthUpdate, value);
+      this.log.debug(`Max history length updated to ${value}.`);
+      this.emit(OrderbookConfigEventKey.ConfigMaxHistoryLengthUpdate, value);
     }
   }
 
@@ -173,9 +170,9 @@ export class OrderbookConfig
   set debug(value) {
     if (this._config.debug !== value) {
       this._config.debug = value;
-      this._logger.debug(`Debug mode ${value ? 'enabled' : 'disabled'}.`);
-      this._logger.enabled = value;
-      this.emit(OrderbookEventKey.ConfigDebugUpdate, value);
+      this.log.debug(`Debug mode ${value ? 'enabled' : 'disabled'}.`);
+      this.log.enabled = value;
+      this.emit(OrderbookConfigEventKey.ConfigDebugUpdate, value);
     }
   }
 
@@ -193,37 +190,37 @@ export class OrderbookConfig
     if (changed) {
       const reconnect = mergeDeep(this._config.reconnect, value);
       this._config.reconnect = reconnect;
-      this._logger.debug(`Reconnect updated to ${JSON.stringify(reconnect)}.`);
-      this.emit(OrderbookEventKey.ConfigReconnectUpdate, reconnect);
+      this.log.debug(`Reconnect updated to ${JSON.stringify(reconnect)}.`);
+      this.emit(OrderbookConfigEventKey.ConfigReconnectUpdate, reconnect);
     }
   }
 
-  onUpdateConfig = this.createListener(OrderbookEventKey.ConfigUpdate);
+  onUpdateConfig = this.createListener(OrderbookConfigEventKey.ConfigUpdate);
   onUpdateConfigSymbol = this.createListener(
-    OrderbookEventKey.ConfigSymbolUpdate,
+    OrderbookConfigEventKey.ConfigSymbolUpdate,
   );
   onUpdateConfigDepth = this.createListener(
-    OrderbookEventKey.ConfigDepthUpdate,
+    OrderbookConfigEventKey.ConfigDepthUpdate,
   );
   onUpdateConfigMaxHistoryLength = this.createListener(
-    OrderbookEventKey.ConfigMaxHistoryLengthUpdate,
+    OrderbookConfigEventKey.ConfigMaxHistoryLengthUpdate,
   );
   onUpdateConfigHistoryEnabled = this.createListener(
-    OrderbookEventKey.ConfigHistoryEnabledUpdate,
+    OrderbookConfigEventKey.ConfigHistoryEnabledUpdate,
   );
   onUpdateConfigSpreadGrouping = this.createListener(
-    OrderbookEventKey.ConfigSpreadGroupingUpdate,
+    OrderbookConfigEventKey.ConfigSpreadGroupingUpdate,
   );
   onUpdateConfigDebug = this.createListener(
-    OrderbookEventKey.ConfigDebugUpdate,
+    OrderbookConfigEventKey.ConfigDebugUpdate,
   );
   onUpdateConfigThrottleMs = this.createListener(
-    OrderbookEventKey.ConfigThrottleMsUpdate,
+    OrderbookConfigEventKey.ConfigThrottleMsUpdate,
   );
   onUpdateConfigDebounceMs = this.createListener(
-    OrderbookEventKey.ConfigDebounceMsUpdate,
+    OrderbookConfigEventKey.ConfigDebounceMsUpdate,
   );
   onUpdateConfigReconnect = this.createListener(
-    OrderbookEventKey.ConfigReconnectUpdate,
+    OrderbookConfigEventKey.ConfigReconnectUpdate,
   );
 }

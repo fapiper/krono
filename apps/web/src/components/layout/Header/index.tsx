@@ -32,7 +32,7 @@ export default function LayoutHeader({
     >
       <div className="flex items-center gap-2">
         <MountainIcon className="h-6 w-6" />
-        <span className="sr-only">Orderbook Visualizer</span>
+        <span className="sr-only">Krono</span>
         <OrderbookPanelSelect />
         <div className={'text-xs tabular-nums hidden md:block'}>
           {format(currentTimestamp, 'PPpp')}
