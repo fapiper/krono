@@ -8,7 +8,7 @@ export type PriceLevel = {
   total: number;
 };
 
-export type OrderbookSnapshot = {
+export type OrderbookData = {
   timestamp: number;
   asks: PriceLevel[];
   bids: PriceLevel[];

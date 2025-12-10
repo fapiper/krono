@@ -1,15 +1,15 @@
 import { useOrderbookConfig } from './useOrderbookConfig';
 import { useOrderbookConnection } from './useOrderbookConnection';
+import { useOrderbookData } from './useOrderbookData';
 import { useOrderbookHistory } from './useOrderbookHistory';
 import { useOrderbookLifecycle } from './useOrderbookLifecycle';
-import { useOrderbookSnapshot } from './useOrderbookSnapshot';
 import { useOrderbookStatus } from './useOrderbookStatus';
 
 export function useOrderbook() {
   const status = useOrderbookStatus();
   const { connect, disconnect } = useOrderbookConnection();
-  const { history, length: historyLength, getSnapshot } = useOrderbookHistory();
-  const { snapshot: currentSnapshot } = useOrderbookSnapshot();
+  const { history, length: historyLength, getData } = useOrderbookHistory();
+  const { data: currentData } = useOrderbookData();
   const lifecycle = useOrderbookLifecycle();
   const config = useOrderbookConfig();
 
@@ -19,9 +19,9 @@ export function useOrderbook() {
     disconnect,
     ...lifecycle,
     ...config,
-    currentSnapshot,
+    currentData,
     history,
     historyLength,
-    getSnapshot,
+    getData,
   };
 }

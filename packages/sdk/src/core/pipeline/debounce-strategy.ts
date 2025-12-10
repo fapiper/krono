@@ -1,19 +1,19 @@
-import type { OrderbookSnapshot } from '../types';
+import type { OrderbookData } from '../types';
 import { UpdateProcessingStrategy } from './update-processing-strategy';
 
 /**
  * Emits only after updates have paused for delay time
  */
-export class DebounceStrategy extends UpdateProcessingStrategy<OrderbookSnapshot> {
-  private pending: OrderbookSnapshot | null = null;
+export class DebounceStrategy extends UpdateProcessingStrategy<OrderbookData> {
+  private pending: OrderbookData | null = null;
   private timer: number | null = null;
 
   constructor(private readonly delay: number) {
     super();
   }
 
-  handle(snapshot: OrderbookSnapshot) {
-    this.pending = snapshot;
+  handle(data: OrderbookData) {
+    this.pending = data;
 
     if (this.timer) clearTimeout(this.timer);
 

@@ -5,6 +5,6 @@ export * from './useOrderbookHistory';
 export * from './useOrderbookConfig';
 export * from './useOrderbookConnection';
 export * from './useOrderbookLifecycle';
-export * from './useOrderbookSnapshot';
+export * from './useOrderbookData';
 export * from './useOrderbookStatus';
 export * from './useOrderbookPlayback';
