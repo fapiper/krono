@@ -7,12 +7,7 @@ const ThemeSwitcher = dynamic(() => import('./ThemeSwitcher'), {
 });
 import MountainIcon from '@/components/icons/MountainIcon';
 import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
-import {
-  useOrderbookConfig,
-  useOrderbookSnapshot,
-  useOrderbookStatus,
-} from '@krono/sdk/react';
-import { Button } from '@ui/components/ui/button';
+import { useOrderbookData, useOrderbookStatus } from '@krono/sdk/react';
 import { cn } from '@ui/lib';
 import { format } from 'date-fns';
 import type { HTMLAttributes } from 'react';
@@ -25,7 +20,7 @@ export default function LayoutHeader({
   ...props
 }: LayoutHeaderProps) {
   const status = useOrderbookStatus();
-  const { timestamp: currentTimestamp } = useOrderbookSnapshot();
+  const { timestamp: currentTimestamp } = useOrderbookData();
 
   return (
     <header

@@ -1,14 +1,14 @@
 import type { IOrderbookConfig, OrderbookConfigEventMap } from './config';
 import { TypedEventEmitter } from './events';
-import type { ConnectionStatus, OrderbookSnapshot } from './types';
+import type { ConnectionStatus, OrderbookData } from './types';
 
 export enum OrderbookEventKey {
-  Snapshot = 'snapshot',
-  UpdateSnapshot = 'update:snapshot',
-  UpdateHistory = 'update:history',
-  UpdateRaw = 'update:raw',
-  UpdateStatus = 'update:status',
-  UpdateConfig = 'update:config',
+  Data = 'data',
+  DataUpdate = 'update:data',
+  HistoryUpdate = 'update:history',
+  RawUpdate = 'update:raw',
+  StatusUpdate = 'update:status',
+  ConfigUpdate = 'update:config',
   UpdateConfigSymbol = 'update:config:symbol',
   UpdateConfigDepth = 'update:config:depth',
   UpdateConfigMaxHistoryLength = 'update:config:max_history_length',
@@ -22,49 +22,45 @@ export enum OrderbookEventKey {
 }
 
 export type OrderbookEventMap = OrderbookConfigEventMap & {
-  [OrderbookEventKey.UpdateConfig]: IOrderbookConfig;
-  [OrderbookEventKey.Snapshot]: OrderbookSnapshot;
-  [OrderbookEventKey.UpdateSnapshot]: OrderbookSnapshot;
-  [OrderbookEventKey.UpdateHistory]: OrderbookSnapshot[];
-  [OrderbookEventKey.UpdateRaw]: OrderbookSnapshot;
-  [OrderbookEventKey.UpdateStatus]: ConnectionStatus;
+  [OrderbookEventKey.ConfigUpdate]: IOrderbookConfig;
+  [OrderbookEventKey.Data]: OrderbookData;
+  [OrderbookEventKey.DataUpdate]: OrderbookData;
+  [OrderbookEventKey.HistoryUpdate]: OrderbookData[];
+  [OrderbookEventKey.RawUpdate]: OrderbookData;
+  [OrderbookEventKey.StatusUpdate]: ConnectionStatus;
   [OrderbookEventKey.Error]: Error;
 };
 
 export class OrderbookEventEmitter extends TypedEventEmitter<OrderbookEventMap> {
   protected emitStatusUpdate(status: ConnectionStatus) {
-    this.emit(OrderbookEventKey.UpdateStatus, status);
+    this.emit(OrderbookEventKey.StatusUpdate, status);
   }
 
-  protected emitRawUpdate(snapshot: OrderbookSnapshot) {
-    this.emit(OrderbookEventKey.UpdateRaw, snapshot);
+  protected emitRawUpdate(data: OrderbookData) {
+    this.emit(OrderbookEventKey.RawUpdate, data);
   }
 
-  protected emitSnapshot(snapshot: OrderbookSnapshot) {
-    this.emit(OrderbookEventKey.Snapshot, snapshot);
+  protected emitDataUpdate(data: OrderbookData) {
+    this.emit(OrderbookEventKey.DataUpdate, data);
   }
 
-  protected emitSnapshotUpdate(snapshot: OrderbookSnapshot) {
-    this.emit(OrderbookEventKey.UpdateSnapshot, snapshot);
-  }
-
-  protected emitHistoryUpdate(history: OrderbookSnapshot[]) {
-    this.emit(OrderbookEventKey.UpdateHistory, history);
+  protected emitHistoryUpdate(history: OrderbookData[]) {
+    this.emit(OrderbookEventKey.HistoryUpdate, history);
   }
 
   protected emitConfigUpdate(config: IOrderbookConfig) {
-    this.emit(OrderbookEventKey.UpdateConfig, config);
+    this.emit(OrderbookEventKey.ConfigUpdate, config);
   }
 
   protected emitError(error: Error) {
     this.emit(OrderbookEventKey.Error, error);
   }
 
-  onSnapshot = this.createListener(OrderbookEventKey.Snapshot);
-  onSnapshotUpdate = this.createListener(OrderbookEventKey.UpdateSnapshot);
-  onHistoryUpdate = this.createListener(OrderbookEventKey.UpdateHistory);
-  onRawUpdate = this.createListener(OrderbookEventKey.UpdateRaw);
-  onStatusUpdate = this.createListener(OrderbookEventKey.UpdateStatus);
-  onConfigUpdate = this.createListener(OrderbookEventKey.UpdateConfig);
+  onData = this.createListener(OrderbookEventKey.Data);
+  onDataUpdate = this.createListener(OrderbookEventKey.DataUpdate);
+  onHistoryUpdate = this.createListener(OrderbookEventKey.HistoryUpdate);
+  onRawUpdate = this.createListener(OrderbookEventKey.RawUpdate);
+  onStatusUpdate = this.createListener(OrderbookEventKey.StatusUpdate);
+  onConfigUpdate = this.createListener(OrderbookEventKey.ConfigUpdate);
   onError = this.createListener(OrderbookEventKey.Error);
 }

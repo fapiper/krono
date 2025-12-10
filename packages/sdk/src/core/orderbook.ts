@@ -12,7 +12,7 @@ import {
 } from './connection';
 import { OrderbookEventEmitter } from './orderbook-event-emitter';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
-import type { ConnectionStatus, OrderbookSnapshot } from './types';
+import type { ConnectionStatus, OrderbookData } from './types';
 
 /**
  * Orderbook manages market depth updates from Kraken.
@@ -24,12 +24,12 @@ export class Orderbook
   private config: OrderbookConfig;
   private asksMap = new PriceMapManager();
   private bidsMap = new PriceMapManager();
-  private readonly history: HistoryBuffer<OrderbookSnapshot>;
+  private readonly history: HistoryBuffer<OrderbookData>;
   private _status: ConnectionStatus = 'disconnected';
   private lastUpdateTime = 0;
   private krakenWebsocket: KrakenWebsocket | null = null;
   private logger: Logger;
-  private pipeline: UpdatePipeline<OrderbookSnapshot>;
+  private pipeline: UpdatePipeline<OrderbookData>;
 
   constructor(config: OrderbookConfigOptions) {
     super();
@@ -88,10 +88,10 @@ export class Orderbook
     });
 
     this.config.onUpdateConfigSpreadGrouping(() => {
-      // Spread grouping change: emit new snapshot
-      const snapshot = this.createSnapshot();
-      if (snapshot) {
-        this.emitSnapshotUpdate(snapshot);
+      // Spread grouping change: emit new data
+      const data = this.createData();
+      if (data) {
+        this.emitDataUpdate(data);
       }
     });
 
@@ -201,10 +201,10 @@ export class Orderbook
   }
 
   /**
-   * Returns the latest snapshot.
+   * Returns the latest orderbook data.
    */
-  get currentSnapshot(): OrderbookSnapshot {
-    return this.createSnapshot();
+  get currentData(): OrderbookData {
+    return this.createData();
   }
 
   /**
@@ -215,9 +215,9 @@ export class Orderbook
   }
 
   /**
-   * Builds orderbook snapshot from internal state.
+   * Builds orderbook data from internal state.
    */
-  private createSnapshot(): OrderbookSnapshot {
+  private createData(): OrderbookData {
     const asks = this.asksMap.getSorted(true, this.config.depth);
     const bids = this.bidsMap.getSorted(false, this.config.depth);
 
@@ -255,37 +255,44 @@ export class Orderbook
   }
 
   /**
-   * Handles initial full snapshot message.
+   * Handles initial full snapshot message from Kraken.
    */
-  private handleSnapshot(data: KrakenBookMessageDataItem) {
+  private handleSnapshot(messageData: KrakenBookMessageDataItem) {
     this.asksMap.clear();
     this.bidsMap.clear();
 
-    if (data.asks) this.asksMap.batchUpdate(data.asks);
-    if (data.bids) this.bidsMap.batchUpdate(data.bids);
-
     this.status = 'connected';
 
-    const snapshot = this.createSnapshot();
-    if (snapshot) {
-      this.emitSnapshot(snapshot);
-    }
+    this.processMessageData(messageData);
   }
 
   /**
-   * Handles incremental update messages.
+   * Handles incremental update messages from Kraken.
    */
-  private handleUpdate(data: KrakenBookMessageDataItem) {
-    if (data.asks) this.asksMap.batchUpdate(data.asks);
-    if (data.bids) this.bidsMap.batchUpdate(data.bids);
+  private handleUpdate(messageData: KrakenBookMessageDataItem) {
+    this.processMessageData(messageData);
+  }
+
+  /**
+   * Processes data messages from Kraken.
+   */
+  private processMessageData(messageData: KrakenBookMessageDataItem) {
+    if (messageData.asks) {
+      this.asksMap.batchUpdate(messageData.asks);
+    }
+    if (messageData.bids) {
+      this.bidsMap.batchUpdate(messageData.bids);
+    }
 
     this.lastUpdateTime = Date.now();
 
-    const snapshot = this.createSnapshot();
-    if (!snapshot) return;
+    const data = this.createData();
+    if (!data) {
+      return;
+    }
 
-    this.emitRawUpdate(snapshot);
-    this.pipeline.push(snapshot);
+    this.emitRawUpdate(data);
+    this.pipeline.push(data);
   }
 
   /**
@@ -301,12 +308,12 @@ export class Orderbook
       this.pipeline.add(new DebounceStrategy(this.config.debounceMs));
     }
 
-    this.pipeline.on('update', (snapshot) => {
+    this.pipeline.on('update', (data) => {
       if (this.config.historyEnabled) {
-        this.history.push(snapshot);
+        this.history.push(data);
         this.emitHistoryUpdate(this.history.getAll());
       }
-      this.emitSnapshotUpdate(snapshot);
+      this.emitDataUpdate(data);
     });
   }
 
@@ -343,17 +350,17 @@ export class Orderbook
         return;
       }
 
-      const data = message.data[0];
-      if (!data || data.symbol !== this.config.symbol) {
+      const messageData = message.data[0];
+      if (!messageData || messageData.symbol !== this.config.symbol) {
         return;
       }
 
       switch (message.type) {
         case 'snapshot':
-          this.handleSnapshot(data);
+          this.handleSnapshot(messageData);
           break;
         case 'update':
-          this.handleUpdate(data);
+          this.handleUpdate(messageData);
           break;
       }
     });
@@ -404,10 +411,10 @@ export class Orderbook
   }
 
   /**
-   * Manually inserts snapshot into history buffer.
+   * Manually inserts data into history buffer.
    */
-  addToHistory(snapshot: OrderbookSnapshot) {
-    this.history.push(snapshot);
+  addToHistory(data: OrderbookData) {
+    this.history.push(data);
   }
 
   /**

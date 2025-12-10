@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { OrderbookSnapshot } from '../../core';
+import type { OrderbookData } from '../../core';
 import { useOrderbookInstance } from '../context';
+import { useOrderbookData } from './useOrderbookData';
 import { useOrderbookHistory } from './useOrderbookHistory';
-import { useOrderbookSnapshot } from './useOrderbookSnapshot';
 
 export function useOrderbookPlayback() {
-  const { length, getSnapshot } = useOrderbookHistory();
-  const liveSnapshot = useOrderbookSnapshot();
+  const { length, getData } = useOrderbookHistory();
+  const liveData = useOrderbookData();
   const [index, setIndex] = useState<number>(length - 1);
   const [isPaused, setIsPaused] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,15 +34,15 @@ export function useOrderbookPlayback() {
         return;
       }
 
-      const currentSnapshot = getSnapshot(index);
-      const nextSnapshot = getSnapshot(index + 1);
+      const currentData = getData(index);
+      const nextData = getData(index + 1);
 
-      if (!currentSnapshot || !nextSnapshot) {
+      if (!currentData || !nextData) {
         setIsPlaying(false);
         return;
       }
 
-      const delay = nextSnapshot.timestamp - currentSnapshot.timestamp;
+      const delay = nextData.timestamp - currentData.timestamp;
 
       timeoutRef.current = setTimeout(() => {
         setIndex((i) => i + 1);
@@ -56,14 +56,14 @@ export function useOrderbookPlayback() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isPlaying, isPaused, index, length, getSnapshot]);
+  }, [isPlaying, isPaused, index, length, getData]);
 
-  const currentSnapshot = useMemo<OrderbookSnapshot>(() => {
+  const currentData = useMemo<OrderbookData>(() => {
     if (length === 0) {
-      return liveSnapshot;
+      return liveData;
     }
-    return getSnapshot(index) ?? liveSnapshot;
-  }, [length, getSnapshot, index, liveSnapshot]);
+    return getData(index) ?? liveData;
+  }, [length, getData, index, liveData]);
 
   const isLive =
     (index === length - 1 && !isPaused && !isPlaying) || length === 0;
@@ -130,7 +130,7 @@ export function useOrderbookPlayback() {
   }, []);
 
   return {
-    currentSnapshot,
+    currentData,
     index,
     isLive,
     isPaused,

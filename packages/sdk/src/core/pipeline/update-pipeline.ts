@@ -8,17 +8,17 @@ export class UpdatePipeline<T> extends TypedEventEmitter<{ update: T }> {
   private readonly strategies: UpdateProcessingStrategy<T>[] = [];
 
   add(strategy: UpdateProcessingStrategy<T>) {
-    strategy.on('update', (snapshot: T) => this.emit('update', snapshot));
+    strategy.on('update', (data: T) => this.emit('update', data));
     this.strategies.push(strategy);
   }
 
-  push(snapshot: T) {
+  push(data: T) {
     if (!this.strategies.length) {
-      this.emit('update', snapshot);
+      this.emit('update', data);
       return;
     }
     for (const s of this.strategies) {
-      s.handle(snapshot);
+      s.handle(data);
     }
   }
 

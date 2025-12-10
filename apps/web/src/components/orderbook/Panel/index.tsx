@@ -1,7 +1,6 @@
 'use client';
 
 import { OrderbookPanelChart } from '@/components/orderbook/Panel/Chart';
-import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
 import {
   useOrderbookConfig,
   useOrderbookPlayback,
@@ -14,13 +13,7 @@ import { format } from 'date-fns';
 
 import { Badge } from '@ui/components/ui/badge';
 import { cn } from '@ui/lib';
-import {
-  ArrowRightCircle,
-  Pause,
-  Play,
-  StepBack,
-  StepForward,
-} from 'lucide-react';
+import { Pause, Play, StepBack, StepForward } from 'lucide-react';
 import { createBreakpoint } from 'react-use';
 
 const useBreakpoint = createBreakpoint({
@@ -46,7 +39,7 @@ export function OrderbookPanel() {
     togglePaused,
     goToLive,
     index: currentIndex,
-    currentSnapshot,
+    currentData,
     goToIndex,
   } = useOrderbookPlayback();
 
@@ -65,21 +58,15 @@ export function OrderbookPanel() {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 pb-px pt-2 text-xs gap-[2px] flex-1 overflow-hidden">
               <OrderbookPanelChart
                 key={`bids-${currentIndex}`}
-                data={currentSnapshot.bids.slice(
-                  0,
-                  n - currentSnapshot.bids.length,
-                )}
-                maxTotal={currentSnapshot.maxBidTotal}
+                data={currentData.bids.slice(0, n - currentData.bids.length)}
+                maxTotal={currentData.maxBidTotal}
                 type="bids"
               />
 
               <OrderbookPanelChart
                 key={`asks-${currentIndex}`}
-                data={currentSnapshot.asks.slice(
-                  0,
-                  n - currentSnapshot.asks.length,
-                )}
-                maxTotal={currentSnapshot.maxAskTotal}
+                data={currentData.asks.slice(0, n - currentData.asks.length)}
+                maxTotal={currentData.maxAskTotal}
                 type="asks"
               />
 
@@ -134,7 +121,7 @@ export function OrderbookPanel() {
                     }
                     variant={'secondary'}
                   >
-                    {format(currentSnapshot.timestamp, 'PPpp')}
+                    {format(currentData.timestamp, 'PPpp')}
                   </Badge>
                 </div>
               </div>
