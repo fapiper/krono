@@ -1,47 +1,27 @@
-import type {
-  ConnectionStatus,
-  InternalOrderbookConfig,
-  OrderbookConfig,
-  OrderbookEventMap,
-  OrderbookSnapshot,
-  PriceLevel,
-} from './types';
-
+import { HistoryBuffer, Logger, PriceMapManager } from './base';
 import {
-  HistoryBuffer,
-  Logger,
-  PriceMapManager,
-  TypedEventEmitter,
-} from './base';
+  type IOrderbookConfig,
+  OrderbookConfig,
+  type OrderbookConfigOptions,
+} from './config';
 import {
   type KrakenBookMessageDataItem,
   type KrakenMessage,
   type KrakenSubscription,
   KrakenWebsocket,
 } from './connection';
+import { OrderbookEventEmitter } from './orderbook-event-emitter';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
-import { mergeDeep } from './utils';
-
-const defaultConfig = {
-  depth: 25,
-  maxHistoryLength: 86_400,
-  historyEnabled: true,
-  spreadGrouping: 0.1,
-  debug: false,
-  throttleMs: 1_000,
-  debounceMs: undefined,
-  reconnect: {
-    enabled: true,
-    maxAttempts: 5,
-    delayMs: 3000,
-  },
-};
+import type { ConnectionStatus, OrderbookSnapshot } from './types';
 
 /**
  * Orderbook manages market depth updates from Kraken.
  */
-export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
-  private config: InternalOrderbookConfig;
+export class Orderbook
+  extends OrderbookEventEmitter
+  implements IOrderbookConfig
+{
+  private config: OrderbookConfig;
   private asksMap = new PriceMapManager();
   private bidsMap = new PriceMapManager();
   private readonly history: HistoryBuffer<OrderbookSnapshot>;
@@ -51,11 +31,10 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
   private logger: Logger;
   private pipeline: UpdatePipeline<OrderbookSnapshot>;
 
-  constructor(config: OrderbookConfig) {
+  constructor(config: OrderbookConfigOptions) {
     super();
 
-    this.config = Orderbook.buildConfig(config);
-
+    this.config = new OrderbookConfig(config);
     this.logger = new Logger({
       enabled: this.config.debug,
       prefix: 'Orderbook',
@@ -65,13 +44,143 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
 
     this.pipeline = new UpdatePipeline();
     this.setupPipeline();
+    this.setupConfigListeners();
   }
 
   /**
-   * Merges user config with defaults.
+   * Sets up listeners for config changes
    */
-  private static buildConfig(config: OrderbookConfig): InternalOrderbookConfig {
-    return mergeDeep(defaultConfig, config);
+  private setupConfigListeners() {
+    this.config.onUpdateConfigSymbol(() => {
+      // Symbol change: clear data and reconnect if needed
+      const wasConnected =
+        this.status === 'connected' || this.status === 'connecting';
+
+      this.asksMap.clear();
+      this.bidsMap.clear();
+      this.clearHistory();
+
+      if (wasConnected) {
+        this.connect().catch((e) =>
+          this.logger.error('Reconnection failed after symbol change', e),
+        );
+      }
+    });
+
+    this.config.onUpdateConfigDepth(() => {
+      // Depth change: reconnect if needed
+
+      if (this.status === 'connected' || this.status === 'connecting') {
+        this.connect().catch((e) =>
+          this.logger.error('Resubscription failed after depth change', e),
+        );
+      }
+    });
+
+    this.config.onUpdateConfigThrottleMs(() => {
+      // Throttle change: rebuild pipeline
+      this.reconfigurePipeline();
+    });
+
+    this.config.onUpdateConfigDebounceMs(() => {
+      // Debounce change: rebuild pipeline
+      this.reconfigurePipeline();
+    });
+
+    this.config.onUpdateConfigSpreadGrouping(() => {
+      // Spread grouping change: emit new snapshot
+      const snapshot = this.createSnapshot();
+      if (snapshot) {
+        this.emitSnapshotUpdate(snapshot);
+      }
+    });
+
+    this.config.onUpdateConfigMaxHistoryLength((value) => {
+      // Max history length change: resize buffer
+      this.history.setMaxLength(value);
+    });
+
+    this.config.onUpdateConfigDebug((value) => {
+      // Debug mode change: update logger
+      this.logger.enabled = value;
+    });
+
+    this.config.onUpdateConfig((newConfig) => {
+      // Emit all config updates
+      this.emitConfigUpdate(newConfig);
+    });
+  }
+
+  get symbol() {
+    return this.config.symbol;
+  }
+
+  set symbol(value) {
+    this.config.symbol = value;
+  }
+
+  get depth() {
+    return this.config.depth;
+  }
+
+  set depth(value) {
+    this.config.depth = value;
+  }
+
+  get throttleMs() {
+    return this.config.throttleMs;
+  }
+
+  set throttleMs(value) {
+    this.config.throttleMs = value;
+  }
+
+  get debounceMs() {
+    return this.config.debounceMs;
+  }
+
+  set debounceMs(value) {
+    this.config.debounceMs = value;
+  }
+
+  get historyEnabled() {
+    return this.config.historyEnabled;
+  }
+
+  set historyEnabled(value) {
+    this.config.historyEnabled = value;
+  }
+
+  get spreadGrouping() {
+    return this.config.spreadGrouping;
+  }
+
+  set spreadGrouping(value) {
+    this.config.spreadGrouping = value;
+  }
+
+  get maxHistoryLength() {
+    return this.config.maxHistoryLength;
+  }
+
+  set maxHistoryLength(value) {
+    this.config.maxHistoryLength = value;
+  }
+
+  get debug() {
+    return this.config.debug;
+  }
+
+  set debug(value) {
+    this.config.debug = value;
+  }
+
+  get reconnect() {
+    return this.config.reconnect;
+  }
+
+  set reconnect(value) {
+    this.config.reconnect = value;
   }
 
   /**
@@ -84,186 +193,10 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
   /**
    * Updates status and emits event when changed.
    */
-  private set status(value: ConnectionStatus) {
+  set status(value: ConnectionStatus) {
     if (this._status !== value) {
       this._status = value;
-      this.emit('statusChange', value);
-    }
-  }
-
-  /**
-   * Returns configured trading symbol.
-   */
-  get symbol(): string {
-    return this.config.symbol;
-  }
-
-  /**
-   * Updates symbol and reconnects.
-   */
-  set symbol(newSymbol: string) {
-    if (this.config.symbol !== newSymbol) {
-      const wasConnected =
-        this.status === 'connected' || this.status === 'connecting';
-
-      this.config.symbol = newSymbol;
-      this.logger.debug(`Symbol updated to ${newSymbol}.`);
-      this.emit('update:config', this.config);
-
-      // Clear old data since it's from a different symbol
-      this.asksMap.clear();
-      this.bidsMap.clear();
-      this.clearHistory();
-
-      // Reconnect if we were connected
-      if (wasConnected) {
-        this.connect().catch((e) =>
-          this.logger.error('Reconnection failed after symbol change', e),
-        );
-      }
-    }
-  }
-
-  /**
-   * Returns configured orderbook depth.
-   */
-  get depth(): number {
-    return this.config.depth;
-  }
-
-  /**
-   * Updates depth and reconnects if necessary.
-   */
-  set depth(newDepth: 10 | 25 | 100 | 500 | 1000) {
-    if (this.config.depth !== newDepth) {
-      this.config.depth = newDepth;
-      this.logger.debug(`Depth updated to ${newDepth}. Resubscribing...`);
-      this.emit('update:config', this.config);
-
-      // Only reconnect if we're actively connected
-      if (this.status === 'connected' || this.status === 'connecting') {
-        this.connect().catch((e) =>
-          this.logger.error('Resubscription failed after depth change', e),
-        );
-      }
-    }
-  }
-
-  /**
-   * Returns throttle time.
-   */
-  get throttleMs(): number | undefined {
-    return this.config.throttleMs;
-  }
-
-  /**
-   * Updates throttle time and rebuilds pipeline.
-   */
-  set throttleMs(value: number | undefined) {
-    if (this.config.throttleMs !== value) {
-      this.config.throttleMs = value;
-      this.logger.debug(`Throttle updated to ${value}.`);
-      this.emit('update:config', this.config);
-      this.reconfigurePipeline();
-    }
-  }
-
-  /**
-   * Returns debounce time.
-   */
-  get debounceMs(): number | undefined {
-    return this.config.debounceMs;
-  }
-
-  /**
-   * Updates debounce time and rebuilds pipeline.
-   */
-  set debounceMs(value: number | undefined) {
-    if (this.config.debounceMs !== value) {
-      this.config.debounceMs = value;
-      this.logger.debug(`Debounce updated to ${value}.`);
-      this.emit('update:config', this.config);
-      this.reconfigurePipeline();
-    }
-  }
-
-  /**
-   * Returns whether history recording is enabled.
-   */
-  get historyEnabled(): boolean {
-    return this.config.historyEnabled;
-  }
-
-  /**
-   * Enables or disables history recording.
-   */
-  set historyEnabled(enabled: boolean) {
-    if (this.config.historyEnabled !== enabled) {
-      this.config.historyEnabled = enabled;
-      this.logger.debug(
-        `History recording ${enabled ? 'enabled' : 'disabled'}.`,
-      );
-      this.emit('update:config', this.config);
-    }
-  }
-
-  /**
-   * Returns spread grouping percentage.
-   */
-  get spreadGrouping(): number {
-    return this.config.spreadGrouping;
-  }
-
-  /**
-   * Updates spread grouping for visual display.
-   */
-  set spreadGrouping(value: number) {
-    if (this.config.spreadGrouping !== value) {
-      this.config.spreadGrouping = value;
-      this.logger.debug(`Spread grouping updated to ${value}.`);
-      this.emit('update:config', this.config);
-      const snapshot = this.createSnapshot();
-      if (snapshot) {
-        this.emit('update', snapshot);
-      }
-    }
-  }
-
-  /**
-   * Returns max history length.
-   */
-  get maxHistoryLength(): number {
-    return this.config.maxHistoryLength;
-  }
-
-  /**
-   * Updates max history length and resizes buffer.
-   */
-  set maxHistoryLength(value: number) {
-    if (this.config.maxHistoryLength !== value) {
-      this.config.maxHistoryLength = value;
-      this.history.setMaxLength(value);
-      this.logger.debug(`Max history length updated to ${value}.`);
-      this.emit('update:config', this.config);
-    }
-  }
-
-  /**
-   * Returns debug mode status.
-   */
-  get debug(): boolean {
-    return this.config.debug;
-  }
-
-  /**
-   * Enables or disables debug logging.
-   */
-  set debug(enabled: boolean) {
-    if (this.config.debug !== enabled) {
-      this.config.debug = enabled;
-      this.logger.debug(`Debug mode ${enabled ? 'enabled' : 'disabled'}.`);
-      this.logger.enabled = enabled;
-      this.emit('update:config', this.config);
+      this.emitStatusUpdate(value);
     }
   }
 
@@ -279,36 +212,6 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
    */
   get timeSinceLastUpdate(): number {
     return Date.now() - this.lastUpdateTime;
-  }
-
-  onStatusChange(listener: (status: ConnectionStatus) => void) {
-    this.on('statusChange', listener);
-    return () => this.off('statusChange', listener);
-  }
-
-  onSnapshot(listener: (snapshot: OrderbookSnapshot) => void) {
-    this.on('snapshot', listener);
-    return () => this.off('snapshot', listener);
-  }
-
-  onHistoryUpdate(listener: (history: OrderbookSnapshot[]) => void) {
-    this.on('update:history', listener);
-    return () => this.off('update:history', listener);
-  }
-
-  onConfigUpdate(listener: (config: InternalOrderbookConfig) => void) {
-    this.on('update:config', listener);
-    return () => this.off('update:config', listener);
-  }
-
-  onUpdate(listener: (snapshot: OrderbookSnapshot) => void) {
-    this.on('update', listener);
-    return () => this.off('update', listener);
-  }
-
-  onError(listener: (error: Error) => void) {
-    this.on('error', listener);
-    return () => this.off('error', listener);
   }
 
   /**
@@ -364,7 +267,9 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     this.status = 'connected';
 
     const snapshot = this.createSnapshot();
-    if (snapshot) this.emit('snapshot', snapshot);
+    if (snapshot) {
+      this.emitSnapshot(snapshot);
+    }
   }
 
   /**
@@ -379,7 +284,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     const snapshot = this.createSnapshot();
     if (!snapshot) return;
 
-    this.emit('rawUpdate', snapshot);
+    this.emitRawUpdate(snapshot);
     this.pipeline.push(snapshot);
   }
 
@@ -399,9 +304,9 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     this.pipeline.on('update', (snapshot) => {
       if (this.config.historyEnabled) {
         this.history.push(snapshot);
-        this.emit('update:history', this.history.getAll());
+        this.emitHistoryUpdate(this.history.getAll());
       }
-      this.emit('update', snapshot);
+      this.emitSnapshotUpdate(snapshot);
     });
   }
 
@@ -434,19 +339,29 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     const krakenWebsocket = new KrakenWebsocket(subscriptionMessage);
 
     krakenWebsocket.on('message', (message: KrakenMessage) => {
-      if (message.channel !== 'book' || !message.data) return;
+      if (message.channel !== 'book' || !message.data) {
+        return;
+      }
 
       const data = message.data[0];
-      if (!data || data.symbol !== this.config.symbol) return;
+      if (!data || data.symbol !== this.config.symbol) {
+        return;
+      }
 
-      if (message.type === 'snapshot') this.handleSnapshot(data);
-      else if (message.type === 'update') this.handleUpdate(data);
+      switch (message.type) {
+        case 'snapshot':
+          this.handleSnapshot(data);
+          break;
+        case 'update':
+          this.handleUpdate(data);
+          break;
+      }
     });
 
     krakenWebsocket.on('error', (e: Error) => {
       this.logger.error('websocket error', e);
       this.status = 'error';
-      this.emit('error', e);
+      this.emitError(e);
     });
 
     krakenWebsocket.on('close', () => {
@@ -460,7 +375,7 @@ export class Orderbook extends TypedEventEmitter<OrderbookEventMap> {
     } catch (e) {
       this.logger.error('websocket connect error', e);
       this.status = 'error';
-      this.emit('error', e instanceof Error ? e : new Error(String(e)));
+      this.emitError(e instanceof Error ? e : new Error(String(e)));
     }
   }
 

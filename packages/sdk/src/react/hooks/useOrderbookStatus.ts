@@ -7,7 +7,7 @@ export function useOrderbookStatus() {
   const ob = useOrderbookInstance();
   const [status, setStatus] = useState(ob.status);
 
-  useEffect(() => ob.onStatusChange(setStatus), [ob]);
+  useEffect(() => ob.onStatusUpdate(setStatus), [ob]);
 
   return status;
 }

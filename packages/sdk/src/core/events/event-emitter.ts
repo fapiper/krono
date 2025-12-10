@@ -1,4 +1,4 @@
-import type { EventListener } from '../types';
+import type { EventListener } from './types';
 
 /**
  * Simple type-safe event emitter
@@ -47,5 +47,11 @@ export class TypedEventEmitter<EventMap extends Record<string, unknown>> {
 
   listenerCount<K extends keyof EventMap>(event: K): number {
     return this.listeners.get(event)?.size ?? 0;
+  }
+
+  protected createListener<K extends keyof EventMap>(eventKey: K) {
+    return (listener: EventListener<EventMap[K]>) => {
+      return this.on(eventKey, listener);
+    };
   }
 }

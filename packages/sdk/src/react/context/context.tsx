@@ -2,12 +2,12 @@
 
 import type { PropsWithChildren } from 'react';
 import { createContext, useContext, useEffect, useRef } from 'react';
-import { Orderbook, type OrderbookConfig } from '../../core';
+import { Orderbook, type OrderbookConfigOptions } from '../../core';
 
 const OrderbookContext = createContext<Orderbook | null>(null);
 
 export type OrderbookProviderProps = PropsWithChildren<{
-  config: OrderbookConfig;
+  config: OrderbookConfigOptions;
 }>;
 
 export function OrderbookProvider({

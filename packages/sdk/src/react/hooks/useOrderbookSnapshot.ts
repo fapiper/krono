@@ -11,7 +11,7 @@ export function useOrderbookSnapshot() {
   const [snapshot, setSnapshot] = useState<OrderbookSnapshot>(initialSnapshot);
 
   useEffect(() => {
-    const unsubscribe = ob.onUpdate(setSnapshot);
+    const unsubscribe = ob.onSnapshotUpdate(setSnapshot);
     return () => unsubscribe();
   }, [ob]);
 

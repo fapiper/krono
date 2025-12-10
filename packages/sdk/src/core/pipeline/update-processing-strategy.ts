@@ -1,4 +1,4 @@
-import { TypedEventEmitter } from '../base';
+import { TypedEventEmitter } from '../events';
 
 /**
  * Base class for update processing modules
