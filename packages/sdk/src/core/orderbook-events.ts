@@ -3,9 +3,9 @@ import {
   type OrderbookConfigEventMap,
 } from './config-manager';
 import {
-  OrderbookLifecycleEventKey,
-  type OrderbookLifecycleEventMap,
-} from './lifecycle-manager';
+  OrderbookStatusEventKey,
+  type OrderbookStatusEventMap,
+} from './status-manager';
 import type { ConnectionStatus, OrderbookData } from './types';
 
 export const OrderbookEventKey = {
@@ -13,14 +13,14 @@ export const OrderbookEventKey = {
   DataUpdate: 'update:data',
   RawDataUpdate: 'update:raw_data',
   HistoryUpdate: 'update:history',
-  ...OrderbookLifecycleEventKey,
+  ...OrderbookStatusEventKey,
   ...OrderbookConfigEventKey,
 } as const;
 
 export type OrderbookEventKey =
   (typeof OrderbookEventKey)[keyof typeof OrderbookEventKey];
 
-export type OrderbookEventMap = OrderbookLifecycleEventMap &
+export type OrderbookEventMap = OrderbookStatusEventMap &
   OrderbookConfigEventMap & {
     [OrderbookEventKey.Data]: OrderbookData;
     [OrderbookEventKey.DataUpdate]: OrderbookData;

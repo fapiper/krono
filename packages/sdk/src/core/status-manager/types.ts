@@ -1,5 +1,6 @@
 import { OrderbookEventKey } from '../orderbook-events';
 import type { DeepPartial } from '../types';
+import { OrderbookStatusManager } from './manager';
 
 export type ConnectionStatus =
   | 'disconnected'
@@ -7,7 +8,7 @@ export type ConnectionStatus =
   | 'connected'
   | 'error';
 
-export interface IOrderbookLifecycle {
+export interface IOrderbookStatus {
   status: ConnectionStatus;
   error?: Error;
   connecting: boolean;

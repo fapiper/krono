@@ -169,10 +169,14 @@ export class OrderbookConfigManager
 
   set debug(value) {
     if (this._config.debug !== value) {
+      if (!value) {
+        this.log.debug('Debug mode disabled.');
+      }
       this._config.debug = value;
-      this.log.debug(`Debug mode ${value ? 'enabled' : 'disabled'}.`);
-      this.log.enabled = value;
       this.emit(OrderbookConfigEventKey.ConfigDebugUpdate, value);
+      if (value) {
+        this.log.debug('Debug mode enabled.');
+      }
     }
   }
 

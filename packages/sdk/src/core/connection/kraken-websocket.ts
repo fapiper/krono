@@ -1,4 +1,4 @@
-import { Logger } from '../base';
+import type { Logger } from '../base';
 import { mergeDeep } from '../utils';
 import type {
   InternalKrakenWebsocketConfig,
@@ -17,7 +17,7 @@ export const defaultConfig: InternalKrakenWebsocketConfig = {
 export class KrakenWebsocket implements WebsocketManager {
   private readonly subscription: KrakenSubscription;
   private isConnected = false;
-  private logger: Logger;
+  // private logger: Logger;
   private readonly connection: WebsocketConnection;
 
   private readonly config: InternalKrakenWebsocketConfig;
@@ -36,10 +36,12 @@ export class KrakenWebsocket implements WebsocketManager {
   ) {
     this.subscription = subscription;
     this.config = mergeDeep(defaultConfig, config ?? {});
+    /*
     this.logger = new Logger({
       enabled: this.config.debug,
       prefix: 'Kraken WS',
     });
+*/
     this.connection = new WebsocketConnection(
       'wss://ws.kraken.com/v2',
       config?.connection,
@@ -56,13 +58,13 @@ export class KrakenWebsocket implements WebsocketManager {
   }
 
   private onOpen(): void {
-    this.logger.info('Connected');
+    //this.logger.info('Connected');
     this.connection.send(this.subscription);
     this.isConnected = true;
   }
 
   private onClose(event: CloseEvent): void {
-    this.logger.info('Closed', event.code, event.reason);
+    //this.logger.info('Closed', event.code, event.reason);
     this.isConnected = false;
 
     for (const fn of this.handlers.close) {
@@ -72,7 +74,7 @@ export class KrakenWebsocket implements WebsocketManager {
 
   private onError(event: Event): void {
     const error = new Error('WebSocket error');
-    this.logger.error('Error', event);
+    //this.logger.error('Error', event);
 
     for (const fn of this.handlers.error) {
       fn(error);
@@ -85,7 +87,7 @@ export class KrakenWebsocket implements WebsocketManager {
 
       if (message.channel === 'heartbeat') return;
       if (message.channel === 'status') {
-        this.logger.info('Status', message);
+        //this.logger.info('Status', message);
         return;
       }
 
@@ -94,7 +96,7 @@ export class KrakenWebsocket implements WebsocketManager {
       }
     } catch {
       const error = new Error('JSON parse failed');
-      this.logger.error(error);
+      //this.logger.error(error);
       for (const fn of this.handlers.error) {
         fn(error);
       }

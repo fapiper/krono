@@ -11,12 +11,12 @@ import {
   KrakenWebsocket,
 } from './connection';
 import { TypedEventEmitter } from './events';
-import {
-  type IOrderbookLifecycle,
-  OrderbookLifecycleManager,
-} from './lifecycle-manager';
 import { OrderbookEventKey, type OrderbookEventMap } from './orderbook-events';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
+import {
+  type IOrderbookStatus,
+  OrderbookStatusManager,
+} from './status-manager';
 import type { ConnectionStatus, OrderbookData } from './types';
 
 /**
@@ -24,10 +24,10 @@ import type { ConnectionStatus, OrderbookData } from './types';
  */
 export class Orderbook
   extends TypedEventEmitter<OrderbookEventMap>
-  implements IOrderbookConfig, IOrderbookLifecycle
+  implements IOrderbookConfig, IOrderbookStatus
 {
   private configManager: OrderbookConfigManager;
-  private lifecycleManager: OrderbookLifecycleManager;
+  private statusManager: OrderbookStatusManager;
   private asksMap = new PriceMapManager();
   private bidsMap = new PriceMapManager();
   private history: HistoryBuffer<OrderbookData>;
@@ -37,15 +37,12 @@ export class Orderbook
 
   constructor(config: OrderbookConfigOptions) {
     super();
-
-    this.logger = new Logger({
+    this.logger = Logger.init({
       enabled: config.debug,
       prefix: 'Orderbook',
     });
     this.configManager = new OrderbookConfigManager(this.logger, config);
-    this.logger.enabled = this.configManager.debug;
-
-    this.lifecycleManager = new OrderbookLifecycleManager(this.logger);
+    this.statusManager = new OrderbookStatusManager(this.logger);
     this.history = new HistoryBuffer(this.configManager.maxHistoryLength);
     this.pipeline = new UpdatePipeline();
     this.setupPipeline();
@@ -56,14 +53,14 @@ export class Orderbook
    * Sets up listeners for config changes
    */
   private setupEventListeners() {
-    this.lifecycleManager.onUpdateStatus((value) => {
+    this.statusManager.onUpdateStatus((value) => {
       this.emit(OrderbookEventKey.StatusUpdate, value);
     });
 
     this.configManager.onUpdateConfigSymbol(() => {
       // Symbol change: clear data and reconnect if needed
       const wasConnected =
-        this.lifecycleManager.connected || this.lifecycleManager.connecting;
+        this.statusManager.connected || this.statusManager.connecting;
 
       this.asksMap.clear();
       this.bidsMap.clear();
@@ -191,31 +188,31 @@ export class Orderbook
   }
 
   get status(): ConnectionStatus {
-    return this.lifecycleManager.status;
+    return this.statusManager.status;
   }
 
   set status(value) {
-    this.lifecycleManager.status = value;
+    this.statusManager.status = value;
   }
 
   get connected() {
-    return this.lifecycleManager.connected;
+    return this.statusManager.connected;
   }
 
   get connecting() {
-    return this.lifecycleManager.connecting;
+    return this.statusManager.connecting;
   }
 
   get disconnected() {
-    return this.lifecycleManager.disconnected;
+    return this.statusManager.disconnected;
   }
 
   get error() {
-    return this.lifecycleManager.error;
+    return this.statusManager.error;
   }
 
   set error(value) {
-    this.lifecycleManager.error = value;
+    this.statusManager.error = value;
   }
 
   /**
@@ -272,7 +269,7 @@ export class Orderbook
     this.asksMap.clear();
     this.bidsMap.clear();
 
-    this.lifecycleManager.status = 'connected';
+    this.statusManager.status = 'connected';
 
     this.processMessageData(messageData);
   }
@@ -340,7 +337,7 @@ export class Orderbook
    */
   async connect() {
     this.disconnect();
-    this.lifecycleManager.status = 'connecting';
+    this.statusManager.status = 'connecting';
 
     const subscriptionMessage: KrakenSubscription = {
       method: 'subscribe',
@@ -376,7 +373,7 @@ export class Orderbook
 
     krakenWebsocket.on('error', (e: Error) => {
       this.logger.error('websocket error', e);
-      this.lifecycleManager.error = e;
+      this.statusManager.error = e;
       this.emit(OrderbookEventKey.Error, e);
     });
 
@@ -390,8 +387,7 @@ export class Orderbook
       this.krakenWebsocket = krakenWebsocket;
     } catch (e) {
       this.logger.error('websocket connect error', e);
-      this.lifecycleManager.error =
-        e instanceof Error ? e : new Error(String(e));
+      this.statusManager.error = e instanceof Error ? e : new Error(String(e));
     }
   }
 

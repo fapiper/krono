@@ -1,15 +1,33 @@
+import { mergeDeep } from '../utils';
+
 export type LoggerOptions = {
   enabled?: boolean;
   prefix?: string;
 };
 
 export class Logger {
-  enabled: boolean;
-  public prefix?: string;
+  private instance: Logger | null;
+  private options: LoggerOptions;
 
-  constructor(options?: LoggerOptions) {
-    this.enabled = options?.enabled ?? false;
-    this.prefix = options?.prefix;
+  private static readonly defaultConfig = {
+    enabled: false,
+  };
+
+  constructor(instance: Logger | null, options: LoggerOptions = {}) {
+    this.instance = instance;
+    this.options = mergeDeep(Logger.defaultConfig, options);
+  }
+
+  static init(options: LoggerOptions = {}) {
+    return new Logger(null, mergeDeep(Logger.defaultConfig, options));
+  }
+
+  get(): Logger {
+    return this.instance ?? this;
+  }
+
+  build(options: Omit<LoggerOptions, 'enabled'> = {}): Logger {
+    return new Logger(this.get(), options);
   }
 
   private format(message: unknown): string {
@@ -23,18 +41,26 @@ export class Logger {
 
   info(...args: unknown[]) {
     if (!this.enabled) return;
-    console.info(this.format(args[0]), ...args.slice(1));
+    console.log(this.format(args[0]), ...args.slice(1));
   }
 
   error(...args: unknown[]) {
     console.error(this.format(args[0]), ...args.slice(1));
   }
 
-  enable() {
-    this.enabled = true;
+  get prefix() {
+    return this.options.prefix;
   }
 
-  disable() {
-    this.enabled = false;
+  set prefix(value: string | undefined) {
+    this.options.prefix = value;
+  }
+
+  get enabled() {
+    return this.get().options.enabled;
+  }
+
+  set enabled(value: boolean | undefined) {
+    this.get().options.enabled = value;
   }
 }
