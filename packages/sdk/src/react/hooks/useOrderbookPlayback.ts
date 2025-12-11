@@ -1,45 +1,48 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useOrderbookHistory } from './useOrderbookHistory';
 
-const LIVE_SNAP_THRESHOLD = 5;
-
 export function useOrderbookPlayback() {
   const { getAll, size } = useOrderbookHistory();
-
   const frames = getAll();
-  const historyLength = size;
 
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [isPaused, setIsPaused] = useState(false);
   const [virtualTime, setVirtualTime] = useState<number>(0);
 
+  const [isTrackingLive, setIsTrackingLive] = useState(true);
+
+  const stateRef = useRef({
+    frames,
+    currentIndex,
+    isPaused,
+    size,
+    isTrackingLive,
+  });
   const rafRef = useRef<number>();
-  const lastUpdateRef = useRef<number>(0);
+  const lastTimestampRef = useRef<number>(0);
 
-  const effectiveIndex = useMemo(() => {
-    if (
-      currentIndex === -1 ||
-      (!isPaused && currentIndex >= historyLength - 1)
-    ) {
-      return historyLength - 1;
-    }
-    return currentIndex;
-  }, [currentIndex, historyLength, isPaused]);
+  useEffect(() => {
+    stateRef.current = { frames, currentIndex, isPaused, size, isTrackingLive };
+  }, [frames, currentIndex, isPaused, size, isTrackingLive]);
 
-  const currentData = useMemo(() => {
-    if (effectiveIndex < 0 || effectiveIndex >= frames.length) return null;
-    return frames[effectiveIndex];
-  }, [frames, effectiveIndex]);
+  const safeIndex = Math.max(0, Math.min(currentIndex, size - 1));
+  const currentData = frames[safeIndex] || null;
+
+  // UI is "Live" if we are explicitly tracking it, or accidentally hit the end
+  const isLive = isTrackingLive || safeIndex === size - 1;
 
   const nextFrameInfo = useMemo(() => {
-    if (effectiveIndex >= historyLength - 1) return null;
+    if (safeIndex >= size - 1) return null;
 
-    const currentFrame = frames[effectiveIndex];
-    const nextFrame = frames[effectiveIndex + 1];
+    const currentFrame = frames[safeIndex];
+    const nextFrame = frames[safeIndex + 1];
 
     if (!currentFrame || !nextFrame) return null;
 
     const frameDuration = nextFrame.timestamp - currentFrame.timestamp;
+    // Safety for 0 duration frames
+    const progress =
+      frameDuration > 0 ? Math.min(1, virtualTime / frameDuration) : 1;
     const remaining = Math.max(0, frameDuration - virtualTime);
 
     return {
@@ -47,158 +50,151 @@ export function useOrderbookPlayback() {
       elapsed: virtualTime,
       remaining,
       remainingSeconds: Math.ceil(remaining / 1000),
-      progress:
-        frameDuration > 0 ? Math.min(1, virtualTime / frameDuration) : 1,
+      progress,
     };
-  }, [frames, effectiveIndex, virtualTime, historyLength]);
-
-  const isLive = effectiveIndex === historyLength - 1;
-  const isPlaying = !isPaused;
-  const canGoBack = effectiveIndex > 0;
-  const canGoForward = effectiveIndex < historyLength - 1;
+  }, [frames, safeIndex, virtualTime, size]);
 
   const timeBehindLive = useMemo(() => {
-    if (historyLength === 0 || !currentData) return 0;
+    if (size === 0 || !currentData) return 0;
+    // If we are tracking live, technically we are 0ms behind for UX purposes
+    // but calculating real lag is also useful
     return Date.now() - currentData.timestamp;
-  }, [currentData, historyLength]);
+  }, [currentData, size]);
 
-  // Playback loop
   useEffect(() => {
-    if (isPaused || historyLength === 0) {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = undefined;
-      }
+    if (isPaused) {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       return;
     }
 
-    let isActive = true;
-
     const animate = (timestamp: number) => {
-      if (!isActive) return;
+      if (!lastTimestampRef.current) lastTimestampRef.current = timestamp;
+      const deltaTime = timestamp - lastTimestampRef.current;
+      lastTimestampRef.current = timestamp;
 
-      if (timestamp - lastUpdateRef.current >= 1000) {
-        lastUpdateRef.current = timestamp;
+      const { frames, currentIndex, size, isTrackingLive } = stateRef.current;
 
-        setVirtualTime((prev) => {
-          const currentFrame = frames[effectiveIndex];
-          const nextFrame = frames[effectiveIndex + 1];
-
-          if (!currentFrame || !nextFrame) {
-            setCurrentIndex(historyLength - 1);
-            return 0;
-          }
-
-          const frameDuration = nextFrame.timestamp - currentFrame.timestamp;
-          const newTime = prev + 1000;
-
-          if (newTime >= frameDuration) {
-            setCurrentIndex((idx) => Math.min(idx + 1, historyLength - 1));
-            return 0;
-          }
-
-          return newTime;
-        });
+      if (isTrackingLive && currentIndex < size - 1) {
+        // Skip animation if we are "Live"
+        setCurrentIndex(size - 1);
+        setVirtualTime(0);
+        rafRef.current = requestAnimationFrame(animate);
+        return;
       }
+
+      if (currentIndex >= size - 1) {
+        // We are at the head.
+        // Ensure tracking is true (in case we arrived here naturally)
+        if (!isTrackingLive) setIsTrackingLive(true);
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      const currentFrame = frames[currentIndex];
+      const nextFrame = frames[currentIndex + 1];
+
+      if (!currentFrame || !nextFrame) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      const frameDuration = nextFrame.timestamp - currentFrame.timestamp;
+
+      setVirtualTime((prevTime) => {
+        const newTime = prevTime + deltaTime;
+        if (newTime >= frameDuration) {
+          setCurrentIndex((idx) => Math.min(idx + 1, size - 1));
+          return 0;
+        }
+        return newTime;
+      });
 
       rafRef.current = requestAnimationFrame(animate);
     };
 
-    lastUpdateRef.current = performance.now();
+    lastTimestampRef.current = performance.now();
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
-      isActive = false;
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [isPaused, historyLength, frames, effectiveIndex]);
+  }, [isPaused]);
 
-  // Initialize to latest when history first loads
   useEffect(() => {
-    if (historyLength > 0 && currentIndex === -1) {
-      setCurrentIndex(historyLength - 1);
+    // If we haven't loaded anything yet, and data comes in, jump to live
+    if (size > 0 && currentIndex === -1) {
+      setCurrentIndex(size - 1);
+      setIsTrackingLive(true);
     }
-  }, [historyLength, currentIndex]);
+  }, [size, currentIndex]);
 
-  // Auto-follow latest frame when already at the end
-  useEffect(() => {
-    if (!isPaused && currentIndex === historyLength - 2) {
-      setCurrentIndex(historyLength - 1);
-      setVirtualTime(0);
-    }
-  }, [isPaused, currentIndex, historyLength]);
-
-  const goToLive = useCallback(() => {
-    setCurrentIndex(historyLength - 1);
-    setVirtualTime(0);
-    setIsPaused(false);
-  }, [historyLength]);
-
-  const goToStart = useCallback(() => {
-    setCurrentIndex(0);
-    setVirtualTime(0);
-    // Keep current play/pause state
+  const stopTracking = useCallback(() => {
+    setIsTrackingLive(false);
   }, []);
 
   const togglePaused = useCallback(() => {
     setIsPaused((prev) => {
-      if (prev) {
-        lastUpdateRef.current = performance.now();
-      } else {
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current);
-          rafRef.current = undefined;
-        }
-      }
+      stopTracking();
       return !prev;
     });
-  }, []);
+  }, [stopTracking]);
 
   const goToIndex = useCallback(
     (i: number) => {
-      const clampedIndex = Math.max(0, Math.min(i, historyLength - 1));
-      setCurrentIndex(clampedIndex);
+      stopTracking();
+      const clamped = Math.max(0, Math.min(i, size - 1));
+      setCurrentIndex(clamped);
       setVirtualTime(0);
     },
-    [historyLength],
+    [size, stopTracking],
   );
 
   const goBack = useCallback(() => {
-    if (!canGoBack) return;
+    stopTracking();
     setCurrentIndex((prev) => Math.max(0, prev - 1));
     setVirtualTime(0);
-  }, [canGoBack]);
+  }, [stopTracking]);
 
   const goForward = useCallback(() => {
-    if (!canGoForward) return;
+    stopTracking(); // Manual forward breaks "Live" until we hit the end
     setCurrentIndex((prev) => {
-      const nextIdx = Math.min(prev + 1, historyLength - 1);
-
-      if (!isPaused && historyLength - nextIdx <= LIVE_SNAP_THRESHOLD) {
-        return historyLength - 1;
+      const nextIdx = Math.min(prev + 1, size - 1);
+      // If user manually steps to the very end, we can re-enable tracking
+      if (nextIdx === size - 1) {
+        setIsTrackingLive(true);
       }
-
       return nextIdx;
     });
     setVirtualTime(0);
-  }, [canGoForward, historyLength, isPaused]);
+  }, [size, stopTracking]);
+
+  const goToStart = useCallback(() => {
+    stopTracking();
+    setCurrentIndex(0);
+    setVirtualTime(0);
+  }, [stopTracking]);
+
+  const goToLive = useCallback(() => {
+    setCurrentIndex(size - 1);
+    setVirtualTime(0);
+    setIsPaused(false);
+    setIsTrackingLive(true);
+  }, [size]);
 
   return {
     isLive,
     isPaused,
-    isPlaying,
+    isPlaying: !isPaused,
     togglePaused,
     goToIndex,
     goBack,
     goForward,
     goToLive,
     goToStart,
-    canGoBack,
-    canGoForward,
-    index: effectiveIndex,
-    historyLength,
+    canGoBack: safeIndex > 0,
+    canGoForward: !isLive && safeIndex < size - 1,
+    index: safeIndex,
+    historyLength: size,
     currentData,
     nextFrameInfo,
     timeBehindLive,
