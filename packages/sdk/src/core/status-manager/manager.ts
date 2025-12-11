@@ -13,10 +13,11 @@ export class OrderbookStatusManager
   implements IOrderbookStatus
 {
   private _status: ConnectionStatus;
-  private _error?: Error;
+  private _error: Error | null;
 
   constructor(logger: Logger) {
     super(logger, 'OrderbookStatus');
+    this._error = null;
     this._status = 'disconnected';
   }
 

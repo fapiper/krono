@@ -10,7 +10,7 @@ export type ConnectionStatus =
 
 export interface IOrderbookStatus {
   status: ConnectionStatus;
-  error?: Error;
+  error: Error | null;
   connecting: boolean;
   connected: boolean;
   disconnected: boolean;

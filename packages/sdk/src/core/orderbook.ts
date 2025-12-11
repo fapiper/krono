@@ -4,12 +4,8 @@ import {
   OrderbookConfigManager,
   type OrderbookConfigOptions,
 } from './config-manager';
-import {
-  type KrakenBookMessageDataItem,
-  type KrakenMessage,
-  type KrakenSubscription,
-  KrakenWebsocket,
-} from './connection';
+import { OrderbookConnectionManager } from './connection-manager';
+import type { KrakenBookMessageDataItem } from './connection-manager/kraken-ws-manager';
 import { TypedEventEmitter } from './events';
 import { OrderbookEventKey, type OrderbookEventMap } from './orderbook-events';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
@@ -28,10 +24,11 @@ export class Orderbook
 {
   private configManager: OrderbookConfigManager;
   private statusManager: OrderbookStatusManager;
+  private connectionManager: OrderbookConnectionManager;
+
   private asksMap = new PriceMapManager();
   private bidsMap = new PriceMapManager();
-  private history: HistoryBuffer<OrderbookData>;
-  private krakenWebsocket: KrakenWebsocket | null = null;
+  private historyManager: HistoryBuffer<OrderbookData>;
   private logger: Logger;
   private pipeline: UpdatePipeline<OrderbookData>;
 
@@ -43,76 +40,198 @@ export class Orderbook
     });
     this.configManager = new OrderbookConfigManager(this.logger, config);
     this.statusManager = new OrderbookStatusManager(this.logger);
-    this.history = new HistoryBuffer(this.configManager.maxHistoryLength);
+    this.connectionManager = new OrderbookConnectionManager(
+      this.logger,
+      this.configManager,
+      this.statusManager,
+    );
+    this.historyManager = new HistoryBuffer(
+      this.configManager.maxHistoryLength,
+    );
     this.pipeline = new UpdatePipeline();
     this.setupPipeline();
-    this.setupEventListeners();
+    this.setupInternalEvents();
   }
 
   /**
-   * Sets up listeners for config changes
+   * Wires up the flow: Connection -> Data Map -> Pipeline -> Events
    */
-  private setupEventListeners() {
-    this.statusManager.onUpdateStatus((value) => {
-      this.emit(OrderbookEventKey.StatusUpdate, value);
-    });
+  private setupInternalEvents() {
+    // Handle Status Changes
+    this.statusManager.onUpdateStatus((val) =>
+      this.emit(OrderbookEventKey.StatusUpdate, val),
+    );
+    this.statusManager.onError(
+      (e) => e && this.emit(OrderbookEventKey.Error, e),
+    );
 
+    // Handle Connection Data
+    this.connectionManager.onSnapshot((data) => this.handleSnapshot(data));
+    this.connectionManager.onUpdate((data) => this.handleUpdate(data));
+
+    // Handle Config Changes
+    this.setupInternalConfigEvents();
+  }
+  /**
+   * Responds to configuration changes by orchestrating sub-managers.
+   */
+  private setupInternalConfigEvents() {
     this.configManager.onUpdateConfigSymbol(() => {
-      // Symbol change: clear data and reconnect if needed
-      const wasConnected =
-        this.statusManager.connected || this.statusManager.connecting;
-
+      // Clear local state
       this.asksMap.clear();
       this.bidsMap.clear();
-      this.clearHistory();
+      this.historyManager.clear();
 
-      if (wasConnected) {
-        this.connect().catch((e) =>
-          this.logger.error('Reconnection failed after symbol change', e),
-        );
+      // Reconnect
+      if (this.statusManager.connected || this.statusManager.connecting) {
+        void this.connectionManager.connect();
       }
     });
 
     this.configManager.onUpdateConfigDepth(() => {
-      // Depth change: reconnect if needed
-
-      if (this.status === 'connected' || this.status === 'connecting') {
-        this.connect().catch((e) =>
-          this.logger.error('Resubscription failed after depth change', e),
-        );
+      if (this.statusManager.connected || this.statusManager.connecting) {
+        this.connectionManager.connect();
       }
     });
 
-    this.configManager.onUpdateConfigThrottleMs(() => {
-      // Throttle change: rebuild pipeline
-      this.reconfigurePipeline();
-    });
+    // Pipeline reconfiguration
+    this.configManager.onUpdateConfigThrottleMs(() =>
+      this.reconfigurePipeline(),
+    );
+    this.configManager.onUpdateConfigDebounceMs(() =>
+      this.reconfigurePipeline(),
+    );
 
-    this.configManager.onUpdateConfigDebounceMs(() => {
-      // Debounce change: rebuild pipeline
-      this.reconfigurePipeline();
-    });
-
+    // Simple state updates
     this.configManager.onUpdateConfigSpreadGrouping(() => {
-      // Spread grouping change: emit new data
-      const data = this.createData();
+      this.emit(OrderbookEventKey.DataUpdate, this.createData());
+    });
+
+    this.configManager.onUpdateConfigMaxHistoryLength((val) =>
+      this.historyManager.setMaxLength(val),
+    );
+    this.configManager.onUpdateConfigDebug((val) => {
+      this.logger.enabled = val;
+    });
+    this.configManager.onUpdateConfig((val) =>
+      this.emit(OrderbookEventKey.ConfigUpdate, val),
+    );
+  }
+
+  /**
+   * Builds orderbook data from internal state.
+   */
+  private createData(): OrderbookData {
+    const asks = this.asksMap.getSorted(true, this.configManager.depth);
+    const bids = this.bidsMap.getSorted(false, this.configManager.depth);
+
+    if (!asks.length || !bids.length) {
+      return {
+        timestamp: Date.now(),
+        asks: [],
+        bids: [],
+        spread: 0,
+        spreadPct: 0,
+        maxAskTotal: 0,
+        maxBidTotal: 0,
+        maxTotal: 0,
+      };
+    }
+
+    const bestAsk = asks[0]?.price ?? -1;
+    const bestBid = bids[0]?.price ?? -1;
+    const spread = bestAsk - bestBid;
+
+    const maxAskTotal = asks[asks.length - 1]?.total ?? 0;
+    const maxBidTotal = bids[bids.length - 1]?.total ?? 0;
+    const maxTotal = Math.max(maxAskTotal, maxBidTotal);
+
+    return {
+      timestamp: Date.now(),
+      asks,
+      bids,
+      spread,
+      spreadPct: bestAsk ? (spread / bestAsk) * 100 : 0,
+      maxAskTotal,
+      maxBidTotal,
+      maxTotal,
+    };
+  }
+
+  private handleSnapshot(data: KrakenBookMessageDataItem) {
+    this.asksMap.clear();
+    this.bidsMap.clear();
+    this.processMessageData(data);
+  }
+
+  private handleUpdate(data: KrakenBookMessageDataItem) {
+    this.processMessageData(data);
+  }
+
+  private processMessageData(messageData: KrakenBookMessageDataItem) {
+    if (messageData.asks) this.asksMap.batchUpdate(messageData.asks);
+    if (messageData.bids) this.bidsMap.batchUpdate(messageData.bids);
+
+    const data = this.createData();
+    if (!data) return;
+
+    this.emit(OrderbookEventKey.RawDataUpdate, data);
+    this.pipeline.push(data);
+  }
+
+  /**
+   * Configures throttling/debouncing pipeline.
+   */
+  private setupPipeline() {
+    this.pipeline.removeAllListeners();
+
+    if (typeof this.configManager.throttleMs === 'number') {
+      this.pipeline.add(new ThrottleStrategy(this.configManager.throttleMs));
+    }
+    if (typeof this.configManager.debounceMs === 'number') {
+      this.pipeline.add(new DebounceStrategy(this.configManager.debounceMs));
+    }
+
+    this.pipeline.on('update', (data) => {
+      if (this.configManager.historyEnabled) {
+        this.historyManager.push(data);
+        this.emit(
+          OrderbookEventKey.HistoryUpdate,
+          this.historyManager.getAll(),
+        );
+      }
       this.emit(OrderbookEventKey.DataUpdate, data);
     });
+  }
 
-    this.configManager.onUpdateConfigMaxHistoryLength((value) => {
-      // Max history length change: resize buffer
-      this.history.setMaxLength(value);
-    });
+  /**
+   * Resets pipeline when configuration changes.
+   */
+  private reconfigurePipeline() {
+    this.pipeline.destroy();
+    this.pipeline = new UpdatePipeline();
+    this.setupPipeline();
+  }
 
-    this.configManager.onUpdateConfigDebug((value) => {
-      // Debug mode change: update logger
-      this.logger.enabled = value;
-    });
+  connect() {
+    return this.connectionManager.connect();
+  }
 
-    this.configManager.onUpdateConfig((value) => {
-      // Emit all config updates
-      this.emit(OrderbookEventKey.ConfigUpdate, value);
-    });
+  disconnect() {
+    this.connectionManager.disconnect();
+  }
+
+  destroy() {
+    this.disconnect();
+    this.pipeline.destroy();
+    this.removeAllListeners();
+    this.asksMap.clear();
+    this.bidsMap.clear();
+    this.historyManager.clear();
+  }
+
+  get history() {
+    return this.historyManager.getAll();
   }
 
   get symbol() {
@@ -220,220 +339,6 @@ export class Orderbook
    */
   get currentData(): OrderbookData {
     return this.createData();
-  }
-
-  /**
-   * Builds orderbook data from internal state.
-   */
-  private createData(): OrderbookData {
-    const asks = this.asksMap.getSorted(true, this.configManager.depth);
-    const bids = this.bidsMap.getSorted(false, this.configManager.depth);
-
-    if (!asks.length || !bids.length) {
-      return {
-        timestamp: Date.now(),
-        asks: [],
-        bids: [],
-        spread: 0,
-        spreadPct: 0,
-        maxAskTotal: 0,
-        maxBidTotal: 0,
-        maxTotal: 0,
-      };
-    }
-
-    const bestAsk = asks[0]?.price ?? -1;
-    const bestBid = bids[0]?.price ?? -1;
-    const spread = bestAsk - bestBid;
-
-    const maxAskTotal = asks[asks.length - 1]?.total ?? 0;
-    const maxBidTotal = bids[bids.length - 1]?.total ?? 0;
-    const maxTotal = Math.max(maxAskTotal, maxBidTotal);
-
-    return {
-      timestamp: Date.now(),
-      asks,
-      bids,
-      spread,
-      spreadPct: bestAsk ? (spread / bestAsk) * 100 : 0,
-      maxAskTotal,
-      maxBidTotal,
-      maxTotal,
-    };
-  }
-
-  /**
-   * Handles initial full snapshot message from Kraken.
-   */
-  private handleSnapshot(messageData: KrakenBookMessageDataItem) {
-    this.asksMap.clear();
-    this.bidsMap.clear();
-
-    this.statusManager.status = 'connected';
-
-    this.processMessageData(messageData);
-  }
-
-  /**
-   * Handles incremental update messages from Kraken.
-   */
-  private handleUpdate(messageData: KrakenBookMessageDataItem) {
-    this.processMessageData(messageData);
-  }
-
-  /**
-   * Processes data messages from Kraken.
-   */
-  private processMessageData(messageData: KrakenBookMessageDataItem) {
-    if (messageData.asks) {
-      this.asksMap.batchUpdate(messageData.asks);
-    }
-    if (messageData.bids) {
-      this.bidsMap.batchUpdate(messageData.bids);
-    }
-
-    const data = this.createData();
-    if (!data) {
-      return;
-    }
-
-    this.emit(OrderbookEventKey.RawDataUpdate, data);
-    this.pipeline.push(data);
-  }
-
-  /**
-   * Configures throttling/debouncing pipeline.
-   */
-  private setupPipeline() {
-    this.pipeline.removeAllListeners();
-
-    if (typeof this.configManager.throttleMs === 'number') {
-      this.pipeline.add(new ThrottleStrategy(this.configManager.throttleMs));
-    }
-    if (typeof this.configManager.debounceMs === 'number') {
-      this.pipeline.add(new DebounceStrategy(this.configManager.debounceMs));
-    }
-
-    this.pipeline.on('update', (data) => {
-      if (this.configManager.historyEnabled) {
-        this.history.push(data);
-        this.emit(OrderbookEventKey.HistoryUpdate, this.history);
-      }
-      this.emit(OrderbookEventKey.DataUpdate, data);
-    });
-  }
-
-  /**
-   * Resets pipeline when configuration changes.
-   */
-  private reconfigurePipeline() {
-    this.pipeline.destroy();
-    this.pipeline = new UpdatePipeline();
-    this.setupPipeline();
-  }
-
-  /**
-   * Connects to Kraken websocket and subscribes to book stream.
-   */
-  async connect() {
-    this.disconnect();
-    this.statusManager.status = 'connecting';
-
-    const subscriptionMessage: KrakenSubscription = {
-      method: 'subscribe',
-      params: {
-        channel: 'book',
-        symbol: [this.configManager.symbol],
-        snapshot: true,
-        depth: this.configManager.depth,
-      },
-    };
-
-    const krakenWebsocket = new KrakenWebsocket(subscriptionMessage);
-
-    krakenWebsocket.on('message', (message: KrakenMessage) => {
-      if (message.channel !== 'book' || !message.data) {
-        return;
-      }
-
-      const messageData = message.data[0];
-      if (!messageData || messageData.symbol !== this.configManager.symbol) {
-        return;
-      }
-
-      switch (message.type) {
-        case 'snapshot':
-          this.handleSnapshot(messageData);
-          break;
-        case 'update':
-          this.handleUpdate(messageData);
-          break;
-      }
-    });
-
-    krakenWebsocket.on('error', (e: Error) => {
-      this.logger.error('websocket error', e);
-      this.statusManager.error = e;
-      this.emit(OrderbookEventKey.Error, e);
-    });
-
-    krakenWebsocket.on('close', () => {
-      this.status = 'disconnected';
-    });
-
-    try {
-      await krakenWebsocket.connect();
-      this.status = 'connected';
-      this.krakenWebsocket = krakenWebsocket;
-    } catch (e) {
-      this.logger.error('websocket connect error', e);
-      this.statusManager.error = e instanceof Error ? e : new Error(String(e));
-    }
-  }
-
-  /**
-   * Disconnects websocket if active.
-   */
-  disconnect() {
-    if (this.krakenWebsocket) {
-      this.krakenWebsocket.disconnect();
-      this.krakenWebsocket = null;
-    }
-
-    this.status = 'disconnected';
-  }
-
-  /**
-   * Fully clears orderbook data and listeners.
-   */
-  destroy() {
-    this.disconnect();
-    this.pipeline.destroy();
-    this.removeAllListeners();
-    this.asksMap.clear();
-    this.bidsMap.clear();
-    this.history.clear();
-  }
-
-  /**
-   * Manually inserts data into history buffer.
-   */
-  addToHistory(data: OrderbookData) {
-    this.history.push(data);
-  }
-
-  /**
-   * Returns history buffer instance.
-   */
-  getHistory() {
-    return this.history;
-  }
-
-  /**
-   * Clears all recorded history.
-   */
-  clearHistory() {
-    this.history.clear();
   }
 
   onData = this.createListener(OrderbookEventKey.Data);

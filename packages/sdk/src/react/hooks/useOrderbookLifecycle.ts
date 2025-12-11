@@ -7,6 +7,5 @@ export function useOrderbookLifecycle() {
   const ob = useOrderbookInstance();
   return {
     destroy: useCallback(() => ob.destroy(), [ob]),
-    clearHistory: useCallback(() => ob.clearHistory(), [ob]),
   };
 }

@@ -5,13 +5,13 @@ import { useOrderbookInstance } from '../context';
 export function useOrderbookHistory() {
   const orderbook = useOrderbookInstance();
 
-  const [historyData, setHistoryData] = useState<OrderbookData[]>(() =>
-    orderbook.getHistory().getAll(),
+  const [historyData, setHistoryData] = useState<OrderbookData[]>(
+    () => orderbook.history,
   );
 
   useEffect(() => {
-    return orderbook.onHistoryUpdate((history) => {
-      setHistoryData(history.getAll());
+    return orderbook.onHistoryUpdate((newHistoryData) => {
+      setHistoryData(newHistoryData);
     });
   }, [orderbook]);
 

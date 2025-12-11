@@ -25,7 +25,7 @@ export type OrderbookEventMap = OrderbookStatusEventMap &
   OrderbookConfigEventMap & {
     [OrderbookEventKey.Data]: OrderbookData;
     [OrderbookEventKey.DataUpdate]: OrderbookData;
-    [OrderbookEventKey.HistoryUpdate]: HistoryBuffer<OrderbookData>;
+    [OrderbookEventKey.HistoryUpdate]: OrderbookData[];
     [OrderbookEventKey.RawDataUpdate]: OrderbookData;
     [OrderbookEventKey.StatusUpdate]: ConnectionStatus;
     [OrderbookEventKey.Error]: Error;

@@ -1,5 +1,5 @@
-import type { Logger } from '../base';
-import { mergeDeep } from '../utils';
+import type { Logger } from '../../base';
+import { mergeDeep } from '../../utils';
 import type {
   InternalKrakenWebsocketConfig,
   KrakenHandlerMap,

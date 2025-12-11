@@ -9,6 +9,7 @@ import {
 import { Card, CardContent } from '@ui/components/ui/card';
 
 import { OrderbookPanelControls } from '@/components/orderbook/Panel/Controls';
+import { OrderbookPanelSkeleton } from '@/components/orderbook/Panel/Skeleton';
 import { useMemo } from 'react';
 import { createBreakpoint } from 'react-use';
 
@@ -42,15 +43,24 @@ export function OrderbookPanel() {
     };
   }, [currentData, n]);
 
+  const loading = status !== 'connected' || !currentData;
+
   return (
     <Card className={'relative flex flex-1 flex-col overflow-hidden group'}>
-      {status === 'connecting' ? (
-        <div className="flex items-center justify-center flex-1 text-xs text-muted-foreground">
-          Connecting to feed...
-        </div>
-      ) : (
-        <>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 pb-px pt-2 text-xs gap-[2px] flex-1 overflow-hidden">
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 pb-px pt-2 text-xs gap-[2px] flex-1 overflow-hidden">
+        {loading ? (
+          <>
+            <OrderbookPanelSkeleton n={n} />
+            <OrderbookPanelSkeleton n={n} />
+
+            <div className="absolute inset-0 flex items-center justify-center bg-background/25 z-10">
+              <span className="text-muted-foreground font-semibold p.4">
+                Connecting to feed...
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
             <OrderbookPanelChart
               data={processedData.bids}
               maxTotal={processedData.maxBid}
@@ -62,9 +72,9 @@ export function OrderbookPanel() {
               type="asks"
             />
             <OrderbookPanelControls controls={controls} />
-          </CardContent>
-        </>
-      )}
+          </>
+        )}
+      </CardContent>
     </Card>
   );
 }

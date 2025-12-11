@@ -4,7 +4,7 @@ import {
   type Websocket,
   WebsocketBuilder,
 } from 'websocket-ts';
-import { mergeDeep } from '../utils';
+import { mergeDeep } from '../../utils';
 import type {
   InternalWebsocketConnectionConfig,
   WebsocketConnectionConfig,

@@ -16,5 +16,5 @@ export type OrderbookStatusEventMap = {
   [OrderbookStatusEventKey.StatusConnectingUpdate]: IOrderbookStatus['connecting'];
   [OrderbookStatusEventKey.StatusConnectedUpdate]: IOrderbookStatus['connected'];
   [OrderbookStatusEventKey.StatusDisconnectedUpdate]: IOrderbookStatus['disconnected'];
-  [OrderbookStatusEventKey.Error]: IOrderbookStatus['error'];
+  [OrderbookStatusEventKey.Error]: IOrderbookStatus['error'] | null;
 };
