@@ -60,6 +60,9 @@ export function OrderbookPanelControls({
   const bufferStart = (currentIndex / Math.max(1, historyLength - 1)) * 100;
   const bufferWidth = showBuffer ? nextFrameInfo.progress * 100 : 0;
 
+  const sliderMax = Math.max(0, historyLength - 1);
+  const sliderValue = isLive ? sliderMax : currentIndex;
+
   return (
     <>
       <Badge
@@ -105,7 +108,7 @@ export function OrderbookPanelControls({
         <div className="absolute top-0 left-0 transform -translate-y-1/2 flex w-full">
           {showBuffer && (
             <div
-              className="absolute pointer-events-none h-1 bg-black/25 dark:bg-white/25 left-0"
+              className="absolute pointer-events-none h-1 bg-black/50 dark:bg-white/50 left-0"
               style={{
                 width: `${bufferWidth}%`,
                 top: '50%',
@@ -119,8 +122,8 @@ export function OrderbookPanelControls({
             className="flex-1 cursor-pointer relative z-10"
             step={1}
             min={0}
-            max={Math.max(0, historyLength - 1)}
-            value={[currentIndex]}
+            max={sliderMax}
+            value={[sliderValue]}
             onValueChange={(values) => goToIndex(values[0] ?? 0)}
           />
         </div>
@@ -162,13 +165,12 @@ export function OrderbookPanelControls({
             className="font-normal hover:bg-primary bg-primary tabular-nums"
             variant="default"
           >
+            {format(currentTimestamp, 'HH:mm:ss')}
             {!isLive && timeBehindLive >= 1000 && (
               <>
-                -{formatDistanceInterval(currentTimestamp, now)}
-                {' / '}
+                {' / '}-{formatDistanceInterval(currentTimestamp, now)}
               </>
             )}
-            {format(currentTimestamp, 'HH:mm:ss')}
           </Badge>
         </div>
       </div>
