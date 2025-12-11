@@ -1,3 +1,4 @@
+import type { HistoryBuffer } from './base';
 import {
   OrderbookConfigEventKey,
   type OrderbookConfigEventMap,
@@ -24,7 +25,7 @@ export type OrderbookEventMap = OrderbookStatusEventMap &
   OrderbookConfigEventMap & {
     [OrderbookEventKey.Data]: OrderbookData;
     [OrderbookEventKey.DataUpdate]: OrderbookData;
-    [OrderbookEventKey.HistoryUpdate]: OrderbookData[];
+    [OrderbookEventKey.HistoryUpdate]: HistoryBuffer<OrderbookData>;
     [OrderbookEventKey.RawDataUpdate]: OrderbookData;
     [OrderbookEventKey.StatusUpdate]: ConnectionStatus;
     [OrderbookEventKey.Error]: Error;

@@ -3,19 +3,26 @@ import type { OrderbookData } from '../../core';
 import { useOrderbookInstance } from '../context';
 
 export function useOrderbookHistory() {
-  const ob = useOrderbookInstance();
+  const orderbook = useOrderbookInstance();
 
-  const initialHistory = useMemo(() => ob.getHistory().getAll(), [ob]);
-  const [history, setHistory] = useState<OrderbookData[]>(initialHistory);
+  const [historyData, setHistoryData] = useState<OrderbookData[]>(() =>
+    orderbook.getHistory().getAll(),
+  );
 
   useEffect(() => {
-    const unsubscribe = ob.onHistoryUpdate(setHistory);
-    return () => unsubscribe();
-  }, [ob]);
+    return orderbook.onHistoryUpdate((history) => {
+      setHistoryData(history.getAll());
+    });
+  }, [orderbook]);
 
-  return {
-    history,
-    length: history.length,
-    getData: (index: number) => history[index] ?? null,
-  };
+  return useMemo(
+    () => ({
+      get: (index: number) => historyData[index],
+      getAll: () => historyData,
+      getLatest: () => historyData[historyData.length - 1],
+      size: historyData.length,
+      isEmpty: historyData.length === 0,
+    }),
+    [historyData],
+  );
 }

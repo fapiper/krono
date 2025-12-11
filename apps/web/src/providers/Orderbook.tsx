@@ -1,10 +1,12 @@
 'use client';
 
-import { OrderbookProvider } from '@krono/sdk/react';
+import { OrderbookProvider as KronoOrderbookProvider } from '@krono/sdk/react';
 import type { PropsWithChildren } from 'react';
 
-export default function SOrderbookProvider({ children }: PropsWithChildren) {
+export default function OrderbookProvider({ children }: PropsWithChildren) {
   const config = { symbol: 'BTC/USD', debug: true, depth: 100 as const };
 
-  return <OrderbookProvider config={config}>{children}</OrderbookProvider>;
+  return (
+    <KronoOrderbookProvider config={config}>{children}</KronoOrderbookProvider>
+  );
 }
