@@ -1,149 +1,206 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { OrderbookData } from '../../core';
-import { useOrderbookInstance } from '../context';
-import { useOrderbookData } from './useOrderbookData';
 import { useOrderbookHistory } from './useOrderbookHistory';
 
+const LIVE_SNAP_THRESHOLD = 5;
+
 export function useOrderbookPlayback() {
-  const { length, getData } = useOrderbookHistory();
-  const liveData = useOrderbookData();
-  const [index, setIndex] = useState<number>(length - 1);
+  const { getAll, size } = useOrderbookHistory();
+
+  const frames = getAll();
+  const historyLength = size;
+
+  const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [isPaused, setIsPaused] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const timeoutRef = useRef<number>();
+  const [virtualTime, setVirtualTime] = useState<number>(0);
 
-  useEffect(() => {
-    if (!isPaused && !isPlaying && length > 0) {
-      setIndex(length - 1);
+  const rafRef = useRef<number>();
+  const lastUpdateRef = useRef<number>(0);
+
+  const effectiveIndex = useMemo(() => {
+    if (
+      currentIndex === -1 ||
+      (!isPaused && currentIndex >= historyLength - 1)
+    ) {
+      return historyLength - 1;
     }
-  }, [length, isPaused, isPlaying]);
+    return currentIndex;
+  }, [currentIndex, historyLength, isPaused]);
 
+  const currentData = useMemo(() => {
+    if (effectiveIndex < 0 || effectiveIndex >= frames.length) return null;
+    return frames[effectiveIndex];
+  }, [frames, effectiveIndex]);
+
+  const nextFrameInfo = useMemo(() => {
+    if (effectiveIndex >= historyLength - 1) return null;
+
+    const currentFrame = frames[effectiveIndex];
+    const nextFrame = frames[effectiveIndex + 1];
+
+    if (!currentFrame || !nextFrame) return null;
+
+    const frameDuration = nextFrame.timestamp - currentFrame.timestamp;
+    const remaining = Math.max(0, frameDuration - virtualTime);
+
+    return {
+      duration: frameDuration,
+      elapsed: virtualTime,
+      remaining,
+      remainingSeconds: Math.ceil(remaining / 1000),
+      progress:
+        frameDuration > 0 ? Math.min(1, virtualTime / frameDuration) : 1,
+    };
+  }, [frames, effectiveIndex, virtualTime, historyLength]);
+
+  const isLive = effectiveIndex === historyLength - 1;
+  const isPlaying = !isPaused;
+  const canGoBack = effectiveIndex > 0;
+  const canGoForward = effectiveIndex < historyLength - 1;
+
+  const timeBehindLive = useMemo(() => {
+    if (historyLength === 0 || !currentData) return 0;
+    return Date.now() - currentData.timestamp;
+  }, [currentData, historyLength]);
+
+  // Playback loop
   useEffect(() => {
-    if (!isPlaying || isPaused) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+    if (isPaused || historyLength === 0) {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = undefined;
       }
       return;
     }
 
-    const scheduleNext = () => {
-      if (index >= length - 1) {
-        setIsPlaying(false);
-        setIsPaused(false);
-        setIndex(length - 1);
-        return;
+    let isActive = true;
+
+    const animate = (timestamp: number) => {
+      if (!isActive) return;
+
+      if (timestamp - lastUpdateRef.current >= 1000) {
+        lastUpdateRef.current = timestamp;
+
+        setVirtualTime((prev) => {
+          const currentFrame = frames[effectiveIndex];
+          const nextFrame = frames[effectiveIndex + 1];
+
+          if (!currentFrame || !nextFrame) {
+            setCurrentIndex(historyLength - 1);
+            return 0;
+          }
+
+          const frameDuration = nextFrame.timestamp - currentFrame.timestamp;
+          const newTime = prev + 1000;
+
+          if (newTime >= frameDuration) {
+            setCurrentIndex((idx) => Math.min(idx + 1, historyLength - 1));
+            return 0;
+          }
+
+          return newTime;
+        });
       }
 
-      const currentData = getData(index);
-      const nextData = getData(index + 1);
-
-      if (!currentData || !nextData) {
-        setIsPlaying(false);
-        return;
-      }
-
-      const delay = nextData.timestamp - currentData.timestamp;
-
-      timeoutRef.current = setTimeout(() => {
-        setIndex((i) => i + 1);
-      }, delay);
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    scheduleNext();
+    lastUpdateRef.current = performance.now();
+    rafRef.current = requestAnimationFrame(animate);
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      isActive = false;
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [isPlaying, isPaused, index, length, getData]);
+  }, [isPaused, historyLength, frames, effectiveIndex]);
 
-  const currentData = useMemo<OrderbookData>(() => {
-    if (length === 0) {
-      return liveData;
+  // Initialize to latest when history first loads
+  useEffect(() => {
+    if (historyLength > 0 && currentIndex === -1) {
+      setCurrentIndex(historyLength - 1);
     }
-    return getData(index) ?? liveData;
-  }, [length, getData, index, liveData]);
+  }, [historyLength, currentIndex]);
 
-  const isLive =
-    (index === length - 1 && !isPaused && !isPlaying) || length === 0;
-
-  const goForward = useCallback(() => {
-    if (length === 0) return;
-    setIsPlaying(false);
-    setIndex((i) => {
-      const newIndex = Math.min(i + 1, length - 1);
-      if (newIndex === length - 1) {
-        setIsPaused(false);
-      }
-      return newIndex;
-    });
-  }, [length]);
-
-  const goBack = useCallback(() => {
-    if (length === 0) return;
-    setIsPlaying(false);
-    setIsPaused(true);
-    setIndex((i) => Math.max(i - 1, 0));
-  }, [length]);
+  // Auto-follow latest frame when already at the end
+  useEffect(() => {
+    if (!isPaused && currentIndex === historyLength - 2) {
+      setCurrentIndex(historyLength - 1);
+      setVirtualTime(0);
+    }
+  }, [isPaused, currentIndex, historyLength]);
 
   const goToLive = useCallback(() => {
-    if (length === 0) return;
-    setIsPlaying(false);
+    setCurrentIndex(historyLength - 1);
+    setVirtualTime(0);
     setIsPaused(false);
-    setIndex(length - 1);
-  }, [length]);
+  }, [historyLength]);
+
+  const goToStart = useCallback(() => {
+    setCurrentIndex(0);
+    setVirtualTime(0);
+    // Keep current play/pause state
+  }, []);
+
+  const togglePaused = useCallback(() => {
+    setIsPaused((prev) => {
+      if (prev) {
+        lastUpdateRef.current = performance.now();
+      } else {
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = undefined;
+        }
+      }
+      return !prev;
+    });
+  }, []);
 
   const goToIndex = useCallback(
     (i: number) => {
-      if (length === 0) return;
-      setIsPlaying(false);
-      const newIndex = Math.max(0, Math.min(i, length - 1));
-      setIndex(newIndex);
-      setIsPaused(newIndex !== length - 1);
+      const clampedIndex = Math.max(0, Math.min(i, historyLength - 1));
+      setCurrentIndex(clampedIndex);
+      setVirtualTime(0);
     },
-    [length],
+    [historyLength],
   );
 
-  const togglePaused = useCallback(() => {
-    if (!isPaused) {
-      setIsPaused(true);
-      setIsPlaying(false);
-    } else {
-      setIsPaused(false);
-      if (index < length - 1) {
-        setIsPlaying(true);
+  const goBack = useCallback(() => {
+    if (!canGoBack) return;
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+    setVirtualTime(0);
+  }, [canGoBack]);
+
+  const goForward = useCallback(() => {
+    if (!canGoForward) return;
+    setCurrentIndex((prev) => {
+      const nextIdx = Math.min(prev + 1, historyLength - 1);
+
+      if (!isPaused && historyLength - nextIdx <= LIVE_SNAP_THRESHOLD) {
+        return historyLength - 1;
       }
-    }
-  }, [isPaused, index, length]);
 
-  const play = useCallback(() => {
-    setIsPaused(false);
-    if (index < length - 1) {
-      setIsPlaying(true);
-    }
-  }, [index, length]);
-
-  const pause = useCallback(() => {
-    setIsPaused(true);
-    setIsPlaying(false);
-  }, []);
+      return nextIdx;
+    });
+    setVirtualTime(0);
+  }, [canGoForward, historyLength, isPaused]);
 
   return {
-    currentData,
-    index,
     isLive,
     isPaused,
     isPlaying,
-    goForward,
-    goBack,
-    goToLive,
-    goToIndex,
-    setIsPaused,
     togglePaused,
-    play,
-    pause,
-    canGoBack: index > 0 && length > 0,
-    canGoForward: index < length - 1 && length > 0,
+    goToIndex,
+    goBack,
+    goForward,
+    goToLive,
+    goToStart,
+    canGoBack,
+    canGoForward,
+    index: effectiveIndex,
+    historyLength,
+    currentData,
+    nextFrameInfo,
+    timeBehindLive,
   };
 }

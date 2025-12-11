@@ -317,7 +317,7 @@ export class Orderbook
     this.pipeline.on('update', (data) => {
       if (this.configManager.historyEnabled) {
         this.history.push(data);
-        this.emit(OrderbookEventKey.HistoryUpdate, this.history.getAll());
+        this.emit(OrderbookEventKey.HistoryUpdate, this.history);
       }
       this.emit(OrderbookEventKey.DataUpdate, data);
     });

@@ -1,29 +1,18 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { OrderbookData } from '../../core';
 import { useOrderbookInstance } from '../context';
 
-export function useOrderbookData() {
-  const ob = useOrderbookInstance();
-
-  const initialData = useMemo(() => ob.currentData, [ob]);
-  const [data, setData] = useState<OrderbookData>(initialData);
+export function useOrderbookData(disabled = false): OrderbookData {
+  const orderbook = useOrderbookInstance();
+  const [data, setData] = useState<OrderbookData>(orderbook.currentData);
 
   useEffect(() => {
-    const unsubscribe = ob.onDataUpdate(setData);
-    return () => unsubscribe();
-  }, [ob]);
+    if (disabled) return;
+    const unsubscribe = orderbook.onDataUpdate(setData);
+    return unsubscribe;
+  }, [disabled, orderbook]);
 
-  return {
-    data,
-    asks: data.asks,
-    bids: data.bids,
-    spread: data.spread,
-    spreadPct: data.spreadPct,
-    maxAskTotal: data.maxAskTotal,
-    maxBidTotal: data.maxBidTotal,
-    maxTotal: data.maxTotal,
-    timestamp: data.timestamp,
-  };
+  return data;
 }
