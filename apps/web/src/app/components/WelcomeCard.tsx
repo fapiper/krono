@@ -1,4 +1,4 @@
-import { Button } from '@orderbook-visualizer/ui/components/ui/button';
+import { Button } from '@krono/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@orderbook-visualizer/ui/components/ui/card';
+} from '@krono/ui/components/ui/card';
 
 interface WelcomeCardProps {
   title?: string;

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Next.js",
-  "extends": "@orderbook-visualizer/tsconfig/nextjs.json",
+  "extends": "@krono/tsconfig/nextjs.json",
   "compilerOptions": {
     "types": ["vitest/globals"],
     "plugins": [

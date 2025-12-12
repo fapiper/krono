@@ -1,5 +1,5 @@
 import path from 'node:path';
-import uiConfig from '@orderbook-visualizer/ui/tailwind.config';
+import uiConfig from '@krono/ui/tailwind.config';
 import type { Config } from 'tailwindcss';
 
 const config: Config = {

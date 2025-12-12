@@ -1,34 +1,26 @@
 {
-  "name": "@orderbook-visualizer/docs",
+  "name": "@krono/docs",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "start": "next start",
-    "dev": "next dev -p 4001",
+    "dev": "mint dev",
     "lint": "biome check .",
     "lint:fix": "biome check . --apply",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
+    "clean": "rm -rf .turbo && rm -rf node_modules"
   },
   "dependencies": {
-    "@orderbook-visualizer/ui": "workspace:*",
-    "@orderbook-visualizer/utils": "workspace:*",
-    "next": "14.2.33",
-    "nextra": "3.0.15",
-    "nextra-theme-blog": "3.0.15",
-    "nextra-theme-docs": "3.0.15",
+    "@krono/ui": "workspace:*",
+    "@krono/sdk": "workspace:*",
+    "mintlify": "^4.2.237",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
-    "@orderbook-visualizer/tsconfig": "workspace:*",
+    "@krono/tsconfig": "workspace:*",
     "@types/node": "20.14.15",
     "@types/react": "18.3.13",
     "@types/react-dom": "18.3.1",
-    "typescript": "5.5.4",
-    "autoprefixer": "10.4.22",
-    "postcss": "8.4.49",
-    "tailwindcss": "3.4.18"
+    "typescript": "5.5.4"
   }
 }

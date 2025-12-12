@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/orderbook-visualizer.iml" filepath="$PROJECT_DIR$/.idea/orderbook-visualizer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/krono.iml" filepath="$PROJECT_DIR$/.idea/krono.iml" />
     </modules>
   </component>
 </project>

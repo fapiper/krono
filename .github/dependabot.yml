@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     allow:
       - dependency-type: "all"
     open-pull-requests-limit: 10
@@ -22,7 +22,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/apps/web"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     allow:
       - dependency-type: "all"
     open-pull-requests-limit: 10
@@ -41,7 +41,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/apps/docs"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     allow:
       - dependency-type: "all"
     open-pull-requests-limit: 10
@@ -60,7 +60,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/packages/ui"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     allow:
       - dependency-type: "all"
     open-pull-requests-limit: 10
@@ -75,11 +75,11 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
-  # /packages/utils
+  # /packages/sdk
   - package-ecosystem: "npm"
-    directory: "/packages/utils"
+    directory: "/packages/sdk"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     allow:
       - dependency-type: "all"
     open-pull-requests-limit: 10
@@ -89,7 +89,7 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
-      - "utils"
+      - "sdk"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]

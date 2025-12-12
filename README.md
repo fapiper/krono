@@ -1,10 +1,10 @@
-# Orderbook Visualizer
+# Krono
 
 ![Static Badge](https://img.shields.io/badge/shadcn%2Fui-0.8.0-blue?link=https%3A%2F%2Fgithub.com%2Fshadcn%2Fui)
 
-[![CI](https://github.com/fapiper/orderbook-visualizer/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/orderbook-visualizer/actions/workflows/ci.yml)
-[![Known Vulnerabilities](https://snyk.io/test/github/fapiper/orderbook-visualizer/badge.svg)](https://snyk.io/test/github/fapiper/orderbook-visualizer)
-[![License](https://img.shields.io/github/license/fapiper/orderbook-visualizer.svg)](https://github.com/fapiper/orderbook-visualizer/blob/main/LICENSE)
+[![CI](https://github.com/fapiper/krono/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/krono/actions/workflows/ci.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/fapiper/krono/badge.svg)](https://snyk.io/test/github/fapiper/krono)
+[![License](https://img.shields.io/github/license/fapiper/krono.svg)](https://github.com/fapiper/krono/blob/main/LICENSE)
 
 ![Bun](https://img.shields.io/badge/Bun-%23000000.svg?&logo=bun&logoColor=white)
 
@@ -38,10 +38,10 @@ A powerful monorepo starter template featuring Next.js, Nextra, and a shared pre
 
 ```sh
 # Clone the repository
-git clone https://github.com/fapiper/orderbook-visualizer.git
+git clone https://github.com/fapiper/krono.git
 
 # Navigate to the project directory
-cd orderbook-visualizer
+cd krono
 
 # Install dependencies
 bun install
@@ -64,21 +64,21 @@ bun ui:add:component <component-name>
 graph TD
     A[Turborepo] --> B[Apps]
     A --> C[Packages]
-    B --> D[@orderbook-visualizer/docs]
-    B --> E[@orderbook-visualizer/web]
-    B --> F[@orderbook-visualizer/storybook]
-    C --> G[@orderbook-visualizer/ui]
-    C --> H[@orderbook-visualizer/utils]
-    C --> I[@orderbook-visualizer/tsconfig]
+    B --> D[@krono/docs]
+    B --> E[@krono/web]
+    B --> F[@krono/storybook]
+    C --> G[@krono/ui]
+    C --> H[@krono/sdk]
+    C --> I[@krono/tsconfig]
 ```
 
 | App/Package | Description |
 |-------------|-------------|
-| `@orderbook-visualizer/docs` | Documentation site powered by [Nextra 3 alpha](https://the-guild.dev/blog/nextra-3) |
-| `@orderbook-visualizer/web` | Main Next.js web application |
-| `@orderbook-visualizer/ui` | Core React components and design system shared by both `web` and `docs` applications (powered by shadcn/ui) |
-| `@orderbook-visualizer/utils` | Shared React utilities |
-| `@orderbook-visualizer/tsconfig` | Shared `tsconfig.json` configurations |
+| `@krono/docs` | Documentation site powered by [Nextra 3 alpha](https://the-guild.dev/blog/nextra-3) |
+| `@krono/web` | Main Next.js web application |
+| `@krono/ui` | Core React components and design system shared by both `web` and `docs` applications (powered by shadcn/ui) |
+| `@krono/sdk` | Shared React utilities |
+| `@krono/tsconfig` | Shared `tsconfig.json` configurations |
 
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 
@@ -95,7 +95,7 @@ This Turborepo has some additional tools already set up for you:
 
 ### Storybook
 
-This Turborepo includes Storybook for component development and documentation. Storybook is set up for both the `@orderbook-visualizer/web` and `@orderbook-visualizer/ui` packages, allowing the development and showcasing of components from both your main application and your shared UI library.
+This Turborepo includes Storybook for component development and documentation. Storybook is set up for both the `@krono/web` and `@krono/ui` packages, allowing the development and showcasing of components from both your main application and your shared UI library.
 
 To run Storybook:
 
@@ -140,7 +140,7 @@ This setup includes several useful Storybook addons:
 * `bun lint:fix` - Lint, format, and fix all packages
 * `bun changeset` - Generate a changeset 🧑‍🔧 - WIP
 * `bun clean` - Clean up all `node_modules` and `dist` folders (runs each package's clean script)
-* `bun ui:add:component` - Add a shadcn/ui component to the `@orderbook-visualizer/ui` package
+* `bun ui:add:component` - Add a shadcn/ui component to the `@krono/ui` package
 * `bun storybook` - Run Storybook for component development and documentation
 
 ### Add a new app or package
@@ -166,7 +166,7 @@ You will be prompted to choose the name and workspace type (app or package) of t
 
 ### CI
 
-[![CI](https://github.com/fapiper/orderbook-visualizer/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/orderbook-visualizer/actions/workflows/ci.yml)
+[![CI](https://github.com/fapiper/krono/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/krono/actions/workflows/ci.yml)
 
 This Turborepo uses [GitHub Actions](https://github.com/features/actions) for CI.
 
@@ -233,15 +233,15 @@ The `docs` and `web` apps can be deployed to Vercel without any additional confi
 
 You can view the test deployments for these apps:
 
-* `apps/web`: [https://orderbook-visualizer-web.vercel.app/](https://orderbook-visualizer-web.vercel.app/)
-* `apps/docs`: [https://orderbook-visualizer-docs.vercel.app/](https://orderbook-visualizer-docs.vercel.app/)
+* `apps/web`: [https://krono-web.vercel.app/](https://krono-web.vercel.app/)
+* `apps/docs`: [https://krono-docs.vercel.app/](https://krono-docs.vercel.app/)
 
 ### Storybook Deployment
 
 The `apps/storybook` is automatically deployed to GitHub Pages using a custom workflow.
 
 * **Workflow File**: You can find the deployment workflow at `.github/workflows/storybook-deploy.yml`
-* **Deployment URL**: The deployed Storybook can be accessed at [https://fapiper.github.io/orderbook-visualizer/](https://fapiper.github.io/orderbook-visualizer/)
+* **Deployment URL**: The deployed Storybook can be accessed at [https://fapiper.github.io/krono/](https://fapiper.github.io/krono/)
 
 ## Useful Links and Thanks
 
