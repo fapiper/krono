@@ -1,17 +1,22 @@
 {
-  "name": "@krono/docs",
+  "name": "@krono/docsold",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "mint dev",
+    "build": "next build",
+    "start": "next start",
+    "dev": "next dev -p 4001",
     "lint": "biome check .",
     "lint:fix": "biome check . --apply",
-    "clean": "rm -rf .turbo && rm -rf node_modules"
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
   },
   "dependencies": {
     "@krono/ui": "workspace:*",
     "@krono/sdk": "workspace:*",
-    "mintlify": "^4.2.237",
+    "next": "14.2.33",
+    "nextra": "3.0.15",
+    "nextra-theme-blog": "3.0.15",
+    "nextra-theme-docs": "3.0.15",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
@@ -21,6 +26,9 @@
     "@types/node": "20.14.15",
     "@types/react": "18.3.13",
     "@types/react-dom": "18.3.1",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "autoprefixer": "10.4.22",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.19"
   }
 }

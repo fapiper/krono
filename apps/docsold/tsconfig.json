@@ -1,13 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Next.js",
-  "extends": "@krono/tsconfig/react-library.json",
+  "extends": "@krono/tsconfig/nextjs.json",
   "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
       "@/*": ["./src/*"],
       "@ui/*": ["../../packages/ui/src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "./.next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
