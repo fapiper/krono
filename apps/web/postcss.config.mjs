@@ -1,3 +1,1 @@
-import postcssConfig from '@krono/ui/postcss.config';
-
-export default postcssConfig;
+export { default } from '@krono/ui/postcss.config';
