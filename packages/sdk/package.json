@@ -6,7 +6,9 @@
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "private": true,
-  "files": ["dist/**"],
+  "files": [
+    "dist/**"
+  ],
   "exports": {
     "./core": {
       "import": "./dist/core/index.mjs",
@@ -28,18 +30,18 @@
   },
   "devDependencies": {
     "@krono/tsconfig": "workspace:*",
-    "@types/react": "18.3.13",
-    "@types/react-dom": "18.3.7",
-    "react": "18.3.1",
-    "tsup": "8.1.2",
-    "typescript": "5.5.4",
-    "@biomejs/biome": "1.8.3"
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "react": "19.2.3",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "@biomejs/biome": "2.3.8"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.90.11",
+    "@tanstack/react-query": "^5.90.12",
     "usehooks-ts": "^3.1.1",
     "websocket-ts": "^2.2.1"
   }

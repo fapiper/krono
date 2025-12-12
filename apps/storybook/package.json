@@ -9,29 +9,29 @@
     "lint:fix": "biome check . --apply"
   },
   "dependencies": {
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "next": "14.2.35",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "next": "16.0.10",
     "@krono/ui": "workspace:*",
     "@krono/web": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.3",
-    "@storybook/addon-essentials": "8.1.11",
-    "@storybook/addon-interactions": "8.1.11",
-    "@storybook/addon-links": "8.1.11",
-    "@storybook/addon-onboarding": "8.1.11",
-    "@storybook/addon-styling-webpack": "1.0.1",
-    "@storybook/addon-themes": "8.1.11",
-    "@storybook/nextjs": "8.1.11",
-    "@storybook/react-vite": "8.1.11",
-    "@types/node": "20.14.15",
-    "@types/react": "18.3.13",
-    "@types/react-dom": "18.3.1",
+    "@biomejs/biome": "2.3.8",
+    "@storybook/addon-essentials": "8.6.14",
+    "@storybook/addon-interactions": "8.6.14",
+    "@storybook/addon-links": "10.1.7",
+    "@storybook/addon-onboarding": "10.1.7",
+    "@storybook/addon-styling-webpack": "3.0.0",
+    "@storybook/addon-themes": "10.1.7",
+    "@storybook/nextjs": "10.1.7",
+    "@storybook/react-vite": "10.1.7",
+    "@types/node": "25.0.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "autoprefixer": "10.4.22",
-    "postcss": "8.4.49",
-    "storybook": "8.1.11",
-    "tailwindcss": "3.4.19",
-    "typescript": "5.5.4"
+    "postcss": "8.5.6",
+    "storybook": "10.1.7",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.9.3"
   }
 }
