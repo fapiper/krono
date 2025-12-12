@@ -54,7 +54,7 @@ export function OrderbookPanel() {
             <OrderbookPanelSkeleton n={n} />
 
             <div className="absolute inset-0 flex items-center justify-center bg-background/25 z-10">
-              <span className="text-muted-foreground font-semibold p.4">
+              <span className="text-foreground text-xl p.4">
                 Connecting to feed...
               </span>
             </div>

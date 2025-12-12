@@ -1,11 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-const ThemeSwitcher = dynamic(() => import('./ThemeSwitcher'), {
-  ssr: false,
-  loading: () => <div className="w-6 h-6" />,
-});
 import MountainIcon from '@/components/icons/MountainIcon';
+import LayoutHeaderSettingsPopover from '@/components/layout/Header/SettingsPopover';
 import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
 import {
   useOrderbookConfig,
@@ -26,8 +22,6 @@ export default function LayoutHeader({
   children,
   ...props
 }: LayoutHeaderProps) {
-  const { debug, setDebug } = useOrderbookConfig();
-  const status = useOrderbookStatus();
   const { timestamp: currentTimestamp } = useOrderbookData();
 
   return (
@@ -42,24 +36,14 @@ export default function LayoutHeader({
         <MountainIcon className="h-6 w-6" />
         <span className="sr-only">Krono</span>
         <OrderbookPanelSelect />
+        {/*
         <div className={'text-xs tabular-nums hidden md:block'}>
           {format(currentTimestamp, 'PPpp')}
         </div>
+*/}
       </div>
       <div className={'flex justify-end items-center gap-2'}>
-        <div className="flex items-center gap-1">
-          <Button
-            size={'xs'}
-            variant={'outline'}
-            onClick={() => setDebug(!debug)}
-          >
-            {debug ? 'Disable Debug' : 'Enable Debug'}
-          </Button>
-        </div>
-
-        <div className={'flex gap-1'}>
-          <ThemeSwitcher />
-        </div>
+        <LayoutHeaderSettingsPopover />
       </div>
 
       {children}

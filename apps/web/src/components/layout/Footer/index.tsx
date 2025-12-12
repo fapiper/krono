@@ -3,9 +3,13 @@ import { Button } from '@ui/components/ui/button';
 import { Separator } from '@ui/components/ui/separator';
 import { cn } from '@ui/lib';
 import { Github, Globe, Linkedin } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { HTMLAttributes } from 'react';
-import { env } from '../../../../env';
+const ThemeSwitcher = dynamic(() => import('./ThemeSwitcher'), {
+  ssr: false,
+  loading: () => <div className="w-6 h-6" />,
+});
 
 export type LayoutFooterProps = HTMLAttributes<HTMLDivElement>;
 
@@ -62,11 +66,21 @@ export default function LayoutFooter({
         </Link>
       </p>
 
+      <Separator orientation="vertical" />
+
+      <ThemeSwitcher />
+
       {children}
 
-      <div className={'flex gap-2 items-center justify-center ml-auto'}>
-        <Button size={'icon-xs'} variant={'secondary'}>
-          <Github />
+      <div className={'flex gap-2 ml-auto'}>
+        <Button size={'icon-xs'} variant={'secondary'} asChild={true}>
+          <Link
+            href={'https://fabianpiper.com'}
+            target={'_blank'}
+            rel={'noopener noreferrer'}
+          >
+            <Github />
+          </Link>
         </Button>
         <Button size={'icon-xs'} variant={'secondary'}>
           <Linkedin />

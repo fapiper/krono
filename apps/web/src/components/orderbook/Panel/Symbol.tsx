@@ -58,7 +58,7 @@ export function OrderbookPanelSelect() {
           role="combobox"
           aria-expanded={open}
           className="w-32 justify-between"
-          size={'xs'}
+          size={'sm'}
         >
           {symbol
             ? frameworks.find((framework) => framework.value === symbol)?.label
