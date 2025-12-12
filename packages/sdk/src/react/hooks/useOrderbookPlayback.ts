@@ -18,7 +18,7 @@ export function useOrderbookPlayback() {
     size,
     isTrackingLive,
   });
-  const rafRef = useRef<number>();
+  const rafRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number>(0);
 
   useEffect(() => {
