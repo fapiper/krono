@@ -1,97 +1,95 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "Welcome to Krono"
 ---
 
-## Setting up
+## Overview
 
-Get your documentation site up and running in minutes.
+Krono provides a complete solution for visualizing cryptocurrency orderbook data from Kraken's WebSocket API.
+It is built with three layers that work independently or together:
+
+- **Core**: Framework-agnostic orderbook logic with WebSocket management
+- **Hooks**: React integration library
+- **Kit**: Pre-built UI components using shadcn/ui and Tailwind CSS
+
+## Features
+
+- Real-time orderbook updates via WebSocket
+- Frame-accurate time travel through historical states
+- Optimized performance with throttling and debouncing
+- Customizable depth levels (10, 25, 100, 500, 1000)
+- Automatic live tracking with manual playback controls
+- Framework-agnostic core (React, Vue, Svelte support possible)
+- Built with TypeScript for complete type safety
+
+## Architecture
+
+The three-layer architecture ensures you can use only what you need:
+
+<Columns cols={2}>
+    <Card
+        title="Core"
+        icon="pen-fancy"
+        href="/essentials/markdown"
+    >
+        Use Core alone for custom implementations in any framework.
+    </Card>
+    <Card
+        title="Hooks"
+        icon="code"
+        href="/essentials/code"
+    >
+        Add Hooks for React state management and event handling.
+    </Card>
+    <Card
+        title="Kit"
+        icon="image"
+        href="/essentials/images"
+    >
+        Include Kit for ready-to-use components with built-in styling.
+    </Card>
+</Columns>
+
+## Quick Example
+```tsx
+import { OrderbookVisualizer } from '@krono/kit';
+
+export default function App() {
+  return (
+
+  );
+}
+```
+
+That's it. You now have a live orderbook with time travel capabilities.
+
+## Browser Support
+
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Modern mobile browsers
+
+## Getting Started
+
+Ready to build?
+Get up and running in minutes.
 
 <Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
+    title="Follow our installation guide"
+    icon="rocket"
+    href="/quickstart"
+    horizontal
 >
-  Follow our three step quickstart guide.
+    Follow our installation guide.
 </Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
 
 ## Need inspiration?
 
 <Card
-  title="See complete examples"
+  title="See examples"
   icon="stars"
-  href="https://mintlify.com/customers"
+  href="/examples"
 >
-  Browse our showcase of exceptional documentation sites.
+  Browse our examples.
 </Card>

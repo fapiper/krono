@@ -1,0 +1,13 @@
+---
+title: "TypeScript"
+---
+
+## Requirements
+Krono is designed to be as type-safe as possible! Things to keep in mind:
+
+- Types currently require using TypeScript >=5.7.3.
+- TypeScript doesn't follow semver and often introduces breaking changes in minor releases.
+- Changes to types in this repository are considered non-breaking and are usually released as patch changes (otherwise every type enhancement would be a major version!).
+- It is highly recommended that you lock your `@krono/core` and `typescript` versions to specific patch releases and upgrade with the expectation that types may be fixed or upgraded between any release.
+- The non-type-related public API of Krono still follows semver very strictly.
+- To ensure everything works correctly, make sure your `tsconfig.json` has strict mode set to true.

@@ -1,0 +1,81 @@
+---
+title: "Getting started"
+description: "Getting started with Krono Kit."
+icon: "asterisk"
+---
+
+This page explains how to use the `@krono/kit` SDK, a React component library around the `@krono/hooks` SDK.
+The `@krono/kit` SDK provides components for displaying orderbook data, time travel controls and many more.
+You can find the `@krono/kit` SDK source code on Github.
+
+Get an interactive demo of the components by visiting the Storybook.
+
+To get started, install the required packages.
+
+<CodeGroup>
+
+    ```pnpm pnpm
+    pnpm add @krono/kit
+    ```
+
+    ```npm npm
+    npm install @krono/kit
+    ```
+
+    ```yarn yarn
+    yarn add @krono/kit
+    ```
+
+    ```bun bun
+    bun add @krono/kit
+    ```
+</CodeGroup>
+
+## Create Config
+
+Create and export a new Krono config.
+
+```typescript create-config.ts
+import { OrderbookConfig } from '@krono/hooks'
+
+export const config = new OrderbookConfig({
+    symbol: "BTC/USD",
+})
+```
+In this example, Krono is configured to use the BTC/USD pair. Check out the config docs for more configuration options.
+
+
+## Wrap Component in Context Provider
+
+Wrap your component in the KronoProvider React Context Provider and pass the config you created earlier to the config property.
+
+```tsx App.tsx
+import { KronoProvider  } from '@krono/hooks'
+import { config } from './config'
+
+function App() {
+  return (
+    <KronoProvider config={config}>
+      {/** ... */}
+    </KronoProvider>
+  )
+}
+```
+
+## Wrap Component in Context Provider
+
+This sample code loads and displays the `OrderbookPanel` component.
+
+```tsx YourComponent.tsx
+import { OrderbookPanel  } from '@krono/kit'
+function YourComponent() {
+  return (
+    <div>
+      <OrderbookPanel />
+    </div>
+  )
+}
+```
+
+## Use Krono
+Now that everything is set up, every component inside the Krono Providers can use Krono Kit.

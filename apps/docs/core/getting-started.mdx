@@ -1,0 +1,69 @@
+---
+title: "Getting started"
+description: "Getting started with Krono Core."
+icon: "asterisk"
+---
+
+This page explains how to use the `@krono/core` SDK.
+The `@krono/core` SDK makes it easier to connect to the Kraken Websocket API and store / retrieve historical data for time traveling.
+You can find the `@krono/core` SDK source code on Github.
+To get started, install the required packages.
+
+<CodeGroup>
+
+    ```pnpm pnpm
+    pnpm add @krono/core
+    ```
+
+    ```npm npm
+    npm install @krono/core
+    ```
+
+    ```yarn yarn
+    yarn add @krono/core
+    ```
+
+    ```bun bun
+    bun add @krono/core
+    ```
+</CodeGroup>
+
+## Create Config
+
+Create and export a new Krono config.
+
+```typescript create-config.ts
+import { OrderbookConfig } from '@krono/hooks'
+
+export const config = new OrderbookConfig({
+    symbol: "BTC/USD",
+})
+```
+In this example, Krono is configured to use the BTC/USD pair. Check out the config docs for more configuration options.
+
+
+## Wrap Component in Context Provider
+
+Wrap your component in the KronoProvider React Context Provider and pass the config you created earlier to the config property.
+
+```tsx App.tsx
+import { KronoProvider  } from '@krono/hooks'
+import { config } from './config'
+
+function App() {
+  return (
+    <KronoProvider config={config}>
+      {/** ... */}
+    </KronoProvider>
+  )
+}
+```
+
+## Use Krono
+Now that everything is set up, every component inside the Krono Providers can use Krono Hooks.
+
+## Next Steps
+For more information on what to do next, check out the following topics.
+
+- **Playback** how to use time travel controls through the orderbook of a pair within your app using Krono.
+- **Hooks** Browse the collection of Hooks and learn how to use them.
