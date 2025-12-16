@@ -1,4 +1,4 @@
-import { BaseManager, type Logger } from './index';
+import { BaseManager, type Logger } from './';
 
 export abstract class BaseConfig<
   TConfig,

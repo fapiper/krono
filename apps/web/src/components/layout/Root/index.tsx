@@ -1,3 +1,5 @@
+'use client';
+
 import { Orderbook } from '@krono/kit';
 import { cn } from '@ui/lib';
 import type { HTMLAttributes } from 'react';

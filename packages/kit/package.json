@@ -9,6 +9,11 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "license": "MIT",
+  "exports": {
+    "./globals.css": "./src/globals.css",
+    "./postcss.config": "./postcss.config.mjs",
+    ".": "./src/index.ts"
+  },
   "dependencies": {
     "@krono/core": "workspace:*",
     "@krono/hooks": "workspace:*",
@@ -30,10 +35,5 @@
     "@tailwindcss/postcss": "4.1.11",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3"
-  },
-  "exports": {
-    "./globals.css": "./src/globals.css",
-    "./postcss.config": "./postcss.config.mjs",
-    ".": "./src/orderbook/index.ts"
   }
 }

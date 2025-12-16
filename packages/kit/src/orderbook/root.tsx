@@ -1,5 +1,3 @@
-'use client';
-
 import {
   AssetPairsProvider,
   type AssetPairsProviderProps,
@@ -14,12 +12,16 @@ export type OrderbookRootProps = PropsWithChildren<{
   };
 }>;
 
-export const OrderbookRoot = ({ children, config }: OrderbookRootProps) => {
-  const { assetPairs: assetPairsConfig, ...orderbookConfig } = config;
+const OrderbookRoot = ({ children, config }: OrderbookRootProps) => {
+  const { assetPairs: assetPairsConfig = {}, ...orderbookConfig } = config;
 
   return (
-    <AssetPairsProvider config={assetPairsConfig ?? {}}>
+    <AssetPairsProvider config={assetPairsConfig}>
       <OrderbookProvider config={orderbookConfig}>{children}</OrderbookProvider>
     </AssetPairsProvider>
   );
+};
+
+export const Orderbook = {
+  Root: OrderbookRoot,
 };
