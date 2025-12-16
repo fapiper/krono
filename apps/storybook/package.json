@@ -6,7 +6,7 @@
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
     "lint": "biome check .",
-    "lint:fix": "biome check . --apply"
+    "lint:fix": "biome check . --write"
   },
   "dependencies": {
     "react": "19.2.3",

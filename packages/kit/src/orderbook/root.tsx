@@ -5,7 +5,7 @@ import {
   type AssetPairsProviderProps,
   OrderbookProvider,
   type OrderbookProviderProps,
-} from '@krono/sdk/react';
+} from '@krono/hooks';
 import type { PropsWithChildren } from 'react';
 
 export type OrderbookRootProps = PropsWithChildren<{

@@ -1,6 +1,6 @@
 'use client';
 
-import { useOrderbookPlayback, useOrderbookStatus } from '@krono/sdk/react';
+import { useOrderbookPlayback, useOrderbookStatus } from '@krono/hooks';
 import { useMemo } from 'react';
 import { createBreakpoint } from 'react-use';
 import { OrderbookTableChart } from './chart';

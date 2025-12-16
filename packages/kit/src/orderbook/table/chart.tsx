@@ -1,6 +1,6 @@
 'use client';
 
-import type { PriceLevel } from '@krono/sdk/core';
+import type { PriceLevel } from '@krono/core';
 import { cn } from '@ui/lib';
 
 const formatUSD = (value: number) => {

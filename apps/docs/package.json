@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@krono/ui": "workspace:*",
-    "@krono/sdk": "workspace:*",
     "mintlify": "^4.2.237",
     "react": "19.2.3",
     "react-dom": "19.2.3"

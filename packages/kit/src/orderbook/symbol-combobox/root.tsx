@@ -1,6 +1,6 @@
 'use client';
 
-import { useAssetPairs, useOrderbookConfig } from '@krono/sdk/react';
+import { useAssetPairs, useOrderbookConfig } from '@krono/hooks';
 import { Button } from '@ui/components/ui/button';
 import {
   Command,

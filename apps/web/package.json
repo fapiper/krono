@@ -16,7 +16,8 @@
     "test:cov:ui": "vitest --ui --coverage"
   },
   "dependencies": {
-    "@krono/sdk": "workspace:*",
+    "@krono/core": "workspace:*",
+    "@krono/hooks": "workspace:*",
     "@krono/ui": "workspace:*",
     "@krono/kit": "workspace:*",
     "@storybook/react": "^10.1.7",

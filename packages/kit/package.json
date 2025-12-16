@@ -10,7 +10,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@krono/sdk": "workspace:*",
+    "@krono/core": "workspace:*",
+    "@krono/hooks": "workspace:*",
     "@krono/ui": "workspace:*",
     "@storybook/react": "^10.1.7",
     "date-fns": "^4.1.0",

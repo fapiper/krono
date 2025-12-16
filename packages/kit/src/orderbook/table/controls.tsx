@@ -1,6 +1,6 @@
 'use client';
 
-import type { useOrderbookPlayback } from '@krono/sdk/react';
+import type { useOrderbookPlayback } from '@krono/hooks';
 import { Badge } from '@ui/components/ui/badge';
 import { Button } from '@ui/components/ui/button';
 import { Slider } from '@ui/components/ui/slider';

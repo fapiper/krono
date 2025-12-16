@@ -1,6 +1,6 @@
 'use client';
 
-import { useOrderbookConfig, useOrderbookStatus } from '@krono/sdk/react';
+import { useOrderbookConfig, useOrderbookStatus } from '@krono/hooks';
 import { Button } from '@ui/components/ui/button';
 import { Input } from '@ui/components/ui/input';
 import { Label } from '@ui/components/ui/label';
