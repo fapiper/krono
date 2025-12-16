@@ -10,10 +10,7 @@ export default function LayoutMain({
 }: LayoutMainProps) {
   return (
     <main
-      className={cn(
-        'flex flex-col shrink grow overflow-hidden px-4 pb-4',
-        className,
-      )}
+      className={cn('flex flex-col shrink grow px-4 pb-4', className)}
       {...props}
     >
       {children}

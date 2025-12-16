@@ -1,14 +1,11 @@
 'use client';
 
-import { useOrderbookData } from '@krono/sdk/react';
+import { OrderbookSettingsPopover, OrderbookSymbolCombobox } from '@krono/kit';
 import { cn } from '@ui/lib';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { HTMLAttributes } from 'react';
 import kronoImage from '@/assets/krono.png';
-import MountainIcon from '@/components/icons/MountainIcon';
-import LayoutHeaderSettingsPopover from '@/components/layout/Header/SettingsPopover';
-import { OrderbookPanelSelect } from '@/components/orderbook/Panel/Symbol';
 
 export type LayoutHeaderProps = HTMLAttributes<HTMLDivElement>;
 
@@ -17,8 +14,6 @@ export default function LayoutHeader({
   children,
   ...props
 }: LayoutHeaderProps) {
-  const { timestamp: currentTimestamp } = useOrderbookData();
-
   return (
     <header
       className={cn(
@@ -36,7 +31,7 @@ export default function LayoutHeader({
           height={40}
         />
         <span className="sr-only">Krono</span>
-        <OrderbookPanelSelect />
+        <OrderbookSymbolCombobox.Root />
         {/*
         <div className={'text-xs tabular-nums hidden md:block'}>
           {format(currentTimestamp, 'PPpp')}
@@ -60,7 +55,7 @@ export default function LayoutHeader({
         >
           Documentation
         </Link>
-        <LayoutHeaderSettingsPopover />
+        <OrderbookSettingsPopover.Root />
       </div>
 
       {children}

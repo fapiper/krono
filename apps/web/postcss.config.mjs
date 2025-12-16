@@ -1,1 +1,1 @@
-export { default } from '@krono/ui/postcss.config';
+export { default } from '@krono/kit/postcss.config';

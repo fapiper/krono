@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@krono/ui/globals.css";
+@import "@krono/kit/globals.css";
 
 /**
  * Tailwind CSS official document:
@@ -9,3 +10,4 @@
  * you can always add it with the @source directive.
  */
 @source '../../node_modules/@krono/ui';
+@source '../../node_modules/@krono/kit';

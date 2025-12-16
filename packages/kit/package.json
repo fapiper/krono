@@ -1,0 +1,38 @@
+{
+  "name": "@krono/kit",
+  "version": "0.0.0",
+  "description": "Kit",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@krono/sdk": "workspace:*",
+    "@krono/ui": "workspace:*",
+    "@storybook/react": "^10.1.7",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.561.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-use": "^17.6.0",
+    "zod": "4.1.13"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@krono/ui": "workspace:*",
+    "@krono/tsconfig": "workspace:*",
+    "@types/node": "25.0.1",
+    "@types/react": "19.2.7",
+    "@tailwindcss/postcss": "4.1.11",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.9.3"
+  },
+  "exports": {
+    "./globals.css": "./src/globals.css",
+    "./postcss.config": "./postcss.config.mjs",
+    ".": "./src/orderbook/index.ts"
+  }
+}

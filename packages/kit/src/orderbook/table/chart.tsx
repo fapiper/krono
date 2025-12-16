@@ -27,7 +27,7 @@ const formatDigits = (value: number, digits = 8) => {
   }).format(rounded);
 };
 
-export function OrderbookPanelChart({
+export function OrderbookTableChart({
   data,
   maxTotal,
   type = 'bids',
@@ -43,8 +43,8 @@ export function OrderbookPanelChart({
   const labels = ['Total', 'Quantity', 'Price'];
 
   return (
-    <div className={'w-full flex flex-col grow shrink-0 overflow-hidden'}>
-      <div className="grid grid-cols-3 grow shrink-0 px-2 py-0">
+    <div className={'w-full flex flex-col grow shrink-0'}>
+      <div className="grid grid-cols-3 grow shrink-0 px-2 py-0.5">
         {(isRTL ? labels : [...labels].reverse()).map((label) => (
           <span
             className="block font-semibold tabular-nums text-foreground/50 uppercase"
@@ -73,7 +73,7 @@ export function OrderbookPanelChart({
               ['--origin' as string]: isRTL ? 'right center' : 'left center',
             }}
             className={
-              "grid grid-cols-3 grow shrink-0 px-2 py-0 relative w-full items-center before:content-[''] before:absolute before:inset-y-px before:left-0 before:right-0 before:bg-[var(--bar)] before:scale-x-[var(--depth)] before:origin-[var(--origin)] before:pointer-events-none"
+              "grid grid-cols-3 grow shrink-0 px-2 py-0.5 relative w-full items-center before:content-[''] before:absolute before:inset-y-px before:left-0 before:right-0 before:bg-(--bar) before:scale-x-(--depth) before:origin-(--origin) before:pointer-events-none"
             }
           >
             {(isRTL ? items : [...items].reverse()).map((item, i) => (

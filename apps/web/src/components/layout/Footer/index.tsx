@@ -24,7 +24,7 @@ export default function LayoutFooter({
   return (
     <footer
       className={cn(
-        'shrink-0 flex flex-row items-center w-full bg-background lg:h-12 px-4 py-4 gap-4',
+        'shrink-0 flex flex-col lg:flex-row items-center w-full bg-background lg:h-12 px-4 py-4 gap-2 lg:gap-4',
         className,
       )}
       {...props}
@@ -40,7 +40,7 @@ export default function LayoutFooter({
         Krono - Orderbook Visualizer
       </Link>
 
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className={'hidden lg:visible'} />
 
       <Link
         className="text-xs text-foreground/60 transition-color ease-in-out duration-200 font-medium hover:text-foreground visited:text-foreground"
@@ -55,7 +55,7 @@ export default function LayoutFooter({
         </span>
       </Link>
 
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className={'hidden lg:visible'} />
 
       <p className="text-xs">
         Made by{' '}
@@ -69,13 +69,13 @@ export default function LayoutFooter({
         </Link>
       </p>
 
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className={'hidden lg:visible'} />
 
       <ThemeSwitcher />
 
       {children}
 
-      <div className={'flex gap-2 ml-auto'}>
+      <div className={'flex gap-2 lg:ml-auto'}>
         <Button size={'icon-xs'} variant={'secondary'} asChild={true}>
           <Link
             href={'https://fabianpiper.com'}

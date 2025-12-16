@@ -19,6 +19,16 @@ const nextConfig = {
       },
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'assets.kraken.com',
+        port: '',
+        pathname: '/marketing/web/icons-uni-webp/**',
+      },
+    ],
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

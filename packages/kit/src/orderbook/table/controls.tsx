@@ -5,7 +5,7 @@ import { Badge } from '@ui/components/ui/badge';
 import { Button } from '@ui/components/ui/button';
 import { Slider } from '@ui/components/ui/slider';
 import { cn } from '@ui/lib';
-import { format, formatDistanceStrict, intervalToDuration } from 'date-fns';
+import { format, intervalToDuration } from 'date-fns';
 import { Pause, Play, StepBack, StepForward } from 'lucide-react';
 import type { HTMLAttributes } from 'react';
 
@@ -24,16 +24,16 @@ const formatDistanceInterval = (laterDate: number, earlierDate: number) => {
   return `${zeroPad(duration.minutes)}:${zeroPad(duration.seconds)}`;
 };
 
-export type OrderbookPanelControlsProps = HTMLAttributes<HTMLDivElement> & {
+export type OrderbookTableControlsProps = HTMLAttributes<HTMLDivElement> & {
   controls: ReturnType<typeof useOrderbookPlayback>;
 };
 
-export function OrderbookPanelControls({
+export function OrderbookTableControls({
   className,
   children,
   controls,
   ...props
-}: OrderbookPanelControlsProps) {
+}: OrderbookTableControlsProps) {
   const {
     isLive,
     isPaused,

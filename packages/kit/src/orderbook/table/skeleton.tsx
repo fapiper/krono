@@ -1,6 +1,6 @@
 import { Skeleton } from '@ui/components/ui/skeleton';
 
-export function OrderbookPanelSkeleton({ n }: { n: number }) {
+export function OrderbookTableSkeleton({ n }: { n: number }) {
   const rows = Array.from({ length: n }).map((_, i) => `skeleton-${i}`);
 
   return (
