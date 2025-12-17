@@ -77,12 +77,10 @@ export class Orderbook
    */
   private setupInternalConfigEvents() {
     this.configManager.onUpdateConfigSymbol(() => {
-      // Clear local state
       this.asksMap.clear();
       this.bidsMap.clear();
       this.historyManager.clear();
 
-      // Reconnect
       if (this.statusManager.connected || this.statusManager.connecting) {
         void this.connectionManager.connect();
       }
@@ -94,7 +92,6 @@ export class Orderbook
       }
     });
 
-    // Pipeline reconfiguration
     this.configManager.onUpdateConfigThrottleMs(() =>
       this.reconfigurePipeline(),
     );
@@ -102,7 +99,6 @@ export class Orderbook
       this.reconfigurePipeline(),
     );
 
-    // Simple state updates
     this.configManager.onUpdateConfigSpreadGrouping(() => {
       this.emit(OrderbookEventKey.DataUpdate, this.createData());
     });

@@ -1,7 +1,7 @@
 import { Label } from '@ui/components/ui/label';
 import { cn } from '@ui/lib';
 import type { ReactNode } from 'react';
-import type { OrderbookSettingsBaseProps } from '@/orderbook/settings/types';
+import type { OrderbookSettingsBaseProps } from './types';
 
 export type OrderbookSettingsRowProps = OrderbookSettingsBaseProps & {
   label: string;
