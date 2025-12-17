@@ -211,11 +211,11 @@ export class AssetPairs extends TypedEventEmitter<AssetPairsEventMap> {
     for (const [pairKey, pair] of topPairs) {
       const baseAsset = getStandardSymbol(pair.base);
       const quoteAsset = getStandardSymbol(pair.quote);
-
+      const displayLabel = createDisplayLabel(baseAsset, quoteAsset); // i.e. "BTC/USD"
       const symbol: SymbolOption = {
-        value: pair.wsname!,
-        label: pair.altname,
-        displayLabel: createDisplayLabel(baseAsset, quoteAsset),
+        value: pair.wsname ?? displayLabel, // i.e. (XBT/USD)
+        label: pair.altname, // i.e. "XBTUSD"
+        displayLabel, // i.e. "BTC/USD"
         altname: pair.altname,
         wsname: pair.wsname,
         baseAsset,
@@ -225,9 +225,10 @@ export class AssetPairs extends TypedEventEmitter<AssetPairsEventMap> {
 
       symbols.push(symbol);
 
-      symbolMap.set(symbol.value.toUpperCase(), symbol);
-      symbolMap.set(symbol.label.toUpperCase(), symbol);
-      symbolMap.set(pairKey.toUpperCase(), symbol);
+      symbolMap.set(symbol.value.toUpperCase(), symbol); // "XBT/USD"
+      symbolMap.set(symbol.displayLabel.toUpperCase(), symbol); // "BTC/USD"
+      symbolMap.set(pairKey.toUpperCase(), symbol); // "XXBTZUSD"
+      symbolMap.set(pair.altname.toUpperCase(), symbol); // "XBTUSD"
 
       if (pair.altname.toUpperCase() !== pairKey.toUpperCase()) {
         symbolMap.set(pair.altname.toUpperCase(), symbol);

@@ -42,9 +42,19 @@ export const OrderbookSymbolComboboxRoot = memo(
     }, [loading, symbols, symbol, setSymbol]);
 
     const selectedSymbol = useMemo(() => {
-      if (!symbol) return null;
-      return symbolMap?.get(symbol.toUpperCase()) ?? null;
-    }, [symbol, symbolMap]);
+      if (!symbol || !symbols.length) return null;
+
+      const search = symbol.toUpperCase();
+
+      return (
+        symbols.find(
+          (s) =>
+            s.value.toUpperCase() === search ||
+            s.displayLabel.toUpperCase() === search ||
+            s.altname.toUpperCase() === search.replace('/', ''),
+        ) ?? null
+      );
+    }, [symbol, symbols]);
 
     const data: SymbolData = { symbols, symbolMap, loading, error };
 
