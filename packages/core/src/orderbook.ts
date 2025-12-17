@@ -57,7 +57,6 @@ export class Orderbook
    * Wires up the flow: Connection -> Data Map -> Pipeline -> Events
    */
   private setupInternalEvents() {
-    // Handle Status Changes
     this.statusManager.onUpdateStatus((val) =>
       this.emit(OrderbookEventKey.StatusUpdate, val),
     );
@@ -65,11 +64,9 @@ export class Orderbook
       (e) => e && this.emit(OrderbookEventKey.Error, e),
     );
 
-    // Handle Connection Data
     this.connectionManager.onSnapshot((data) => this.handleSnapshot(data));
     this.connectionManager.onUpdate((data) => this.handleUpdate(data));
 
-    // Handle Config Changes
     this.setupInternalConfigEvents();
   }
   /**
@@ -84,6 +81,13 @@ export class Orderbook
       if (this.statusManager.connected || this.statusManager.connecting) {
         void this.connectionManager.connect();
       }
+    });
+
+    this.configManager.onUpdateConfigLimit(() => {
+      if (this.depth < this.limit) {
+        this.logger.debug('Depth is set lower than limit');
+      }
+      this.emit(OrderbookEventKey.DataUpdate, this.createData());
     });
 
     this.configManager.onUpdateConfigDepth(() => {
@@ -121,12 +125,12 @@ export class Orderbook
     const grouping = this.configManager.spreadGrouping;
     const asks = this.asksMap.getSorted(
       true,
-      this.configManager.depth,
+      this.configManager.limit,
       grouping,
     );
     const bids = this.bidsMap.getSorted(
       false,
-      this.configManager.depth,
+      this.configManager.limit,
       grouping,
     );
     if (!asks.length || !bids.length) {
@@ -244,6 +248,14 @@ export class Orderbook
 
   set symbol(value) {
     this.configManager.symbol = value;
+  }
+
+  get limit() {
+    return this.configManager.limit;
+  }
+
+  set limit(value) {
+    this.configManager.limit = value;
   }
 
   get depth() {

@@ -6,6 +6,8 @@ import {
 } from './events';
 import type { IOrderbookConfig, OrderbookConfigOptions } from './types';
 
+const KRAKEN_DEPTHS = [10, 25, 100, 500, 1000] as const;
+
 /**
  * Orderbook manages market depth updates from Kraken.
  */
@@ -14,6 +16,7 @@ export class OrderbookConfigManager
   implements IOrderbookConfig
 {
   private static readonly _defaultConfig = {
+    limit: 25,
     depth: 25,
     maxHistoryLength: 86_400,
     historyEnabled: true,
@@ -37,6 +40,10 @@ export class OrderbookConfigManager
     );
   }
 
+  private getRequiredDepth(limit: number): 10 | 25 | 100 | 500 | 1000 {
+    return KRAKEN_DEPTHS.find((d) => d >= limit) || 1000;
+  }
+
   /**
    * Returns configured trading symbol.
    */
@@ -52,6 +59,33 @@ export class OrderbookConfigManager
       this._config.symbol = value;
       this.log.debug(`Symbol updated to ${value}.`);
       this.emit(OrderbookConfigEventKey.ConfigSymbolUpdate, value);
+    }
+  }
+
+  /**
+   * Returns configured orderbook limit.
+   */
+  get limit() {
+    return this._config.limit;
+  }
+
+  /**
+   * Updates limit and reconnects if necessary.
+   */
+  set limit(value) {
+    if (this._config.limit !== value) {
+      this._config.limit = value;
+      this.log.debug(`Limit updated to ${value}`);
+
+      const required = this.getRequiredDepth(value);
+      if (this.depth < required) {
+        this.log.info(
+          `Auto-adjusting depth: Limit (${value}) requires at least ${required} (Current: ${this.depth})`,
+        );
+        this.depth = required;
+      }
+
+      this.emit(OrderbookConfigEventKey.ConfigLimitUpdate, value);
     }
   }
 
@@ -202,6 +236,9 @@ export class OrderbookConfigManager
   onUpdateConfig = this.createListener(OrderbookConfigEventKey.ConfigUpdate);
   onUpdateConfigSymbol = this.createListener(
     OrderbookConfigEventKey.ConfigSymbolUpdate,
+  );
+  onUpdateConfigLimit = this.createListener(
+    OrderbookConfigEventKey.ConfigLimitUpdate,
   );
   onUpdateConfigDepth = this.createListener(
     OrderbookConfigEventKey.ConfigDepthUpdate,

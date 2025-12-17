@@ -2,23 +2,25 @@ import { useEffect, useState } from 'react';
 import { useOrderbookInstance } from '../context';
 
 export function useOrderbookConfig() {
-  const ob = useOrderbookInstance();
+  const orderbook = useOrderbookInstance();
 
   const [config, setConfig] = useState(() => ({
-    symbol: ob.symbol,
-    depth: ob.depth,
-    spreadGrouping: ob.spreadGrouping,
-    throttleMs: ob.throttleMs,
-    debounceMs: ob.debounceMs,
-    historyEnabled: ob.historyEnabled,
-    maxHistoryLength: ob.maxHistoryLength,
-    debug: ob.debug,
+    symbol: orderbook.symbol,
+    limit: orderbook.limit,
+    depth: orderbook.depth,
+    spreadGrouping: orderbook.spreadGrouping,
+    throttleMs: orderbook.throttleMs,
+    debounceMs: orderbook.debounceMs,
+    historyEnabled: orderbook.historyEnabled,
+    maxHistoryLength: orderbook.maxHistoryLength,
+    debug: orderbook.debug,
   }));
 
   useEffect(() => {
-    const unsubscribe = ob.onConfigUpdate((newConfig) => {
+    const unsubscribe = orderbook.onConfigUpdate((newConfig) => {
       setConfig({
         symbol: newConfig.symbol,
+        limit: newConfig.limit,
         depth: newConfig.depth,
         spreadGrouping: newConfig.spreadGrouping,
         throttleMs: newConfig.throttleMs,
@@ -29,33 +31,36 @@ export function useOrderbookConfig() {
       });
     });
     return () => unsubscribe();
-  }, [ob]);
+  }, [orderbook]);
 
   return {
     ...config,
     setSymbol: (v: string) => {
-      ob.symbol = v;
+      orderbook.symbol = v;
     },
     setSpreadGrouping: (v: number) => {
-      ob.spreadGrouping = v;
+      orderbook.spreadGrouping = v;
+    },
+    setLimit: (v: number) => {
+      orderbook.limit = v;
     },
     setDepth: (v: 10 | 25 | 100 | 500 | 1000) => {
-      ob.depth = v;
+      orderbook.depth = v;
     },
     setThrottle: (v: number | undefined) => {
-      ob.throttleMs = v;
+      orderbook.throttleMs = v;
     },
     setDebounce: (v: number | undefined) => {
-      ob.debounceMs = v;
+      orderbook.debounceMs = v;
     },
     setHistoryEnabled: (v: boolean) => {
-      ob.historyEnabled = v;
+      orderbook.historyEnabled = v;
     },
     setMaxHistoryLength: (v: number) => {
-      ob.maxHistoryLength = v;
+      orderbook.maxHistoryLength = v;
     },
     setDebug: (v: boolean) => {
-      ob.debug = v;
+      orderbook.debug = v;
     },
   };
 }

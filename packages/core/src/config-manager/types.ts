@@ -3,6 +3,7 @@ import type { DeepPartial } from '../types';
 
 export interface IOrderbookConfig {
   symbol: string;
+  limit: number;
   depth: 100 | 10 | 25 | 500 | 1000;
   maxHistoryLength: number;
   historyEnabled: boolean;

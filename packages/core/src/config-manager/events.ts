@@ -3,6 +3,7 @@ import type { IOrderbookConfig } from './types';
 export const OrderbookConfigEventKey = {
   ConfigUpdate: 'update:config',
   ConfigSymbolUpdate: 'update:config:symbol',
+  ConfigLimitUpdate: 'update:config:limit',
   ConfigDepthUpdate: 'update:config:depth',
   ConfigMaxHistoryLengthUpdate: 'update:config:max_history_length',
   ConfigHistoryEnabledUpdate: 'update:config:history_enabled',
@@ -19,6 +20,7 @@ export type OrderbookConfigEventKey =
 export type OrderbookConfigEventMap = {
   [OrderbookConfigEventKey.ConfigUpdate]: IOrderbookConfig;
   [OrderbookConfigEventKey.ConfigSymbolUpdate]: IOrderbookConfig['symbol'];
+  [OrderbookConfigEventKey.ConfigLimitUpdate]: IOrderbookConfig['limit'];
   [OrderbookConfigEventKey.ConfigDepthUpdate]: IOrderbookConfig['depth'];
   [OrderbookConfigEventKey.ConfigMaxHistoryLengthUpdate]: IOrderbookConfig['maxHistoryLength'];
   [OrderbookConfigEventKey.ConfigHistoryEnabledUpdate]: IOrderbookConfig['historyEnabled'];
