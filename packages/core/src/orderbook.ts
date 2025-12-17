@@ -118,9 +118,17 @@ export class Orderbook
    * Builds orderbook data from internal state.
    */
   private createData(): OrderbookData {
-    const asks = this.asksMap.getSorted(true, this.configManager.depth);
-    const bids = this.bidsMap.getSorted(false, this.configManager.depth);
-
+    const grouping = this.configManager.spreadGrouping;
+    const asks = this.asksMap.getSorted(
+      true,
+      this.configManager.depth,
+      grouping,
+    );
+    const bids = this.bidsMap.getSorted(
+      false,
+      this.configManager.depth,
+      grouping,
+    );
     if (!asks.length || !bids.length) {
       return {
         timestamp: Date.now(),

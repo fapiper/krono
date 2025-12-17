@@ -42,16 +42,43 @@ export class PriceMapManager {
   }
 
   /**
-   * Get sorted price levels
-   * @param ascending - Sort direction (true = ascending for asks, false = descending for bids)
-   * @param limit - Maximum number of levels to return
+   * Get sorted price levels with optional grouping
+   * @param ascending - Sort direction
+   * @param limit - Max rows
+   * @param grouping - The step size (e.g., 0.1, 0.5, 1.0). If 0 or null, no grouping.
    */
-  getSorted(ascending: boolean, limit?: number): PriceLevel[] {
-    const entries = Array.from(this.map.entries());
-    const sorted = entries.sort((a, b) =>
-      ascending ? a[0] - b[0] : b[0] - a[0],
-    );
-    const limited = limit ? sorted.slice(0, limit) : sorted;
+  getSorted(
+    ascending: boolean,
+    limit?: number,
+    grouping?: number,
+  ): PriceLevel[] {
+    let processingMap: Map<number, number>;
+
+    if (grouping && grouping > 0) {
+      processingMap = new Map();
+
+      for (const [price, qty] of this.map.entries()) {
+        let groupedPrice: number;
+
+        if (ascending) {
+          groupedPrice = Math.ceil(price / grouping) * grouping;
+        } else {
+          groupedPrice = Math.floor(price / grouping) * grouping;
+        }
+
+        groupedPrice = Number(groupedPrice.toFixed(8)); // Oder toFixed(2) je nach Asset
+
+        const currentQty = processingMap.get(groupedPrice) || 0;
+        processingMap.set(groupedPrice, currentQty + qty);
+      }
+    } else {
+      processingMap = this.map;
+    }
+
+    const entries = Array.from(processingMap.entries());
+    entries.sort((a, b) => (ascending ? a[0] - b[0] : b[0] - a[0]));
+
+    const limited = limit ? entries.slice(0, limit) : entries;
 
     let cumulativeTotal = 0;
     return limited.map(([price, quantity]) => {
