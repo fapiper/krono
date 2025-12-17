@@ -32,11 +32,6 @@ export default function LayoutHeader({
         />
         <span className="sr-only">Krono</span>
         <OrderbookSymbolCombobox.Root />
-        {/*
-        <div className={'text-xs tabular-nums hidden md:block'}>
-          {format(currentTimestamp, 'PPpp')}
-        </div>
-*/}
       </div>
       <div className={'flex justify-end items-center gap-6'}>
         <Link

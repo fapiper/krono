@@ -1,6 +1,11 @@
-import { Skeleton } from '@ui/components/ui/skeleton';
+import { Skeleton } from '@krono/ui/components/ui/skeleton';
+import type { OrderbookTableBaseProps } from './types';
 
-export function OrderbookTableSkeleton({ n }: { n: number }) {
+export type OrderbookTableSkeletonProps = OrderbookTableBaseProps & {
+  n: number;
+};
+
+export function OrderbookTableSkeleton({ n }: OrderbookTableSkeletonProps) {
   const rows = Array.from({ length: n }).map((_, i) => `skeleton-${i}`);
 
   return (

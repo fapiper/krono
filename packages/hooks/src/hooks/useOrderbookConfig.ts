@@ -7,6 +7,7 @@ export function useOrderbookConfig() {
   const [config, setConfig] = useState(() => ({
     symbol: ob.symbol,
     depth: ob.depth,
+    spreadGrouping: ob.spreadGrouping,
     throttleMs: ob.throttleMs,
     debounceMs: ob.debounceMs,
     historyEnabled: ob.historyEnabled,
@@ -19,6 +20,7 @@ export function useOrderbookConfig() {
       setConfig({
         symbol: newConfig.symbol,
         depth: newConfig.depth,
+        spreadGrouping: newConfig.spreadGrouping,
         throttleMs: newConfig.throttleMs,
         debounceMs: newConfig.debounceMs,
         historyEnabled: newConfig.historyEnabled,
@@ -33,6 +35,9 @@ export function useOrderbookConfig() {
     ...config,
     setSymbol: (v: string) => {
       ob.symbol = v;
+    },
+    setSpreadGrouping: (v: number) => {
+      ob.spreadGrouping = v;
     },
     setDepth: (v: 10 | 25 | 100 | 500 | 1000) => {
       ob.depth = v;

@@ -1,3 +1,4 @@
+export * from './controls';
 export * from './root';
 export * from './settings';
 export * from './symbol-combobox';

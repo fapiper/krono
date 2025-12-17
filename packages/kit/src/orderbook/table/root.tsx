@@ -3,9 +3,10 @@
 import { useOrderbookPlayback, useOrderbookStatus } from '@krono/hooks';
 import { useMemo } from 'react';
 import { createBreakpoint } from 'react-use';
+import { OrderbookControls } from '../controls';
 import { OrderbookTableChart } from './chart';
-import { OrderbookTableControls } from './controls';
 import { OrderbookTableSkeleton } from './skeleton';
+import type { OrderbookTableBaseProps } from './types';
 
 const useBreakpoint = createBreakpoint({
   sm: 640,
@@ -17,9 +18,13 @@ const useBreakpoint = createBreakpoint({
   '4xl': 2600,
 });
 
-export function OrderbookTable() {
-  const status = useOrderbookStatus();
+export type OrderbookTableRootProps = OrderbookTableBaseProps;
 
+export function OrderbookTableRoot({
+  children,
+  ...props
+}: OrderbookTableRootProps) {
+  const status = useOrderbookStatus();
   const controls = useOrderbookPlayback();
   const { currentData } = controls;
 
@@ -39,7 +44,7 @@ export function OrderbookTable() {
 
   const loading = status !== 'connected' || !currentData;
 
-  return (
+  const defaultContent = (
     <>
       {loading ? (
         <>
@@ -64,9 +69,11 @@ export function OrderbookTable() {
             maxTotal={processedData.maxAsk}
             type="asks"
           />
-          <OrderbookTableControls controls={controls} />
+          <OrderbookControls.Root controls={controls} />
         </>
       )}
     </>
   );
+
+  return <>{children || defaultContent}</>;
 }

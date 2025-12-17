@@ -132,9 +132,8 @@ export class KrakenWSManager
   }
 
   private handleError(event: Event | Error): void {
-    const error =
-      event instanceof Error ? event : new Error('WebSocket error occurred');
-    this.log.error('Socket error:', error);
+    const isError = event instanceof Error;
+    const error = isError ? event : new Error('WebSocket error occurred');
     this.emit(KrakenWebsocketEventKey.Error, error);
   }
 
