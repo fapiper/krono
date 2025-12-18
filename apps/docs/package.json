@@ -9,6 +9,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules"
   },
   "dependencies": {
+    "@krono/kit": "workspace:*",
     "@krono/ui": "workspace:*",
     "mintlify": "^4.2.237",
     "react": "19.2.3",

@@ -43,11 +43,10 @@
           {
             "group": "Components",
             "pages": [
-              "kit/api/components/Panel",
-              "kit/api/components/Settings",
-              "kit/api/components/PlaybackControls",
-              "kit/api/components/PlaybackIndicator",
-              "kit/api/components/SymbolCombobox"
+              "kit/api/components/OrderbookTable",
+              "kit/api/components/OrderbookSettings",
+              "kit/api/components/OrderbookControls",
+              "kit/api/components/OrderbookSymbolCombobox"
             ]
           }
         ]
@@ -104,7 +103,7 @@
             ]
           },
           {
-            "group": "Actions",
+            "group": "Orderbook",
             "pages": [
               "core/api/actions/connect",
               "core/api/actions/disconnect",
@@ -119,12 +118,51 @@
               "core/api/actions/debug",
               "core/api/actions/reconnect",
               "core/api/actions/status",
-              "core/api/actions/error"
+              "core/api/actions/error",
+              "core/api/fetchers/history",
+              "core/api/fetchers/symbol",
+              "core/api/fetchers/history",
+              "core/api/fetchers/depth",
+              "core/api/fetchers/throttleMs",
+              "core/api/fetchers/debounceMs",
+              "core/api/fetchers/historyEnabled",
+              "core/api/fetchers/spreadGrouping",
+              "core/api/fetchers/maxHistoryLength",
+              "core/api/fetchers/debug",
+              "core/api/fetchers/reconnect",
+              "core/api/fetchers/status",
+              "core/api/fetchers/connected",
+              "core/api/actions/connected",
+              "core/api/actions/connecting",
+              "core/api/actions/disconnected",
+              "core/api/actions/error",
+              "core/api/actions/currentData",
+              "core/api/actions/onData",
+              "core/api/actions/onDataUpdate",
+              "core/api/actions/onHistoryUpdate",
+              "core/api/actions/onRawDataUpdate",
+              "core/api/actions/onStatusUpdate",
+              "core/api/actions/onConfigUpdate",
+              "core/api/actions/onError"
             ]
           },
           {
-            "group": "Fetchers",
+            "group": "AssetPairs",
             "pages": [
+              "core/api/actions/connect",
+              "core/api/actions/disconnect",
+              "core/api/actions/destroy",
+              "core/api/actions/symbol",
+              "core/api/actions/depth",
+              "core/api/actions/throttleMs",
+              "core/api/actions/debounceMs",
+              "core/api/actions/historyEnabled",
+              "core/api/actions/spreadGrouping",
+              "core/api/actions/maxHistoryLength",
+              "core/api/actions/debug",
+              "core/api/actions/reconnect",
+              "core/api/actions/status",
+              "core/api/actions/error",
               "core/api/fetchers/history",
               "core/api/fetchers/symbol",
               "core/api/fetchers/history",
@@ -160,12 +198,12 @@
         {
           "anchor": "Storybook",
           "href": "https://krono.fabianpiper.com/storybook",
-          "icon": "book-open-cover"
+          "icon": "http://storybook.js.org/icon.svg"
         },
         {
           "anchor": "Taikai Project",
           "href": "https://taikai.network/kraken/hackathons/kraken-forge/projects/cmit01auz00d9jk8jju0g0vtc",
-          "icon": "newspaper"
+          "icon": "https://taikai.network/icon.svg"
         }
       ]
     }
