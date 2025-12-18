@@ -6,12 +6,27 @@ import {
   type OrderbookConnectionEventMap,
 } from './events';
 import { type KrakenSubscription, KrakenWSManager } from './kraken-ws-manager';
+import type { IOrderbookConnection } from './types';
 
-export class OrderbookConnectionManager extends BaseManager<OrderbookConnectionEventMap> {
+/**
+ * Translates Kraken websocket messages into
+ * orderbook domain events.
+ *
+ * @internal
+ */
+export class OrderbookConnectionManager
+  extends BaseManager<OrderbookConnectionEventMap>
+  implements IOrderbookConnection
+{
   private socket: KrakenWSManager;
   private configManager: OrderbookConfigManager;
   private statusManager: OrderbookStatusManager;
 
+  /**
+   * @param logger Shared logger
+   * @param configManager Runtime config
+   * @param statusManager Connection status holder
+   */
   constructor(
     logger: Logger,
     configManager: OrderbookConfigManager,
@@ -29,7 +44,7 @@ export class OrderbookConnectionManager extends BaseManager<OrderbookConnectionE
   }
 
   /**
-   * Connects to the stream using the current configuration.
+   * Opens websocket and subscribes to orderbook feed
    */
   async connect(): Promise<void> {
     this.statusManager.status = 'connecting';
@@ -52,7 +67,7 @@ export class OrderbookConnectionManager extends BaseManager<OrderbookConnectionE
   }
 
   /**
-   * Disconnects the underlying socket.
+   * Closes the underlying socket.
    */
   disconnect(): void {
     this.socket.disconnect();
@@ -99,6 +114,8 @@ export class OrderbookConnectionManager extends BaseManager<OrderbookConnectionE
       }
     });
   }
+
+  // Event helpers
 
   onSnapshot = this.createListener(OrderbookConnectionEventKey.Snapshot);
   onUpdate = this.createListener(OrderbookConnectionEventKey.Update);

@@ -1,26 +1,39 @@
 import type { AssetPairsData, SymbolOption } from '@krono/core';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAssetPairsInstance } from '../context';
 
-export type AssetPairsState = {
+export type UseAssetPairsParameters = { initialData?: AssetPairsData };
+
+export type UseAssetPairsReturnType = {
   symbols: SymbolOption[];
   symbolMap: Map<string, SymbolOption>;
   loading: boolean;
   loaded: boolean;
   error: Error | null;
+  topN: number;
+  debug: boolean;
   refresh: () => Promise<AssetPairsData>;
+  clear: () => void;
+  findSymbol: (search: string) => SymbolOption | undefined;
+  setTopN: (n: number) => void;
+  setDebug: (enabled: boolean) => void;
 };
 
-export function useAssetPairs(initialData?: AssetPairsData): AssetPairsState {
+export function useAssetPairs(
+  parameters: UseAssetPairsParameters = {},
+): UseAssetPairsReturnType {
+  const { initialData } = parameters;
+
   const instance = useAssetPairsInstance();
 
-  const [state, setState] = useState<AssetPairsState>({
+  const [state, setState] = useState({
     symbols: initialData?.symbols ?? instance.symbols,
     symbolMap: initialData?.symbolMap ?? instance.symbolMap,
     loading: instance.loading,
     loaded: instance.loaded,
-    error: instance.error ?? null,
-    refresh: instance.refresh,
+    error: instance.error,
+    topN: instance.topN,
+    debug: instance.debug,
   });
 
   useEffect(() => {
@@ -30,23 +43,71 @@ export function useAssetPairs(initialData?: AssetPairsData): AssetPairsState {
         symbolMap: instance.symbolMap,
         loading: instance.loading,
         loaded: instance.loaded,
-        error: instance.error ?? null,
-        refresh: instance.refresh,
+        error: instance.error,
+        topN: instance.topN,
+        debug: instance.debug,
       });
     };
 
-    const unsubscribeStatus = instance.onStatusUpdate(updateState);
-    const unsubscribeData = instance.onDataUpdate(updateState);
-    const unsubscribeError = instance.onError(updateState);
+    const unsubStatus = instance.onStatusUpdate(updateState);
+    const unsubData = instance.onDataUpdate(updateState);
+    const unsubError = instance.onError(updateState);
+    const unsubConfig = instance.onConfigUpdate(updateState);
 
     updateState();
 
     return () => {
-      unsubscribeStatus();
-      unsubscribeData();
-      unsubscribeError();
+      unsubStatus();
+      unsubData();
+      unsubError();
+      unsubConfig();
     };
   }, [instance]);
 
-  return state;
+  /**
+   * Force a manual refresh of the pairs list
+   */
+  const refresh = useCallback(() => instance.refresh(), [instance]);
+
+  /**
+   * Clear the internal cache and reset status
+   */
+  const clear = useCallback(() => instance.clear(), [instance]);
+
+  /**
+   * Search for a specific symbol using various identifiers
+   */
+  const findSymbol = useCallback(
+    (search: string) => instance.findSymbol(search),
+    [instance],
+  );
+
+  /**
+   * Update the number of top pairs to track
+   */
+  const setTopN = useCallback(
+    (n: number) => {
+      instance.topN = n;
+    },
+    [instance],
+  );
+
+  /**
+   * Toggle debug logging
+   */
+  const setDebug = useCallback(
+    (enabled: boolean) => {
+      instance.debug = enabled;
+    },
+    [instance],
+  );
+
+  return {
+    ...state,
+    refresh,
+    clear,
+    findSymbol,
+    setTopN,
+    setDebug,
+  };
 }

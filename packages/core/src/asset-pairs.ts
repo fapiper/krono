@@ -2,148 +2,78 @@ import {
   AssetPairsEventKey,
   type AssetPairsEventMap,
 } from './asset-pairs-events';
+import { Logger } from './base';
 import { TypedEventEmitter } from './events';
 import type {
   AssetPairsConfig,
   AssetPairsData,
   AssetPairsStatus,
+  IAssetPairsConfig,
+  IAssetPairsStatus,
   KrakenApiResponse,
   KrakenAssetPair,
   SymbolOption,
 } from './types';
-
-const KRAKEN_API_URL = 'https://api.kraken.com/0/public/AssetPairs';
-const PRIORITY_QUOTES = [
-  'USD',
-  'USDT',
-  'EUR',
-  'GBP',
-  'USDC',
-  'BTC',
-  'XBT',
-  'ETH',
-];
-
-const ASSET_SYMBOL_MAP: Record<string, string> = {
-  XBT: 'BTC',
-  XXBT: 'BTC',
-  XETH: 'ETH',
-  XXRP: 'XRP',
-  XLTC: 'LTC',
-  XXLM: 'XLM',
-  XDAO: 'DAO',
-  XETC: 'ETC',
-  XICN: 'ICN',
-  XMLN: 'MLN',
-  XNMC: 'NMC',
-  XREP: 'REP',
-  XXDG: 'DOGE',
-  XXMR: 'XMR',
-  XZEC: 'ZEC',
-  ZUSD: 'USD',
-  ZEUR: 'EUR',
-  ZGBP: 'GBP',
-  ZCAD: 'CAD',
-  ZJPY: 'JPY',
-  ZAUD: 'AUD',
-  ZKRW: 'KRW',
-};
-
-function getStandardSymbol(krakenAsset: string): string {
-  return ASSET_SYMBOL_MAP[krakenAsset] || krakenAsset;
-}
-
-function getCryptoIconUrl(symbol: string): string {
-  const standardSymbol = getStandardSymbol(symbol).toLowerCase();
-  return `https://assets.kraken.com/marketing/web/icons-uni-webp/s_${standardSymbol}.webp?i=kds`;
-}
-
-function createDisplayLabel(baseAsset: string, quoteAsset: string): string {
-  return `${baseAsset}/${quoteAsset}`;
-}
-
-function getLiquidityScore(pair: KrakenAssetPair): number {
-  let score = 0;
-
-  const quoteIndex = PRIORITY_QUOTES.indexOf(pair.quote);
-  if (quoteIndex !== -1) {
-    score += (PRIORITY_QUOTES.length - quoteIndex) * 1000;
-  }
-
-  if (pair.ordermin) {
-    const orderMin = parseFloat(pair.ordermin);
-    if (!Number.isNaN(orderMin) && orderMin > 0) {
-      score += 100 / orderMin;
-    }
-  }
-
-  if (pair.status === 'online') {
-    score += 500;
-  }
-
-  if (pair.wsname) {
-    score += 200;
-  }
-
-  return score;
-}
+import {
+  createDisplayLabel,
+  getCryptoIconUrl,
+  getLiquidityScore,
+  getStandardSymbol,
+  KRAKEN_API_URL,
+  mergeDeep,
+} from './utils';
 
 /**
- * AssetPairs manages fetching and caching Kraken trading pairs.
- * Follows the same pattern as Orderbook for consistency.
+ * AssetPairs facade.
+ *
+ * Fetches, processes, caches and exposes Kraken trading pairs.
  */
-export class AssetPairs extends TypedEventEmitter<AssetPairsEventMap> {
+export class AssetPairs
+  extends TypedEventEmitter<AssetPairsEventMap>
+  implements IAssetPairsConfig, IAssetPairsStatus
+{
+  /** Default configuration values */
+  private static readonly defaultConfig: Required<AssetPairsConfig> = {
+    topN: 100,
+    autoFetch: true,
+    debug: false,
+  };
+
+  private logger: Logger;
+
   private _status: AssetPairsStatus = 'idle';
   private _error: Error | null = null;
   private _data: AssetPairsData = {
     symbols: [],
     symbolMap: new Map(),
   };
-  private _config: Required<AssetPairsConfig>;
-  private abortController: AbortController | null = null;
-  private debug: boolean;
 
+  private config: Required<AssetPairsConfig>;
+  private abortController: AbortController | null = null;
+
+  /**
+   * @param config Asset pairs configuration
+   */
   constructor(config: AssetPairsConfig = {}) {
     super();
-    this._config = {
-      topN: config.topN ?? 100,
-      autoFetch: config.autoFetch ?? true,
-      debug: config.debug ?? false,
-    };
-    this.debug = this._config.debug;
 
-    if (this._config.autoFetch) {
+    this.config = mergeDeep(AssetPairs.defaultConfig, config);
+
+    this.logger = Logger.init({
+      enabled: this.config.debug,
+      prefix: 'AssetPairs',
+    });
+
+    if (this.config.autoFetch) {
       void this.fetch();
     }
   }
 
-  private log(...args: unknown[]) {
-    if (this.debug) {
-      console.log('[AssetPairs]', ...args);
-    }
-  }
-
-  private setStatus(status: AssetPairsStatus) {
-    if (this._status === status) return;
-    this._status = status;
-    this.log('Status:', status);
-    this.emit(AssetPairsEventKey.StatusUpdate, status);
-  }
-
-  private setError(error: Error | null) {
-    this._error = error;
-    if (error) {
-      this.log('Error:', error.message);
-      this.emit(AssetPairsEventKey.Error, error);
-    }
-  }
-
-  private setData(data: AssetPairsData) {
-    this._data = data;
-    this.log('Data updated:', data.symbols.length, 'symbols');
-    this.emit(AssetPairsEventKey.DataUpdate, data);
-  }
-
+  /**
+   * Fetches asset pairs from Kraken REST API.
+   *
+   * @returns Processed asset pair data
+   */
   async fetch(): Promise<AssetPairsData> {
     if (this.abortController) {
       this.abortController.abort();
@@ -160,23 +90,24 @@ export class AssetPairs extends TypedEventEmitter<AssetPairsEventMap> {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status}`);
       }
 
       const apiData = (await response.json()) as KrakenApiResponse;
 
-      if (apiData.error && apiData.error.length > 0) {
-        throw new Error(`Kraken API Error: ${apiData.error.join(', ')}`);
+      if (apiData.error?.length) {
+        throw new Error(`Kraken API error: ${apiData.error.join(', ')}`);
       }
 
       const data = this.processApiResponse(apiData.result);
+
       this.setData(data);
       this.setStatus('loaded');
 
       return data;
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        this.log('Fetch aborted');
+        this.logger.debug('Fetch aborted');
         throw err;
       }
 
@@ -189,33 +120,141 @@ export class AssetPairs extends TypedEventEmitter<AssetPairsEventMap> {
     }
   }
 
+  /**
+   * Forces a refetch of asset pairs.
+   */
+  refresh() {
+    return this.fetch();
+  }
+
+  /**
+   * Clears cached data and resets state to idle.
+   */
+  clear() {
+    this._data = {
+      symbols: [],
+      symbolMap: new Map(),
+    };
+    this.setError(null);
+    this.setStatus('idle');
+  }
+
+  /**
+   * Aborts active requests and removes all event listeners.
+   */
+  destroy() {
+    if (this.abortController) {
+      this.abortController.abort();
+    }
+    this.removeAllListeners();
+    this.clear();
+  }
+
+  /**
+   * Finds a symbol by any supported identifier.
+   *
+   * @param search Symbol string
+   */
+  findSymbol(search: string): SymbolOption | undefined {
+    return this._data.symbolMap.get(search.toUpperCase());
+  }
+
+  /** @inheritdoc */
+  get loading(): boolean {
+    return this.status === 'loading';
+  }
+
+  /** @inheritdoc */
+  get loaded(): boolean {
+    return this.status === 'loaded';
+  }
+
+  /** @inheritdoc */
+  get status() {
+    return this._status;
+  }
+
+  /** @inheritdoc */
+  get error() {
+    return this._error;
+  }
+
+  /** @inheritdoc */
+  get symbols(): SymbolOption[] {
+    return this._data.symbols;
+  }
+
+  /** @inheritdoc */
+  get symbolMap(): Map<string, SymbolOption> {
+    return this._data.symbolMap;
+  }
+
+  /** @inheritdoc */
+  get topN(): number {
+    return this.config.topN;
+  }
+  set topN(value: number) {
+    if (this.config.topN === value) return;
+    this.config.topN = value;
+    this.emit(AssetPairsEventKey.ConfigUpdate, { ...this.config });
+
+    if (this.loaded) {
+      void this.fetch();
+    }
+  }
+
+  /** @inheritdoc */
+  get autoFetch() {
+    return this.config.autoFetch;
+  }
+  set autoFetch(value) {
+    if (this.config.autoFetch === value) return;
+    this.config.autoFetch = value;
+    this.emit(AssetPairsEventKey.ConfigUpdate, { ...this.config });
+  }
+
+  /** @inheritdoc */
+  get debug(): boolean {
+    return this.config.debug;
+  }
+  set debug(value: boolean) {
+    if (this.config.debug === value) return;
+    this.config.debug = value;
+    this.logger.enabled = value;
+    this.emit(AssetPairsEventKey.ConfigUpdate, { ...this.config });
+  }
+
+  /**
+   * Processes raw Kraken asset pair payload.
+   */
   private processApiResponse(
     pairs: Record<string, KrakenAssetPair>,
   ): AssetPairsData {
-    const pairEntries: Array<[string, KrakenAssetPair, number]> = [];
+    const ranked: Array<[string, KrakenAssetPair, number]> = [];
 
-    for (const [pairKey, pair] of Object.entries(pairs)) {
+    for (const [key, pair] of Object.entries(pairs)) {
       if (!pair.wsname) continue;
       if (pair.status && pair.status !== 'online') continue;
 
-      const score = getLiquidityScore(pair);
-      pairEntries.push([pairKey, pair, score]);
+      ranked.push([key, pair, getLiquidityScore(pair)]);
     }
 
-    pairEntries.sort((a, b) => b[2] - a[2]);
-    const topPairs = pairEntries.slice(0, this._config.topN);
+    ranked.sort((a, b) => b[2] - a[2]);
 
-    const symbolMap = new Map<string, SymbolOption>();
+    const topPairs = ranked.slice(0, this.config.topN);
+
     const symbols: SymbolOption[] = [];
+    const symbolMap = new Map<string, SymbolOption>();
 
     for (const [pairKey, pair] of topPairs) {
       const baseAsset = getStandardSymbol(pair.base);
       const quoteAsset = getStandardSymbol(pair.quote);
-      const displayLabel = createDisplayLabel(baseAsset, quoteAsset); // i.e. "BTC/USD"
+      const displayLabel = createDisplayLabel(baseAsset, quoteAsset);
+
       const symbol: SymbolOption = {
-        value: pair.wsname ?? displayLabel, // i.e. (XBT/USD)
-        label: pair.altname, // i.e. "XBTUSD"
-        displayLabel, // i.e. "BTC/USD"
+        value: pair.wsname ?? displayLabel,
+        label: pair.altname,
+        displayLabel,
         altname: pair.altname,
         wsname: pair.wsname,
         baseAsset,
@@ -225,89 +264,39 @@ export class AssetPairs extends TypedEventEmitter<AssetPairsEventMap> {
 
       symbols.push(symbol);
 
-      symbolMap.set(symbol.value.toUpperCase(), symbol); // "XBT/USD"
-      symbolMap.set(symbol.displayLabel.toUpperCase(), symbol); // "BTC/USD"
-      symbolMap.set(pairKey.toUpperCase(), symbol); // "XXBTZUSD"
-      symbolMap.set(pair.altname.toUpperCase(), symbol); // "XBTUSD"
-
-      if (pair.altname.toUpperCase() !== pairKey.toUpperCase()) {
-        symbolMap.set(pair.altname.toUpperCase(), symbol);
-      }
+      symbolMap.set(symbol.value.toUpperCase(), symbol);
+      symbolMap.set(symbol.displayLabel.toUpperCase(), symbol);
+      symbolMap.set(pairKey.toUpperCase(), symbol);
+      symbolMap.set(pair.altname.toUpperCase(), symbol);
     }
 
     symbols.sort((a, b) => a.label.localeCompare(b.label));
 
     return { symbols, symbolMap };
   }
-  findSymbol(search: string): SymbolOption | undefined {
-    return this._data.symbolMap.get(search.toUpperCase());
+
+  private setData(value: AssetPairsData): void {
+    this._data = value;
+    this.logger.debug(`Loaded ${value.symbols.length} symbols`);
+    this.emit(AssetPairsEventKey.DataUpdate, value);
   }
 
-  refresh(): Promise<AssetPairsData> {
-    return this.fetch();
+  private setStatus(value: AssetPairsStatus) {
+    if (this._status === value) return;
+    this._status = value;
+    this.logger.debug(`Status updated to ${value}`);
+    this.emit(AssetPairsEventKey.StatusUpdate, value);
   }
 
-  clear() {
-    this._data = {
-      symbols: [],
-      symbolMap: new Map(),
-    };
-    this._error = null;
-    this.setStatus('idle');
-  }
-
-  destroy() {
-    if (this.abortController) {
-      this.abortController.abort();
-    }
-    this.removeAllListeners();
-    this.clear();
-  }
-
-  get status(): AssetPairsStatus {
-    return this._status;
-  }
-
-  get error(): Error | null {
-    return this._error;
-  }
-
-  get data(): AssetPairsData {
-    return this._data;
-  }
-
-  get symbols(): SymbolOption[] {
-    return this._data.symbols;
-  }
-
-  get symbolMap(): Map<string, SymbolOption> {
-    return this._data.symbolMap;
-  }
-
-  get loading(): boolean {
-    return this._status === 'loading';
-  }
-
-  get loaded(): boolean {
-    return this._status === 'loaded';
-  }
-
-  get config(): Required<AssetPairsConfig> {
-    return { ...this._config };
-  }
-
-  set topN(value: number) {
-    if (this._config.topN === value) return;
-    this._config.topN = value;
-    this.emit(AssetPairsEventKey.ConfigUpdate, this.config);
-    if (this.loaded) {
-      void this.fetch();
+  private setError(value: Error | null) {
+    this._error = value;
+    if (value) {
+      this.logger.error(value);
+      this.emit(AssetPairsEventKey.Error, value);
     }
   }
 
-  get topN(): number {
-    return this._config.topN;
-  }
+  // Event helpers
 
   onDataUpdate = this.createListener(AssetPairsEventKey.DataUpdate);
   onStatusUpdate = this.createListener(AssetPairsEventKey.StatusUpdate);

@@ -1,5 +1,4 @@
 export * from './useAssetPairs';
-export * from './useOrderbook';
 export * from './useOrderbookConfig';
 export * from './useOrderbookConnection';
 export * from './useOrderbookData';

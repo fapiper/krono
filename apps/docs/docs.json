@@ -3,6 +3,9 @@
   "theme": "aspen",
   "family": "Inter",
   "name": "Krono",
+  "icons": {
+    "library": "lucide"
+  },
   "colors": {
     "primary": "#171717",
     "light": "#ffffff",
@@ -70,7 +73,7 @@
           {
             "group": "Hooks",
             "pages": [
-              "hooks/api/hooks/useOrderbook",
+              "hooks/api/hooks/useAssetPairs",
               "hooks/api/hooks/useOrderbookConfig",
               "hooks/api/hooks/useOrderbookConnection",
               "hooks/api/hooks/useOrderbookData",

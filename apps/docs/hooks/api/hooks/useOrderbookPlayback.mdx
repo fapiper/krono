@@ -1,0 +1,144 @@
+---
+title: useOrderbookPlayback
+description: |
+    A hook for replaying historical orderbook snapshots.
+    Provides controls (play, pause, seek) and time-travel capabilities.
+---
+
+<Note>
+    This hook relies on `useOrderbookHistory`. Ensure that `historyEnabled` is set to `true` in your orderbook configuration, otherwise there will be no frames to play back.
+</Note>
+
+## Import
+
+```ts
+import { useOrderbookPlayback } from '@krono/hooks'
+```
+
+## Usage
+
+```tsx
+import { useOrderbookPlayback } from '@krono/hooks'
+
+function OrderbookReplay() {
+  const {
+    currentData,
+    isPaused,
+    togglePaused,
+    goToLive,
+    goBack,
+    goForward,
+    isLive
+  } = useOrderbookPlayback();
+
+  if (!currentData) return <div>No history recorded yet...</div>;
+
+  return (
+    <div>
+      <div className="status">
+        {isLive ? <span className="live">Live</span> : <span>Time Travel</span>}
+      </div>
+
+      <OrderbookUI data={currentData} />
+
+      <div className="controls">
+        <button onClick={goBack}>Step Back</button>
+        <button onClick={togglePaused}>{isPaused ? 'Play' : 'Pause'}</button>
+        <button onClick={goForward}>Step Forward</button>
+        {!isLive && <button onClick={goToLive}>Jump to Live</button>}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## Parameters
+
+This hook does not accept any parameters. It automatically consumes orderbook history data.
+
+---
+
+## Return Type
+
+### State
+
+<ResponseField name="currentData" type="OrderbookData | null">
+    The orderbook snapshot at the current playback position. Use this to drive your UI instead of `useOrderbookData` when in replay mode.
+</ResponseField>
+
+<ResponseField name="isLive" type="boolean">
+    Returns `true` if the playback is currently tracking the latest incoming snapshots from the live stream.
+</ResponseField>
+
+<ResponseField name="isPaused" type="boolean">
+    Indicates if the automatic playback progression is currently halted.
+</ResponseField>
+
+<ResponseField name="index" type="number">
+    The current frame index in the history buffer.
+</ResponseField>
+
+<ResponseField name="historyLength" type="number">
+    The total number of snapshots available for playback.
+</ResponseField>
+
+<ResponseField name="timeBehindLive" type="number">
+    The difference in milliseconds between the current playback frame and the actual current time.
+</ResponseField>
+
+<ResponseField name="nextFrameInfo" type="object">
+    Metadata about the upcoming transition, including `duration` between frames, `progress` (0 to 1), and `remaining` time.
+</ResponseField>
+
+### Actions
+
+<ResponseField name="togglePaused" type="() => void">
+    Toggles between play and pause. Pausing automatically disables live tracking.
+</ResponseField>
+
+<ResponseField name="goToIndex" type="(i: number) => void">
+    Seeks to a specific frame in the history buffer.
+</ResponseField>
+
+<ResponseField name="goBack" type="() => void">
+    Steps one frame backward in time.
+</ResponseField>
+
+<ResponseField name="goForward" type="() => void">
+    Steps one frame forward in time.
+</ResponseField>
+
+<ResponseField name="goToLive" type="() => void">
+    Resume live tracking, jump to the most recent snapshot, and set `isPaused` to false.
+</ResponseField>
+
+---
+
+## Key Concepts
+
+### Virtual Time & Interpolation
+Unlike a simple loop, `useOrderbookPlayback` uses `requestAnimationFrame` and a internal `virtualTime` state. It calculates the actual time difference between recorded snapshots to ensure that the playback speed matches the real-world frequency of the market updates.
+
+### Live Tracking
+The hook features a "Live Tracking" mode. If you are at the head of the buffer (the latest frame), it stays in sync with incoming market data. If you manually seek backward, tracking is disabled so you can inspect historical data without the UI jumping back to the present every time a new trade occurs.
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+    <Card title="useOrderbookHistory" icon="history" href="/hooks/api/hooks/useOrderbookHistory">
+        The underlying hook that manages the circular buffer of snapshots.
+    </Card>
+    <Card title="useOrderbookConfig" icon="cog" href="/hooks/api/hooks/useOrderbookConfig">
+        Used to adjust `maxHistoryLength` to allow for longer replay sessions.
+    </Card>
+    <Card title="useAssetPairs" icon="text-search" href="/hooks/api/hooks/useAssetPairs">
+        Find the right symbols to travel in time.
+    </Card>
+    <Card title="Kraken API" icon="link" href="https://docs.kraken.com/api/docs/websocket-v2/book">
+        Explore the `book` channel streams level 2 order book docs.
+    </Card>
+</CardGroup>

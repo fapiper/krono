@@ -1,7 +1,7 @@
 import type { PriceLevel } from '../types';
 
 /**
- * Manages a price-level map with efficient updates
+ * Maintains price - quantity levels with grouping support.
  */
 export class PriceMapManager {
   private map: Map<number, number> = new Map();
@@ -14,7 +14,8 @@ export class PriceMapManager {
   }
 
   /**
-   * Set a price level (or remove if volume is 0)
+   * Sets a price level.
+   * Deletes the level if quantity is zero.
    */
   set(price: number, volume: number): void {
     if (volume === 0) {
@@ -42,10 +43,11 @@ export class PriceMapManager {
   }
 
   /**
-   * Get sorted price levels with optional grouping
-   * @param ascending - Sort direction
-   * @param limit - Max rows
-   * @param grouping - The step size (e.g., 0.1, 0.5, 1.0). If 0 or null, no grouping.
+   * Returns sorted and optionally grouped levels.
+   *
+   * @param ascending Sort direction
+   * @param limit Max number of rows
+   * @param grouping Price step size
    */
   getSorted(
     ascending: boolean,

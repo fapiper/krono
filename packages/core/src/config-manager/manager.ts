@@ -9,15 +9,20 @@ import type { IOrderbookConfig, OrderbookConfigOptions } from './types';
 const KRAKEN_DEPTHS = [10, 25, 100, 500, 1000] as const;
 
 /**
- * Orderbook manages market depth updates from Kraken.
+ * Owns, validates, and mutates orderbook configuration.
+ *
+ * Emits fine-grained update events as well as a global config update.
+ *
+ * @internal
  */
 export class OrderbookConfigManager
   extends BaseConfig<IOrderbookConfig, OrderbookConfigEventMap>
   implements IOrderbookConfig
 {
+  /** Default configuration values */
   private static readonly _defaultConfig = {
     limit: 25,
-    depth: 25,
+    depth: 500,
     maxHistoryLength: 86_400,
     historyEnabled: true,
     spreadGrouping: 0.1,
@@ -32,6 +37,10 @@ export class OrderbookConfigManager
   };
   protected readonly updateAllEventKey = OrderbookConfigEventKey.ConfigUpdate;
 
+  /**
+   * @param logger Shared logger
+   * @param config User-provided orderbook configuration
+   */
   constructor(logger: Logger, config: OrderbookConfigOptions) {
     super(
       logger,
@@ -39,21 +48,17 @@ export class OrderbookConfigManager
       mergeDeep(OrderbookConfigManager._defaultConfig, config),
     );
   }
-
+  /**
+   * Maps limit to Kraken-supported depth.
+   */
   private getRequiredDepth(limit: number): 10 | 25 | 100 | 500 | 1000 {
-    return KRAKEN_DEPTHS.find((d) => d >= limit) || 1000;
+    return KRAKEN_DEPTHS.find((d) => d >= limit) ?? 1000;
   }
 
-  /**
-   * Returns configured trading symbol.
-   */
   get symbol(): string {
     return this._config.symbol;
   }
 
-  /**
-   * Updates symbol and reconnects.
-   */
   set symbol(value: string) {
     if (this._config.symbol !== value) {
       this._config.symbol = value;
@@ -62,9 +67,6 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns configured orderbook limit.
-   */
   get limit() {
     return this._config.limit;
   }
@@ -89,16 +91,10 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns configured orderbook depth.
-   */
   get depth() {
     return this._config.depth;
   }
 
-  /**
-   * Updates depth and reconnects if necessary.
-   */
   set depth(value) {
     if (this._config.depth !== value) {
       this._config.depth = value;
@@ -107,16 +103,10 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns throttle time.
-   */
   get throttleMs() {
     return this._config.throttleMs;
   }
 
-  /**
-   * Updates throttle time and rebuilds pipeline.
-   */
   set throttleMs(value) {
     if (this._config.throttleMs !== value) {
       this._config.throttleMs = value;
@@ -125,16 +115,10 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns debounce time.
-   */
   get debounceMs() {
     return this._config.debounceMs;
   }
 
-  /**
-   * Updates debounce time and rebuilds pipeline.
-   */
   set debounceMs(value) {
     if (this._config.debounceMs !== value) {
       this._config.debounceMs = value;
@@ -143,16 +127,10 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns whether history recording is enabled.
-   */
   get historyEnabled(): boolean {
     return this._config.historyEnabled;
   }
 
-  /**
-   * Enables or disables history recording.
-   */
   set historyEnabled(value) {
     if (this._config.historyEnabled !== value) {
       this._config.historyEnabled = value;
@@ -161,16 +139,10 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns spread grouping percentage.
-   */
   get spreadGrouping() {
     return this._config.spreadGrouping;
   }
 
-  /**
-   * Updates spread grouping for visual display.
-   */
   set spreadGrouping(value) {
     if (this._config.spreadGrouping !== value) {
       this._config.spreadGrouping = value;
@@ -179,16 +151,10 @@ export class OrderbookConfigManager
     }
   }
 
-  /**
-   * Returns max history length.
-   */
   get maxHistoryLength() {
     return this._config.maxHistoryLength;
   }
 
-  /**
-   * Updates max history length and resizes buffer.
-   */
   set maxHistoryLength(value) {
     if (this._config.maxHistoryLength !== value) {
       this._config.maxHistoryLength = value;
@@ -232,6 +198,8 @@ export class OrderbookConfigManager
       this.emit(OrderbookConfigEventKey.ConfigReconnectUpdate, reconnect);
     }
   }
+
+  // Event helpers
 
   onUpdateConfig = this.createListener(OrderbookConfigEventKey.ConfigUpdate);
   onUpdateConfigSymbol = this.createListener(

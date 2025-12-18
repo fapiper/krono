@@ -6,7 +6,11 @@ import {
 import type { ConnectionStatus, IOrderbookStatus } from './types';
 
 /**
- * Orderbook manages market depth updates from Kraken.
+ * Owns and emits orderbook connection status.
+ *
+ * Maintains a derived `error` state that overrides the base status.
+ *
+ * @internal
  */
 export class OrderbookStatusManager
   extends BaseManager<OrderbookStatusEventMap>
@@ -21,16 +25,15 @@ export class OrderbookStatusManager
     this._status = 'disconnected';
   }
 
-  /**
-   * Returns configured trading symbol.
-   */
   get status(): ConnectionStatus {
     if (!this._error) return 'error';
     return this._status;
   }
 
   /**
-   * Updates symbol and reconnects.
+   * Updates the base connection status.
+   *
+   * Has no effect while an error is present.
    */
   set status(value: ConnectionStatus) {
     if (this._status !== value && value !== 'error') {
@@ -40,36 +43,26 @@ export class OrderbookStatusManager
     }
   }
 
-  /**
-   * Returns disconnected.
-   */
   get disconnected() {
     return this._status === 'disconnected';
   }
 
-  /**
-   * Returns connected.
-   */
   get connected() {
     return this._status === 'connected';
   }
 
-  /**
-   * Returns connecting.
-   */
   get connecting() {
     return this._status === 'connecting';
   }
 
-  /**
-   * Returns error.
-   */
   get error() {
     return this._error;
   }
 
   /**
-   * Sets connecting.
+   * Sets or clears the error state.
+   *
+   * Setting an error forces `status` to `'error'`.
    */
   set error(value) {
     if (this._error !== value) {
@@ -102,6 +95,8 @@ export class OrderbookStatusManager
         break;
     }
   }
+
+  // Event helpers
 
   onUpdateStatus = this.createListener(OrderbookStatusEventKey.StatusUpdate);
   onUpdateStatusConnected = this.createListener(
