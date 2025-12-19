@@ -29,10 +29,10 @@ const orderbook = new Orderbook({
     The trading pair symbol to subscribe to (e.g., `BTC/USD`, `ETH/EUR`).
 </ParamField>
 
-<ParamField body="depth" type="number" default="100">
+<ParamField body="depth" type="number" default="1_000">
     The subscription depth requested from the Kraken WebSocket.
 
-    **Allowed values:** `10`, `25`, `100`, `500`, `1000`.
+    Allowed values: `10`, `25`, `100`, `500`, `1000`.
 
     <Note>
         A higher depth increases network traffic. Choose the lowest value that satisfies your `limit` requirement.
@@ -45,8 +45,15 @@ const orderbook = new Orderbook({
     If `limit` is lower than `depth`, the orderbook will crop the data client-side.
 </ParamField>
 
+<ParamField body="tickSize" type="number">
+    The minimum price increment allowed for the asset pair. This value is used to generate the valid groupingOptions.
+</ParamField>
+
 <ParamField body="spreadGrouping" type="number" default="0">
     Combines price levels into groups of this size. Useful for visualizing the book or reducing noise.
+    <Note>
+        When the `tickSize` or `symbol` changes, the orderbook automatically resets `spreadGrouping` to match the `tickSize` to ensure the most granular view by default.
+    </Note>
 </ParamField>
 
 ## Pipeline & Performance

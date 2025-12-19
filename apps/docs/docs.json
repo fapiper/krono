@@ -108,6 +108,7 @@
               "core/api/orderbook/disconnect",
               "core/api/orderbook/disconnected",
               "core/api/orderbook/error",
+              "core/api/orderbook/groupingOptions",
               "core/api/orderbook/history",
               "core/api/orderbook/historyEnabled",
               "core/api/orderbook/limit",
@@ -122,7 +123,8 @@
               "core/api/orderbook/spreadGrouping",
               "core/api/fetchers/status",
               "core/api/orderbook/symbol",
-              "core/api/orderbook/throttleMs"
+              "core/api/orderbook/throttleMs",
+              "core/api/orderbook/tickSize"
             ]
           },
           {

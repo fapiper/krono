@@ -63,6 +63,8 @@ This hook does not accept any parameters. It automatically connects to the `Orde
     The subscription depth requested from the Kraken WebSocket.
 </ResponseField>
 
+<ResponseField name="groupingOptions" type="number[]"> A generated list of 9 user-friendly grouping steps (1x, 2x, 5x, 10x... of tickSize). </ResponseField>
+
 <ResponseField name="spreadGrouping" type="number" default={0.1}>
     The step size for price grouping (aggregation). Defaults to 0 (no grouping).
 </ResponseField>
@@ -101,9 +103,9 @@ This hook does not accept any parameters. It automatically connects to the `Orde
     Adjusts the number of levels filtered from the local cache. Does not trigger a re-subscription.
 </ResponseField>
 
-<ResponseField name="setSpreadGrouping" type="(v: number) => void">
-    Updates the price aggregation step size.
-</ResponseField>
+<ResponseField name="setTickSize" type="(v: number) => void"> Updates the base increment. This regenerates the groupingOptions. </ResponseField>
+
+<ResponseField name="setSpreadGrouping" type="(v: number) => void"> Updates the price aggregation step size.</ResponseField>
 
 <ResponseField name="setThrottle" type="(v: number | undefined) => void">
     Configures the throttle interval for the update pipeline.
