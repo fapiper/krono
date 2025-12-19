@@ -1,5 +1,5 @@
 import { Badge } from '@krono/ui/components/ui/badge';
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import type { OrderbookControlsBaseProps } from './types';
 
 export type OrderbookControlsLiveBadgeProps = Pick<

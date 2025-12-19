@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrderbookConfig } from '@krono/hooks';
-import { Switch } from '@ui/components/ui/switch';
+import { Switch } from '@krono/ui/components/ui/switch';
 import { OrderbookSettingsRow } from './row';
 import type { OrderbookSettingsBaseProps } from './types';
 

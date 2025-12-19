@@ -1,4 +1,4 @@
-import { cn } from '@ui/lib/utils';
+import { cn } from '@krono/ui/lib';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 

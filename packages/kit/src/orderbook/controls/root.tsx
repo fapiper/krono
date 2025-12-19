@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import { OrderbookControlsLiveBadge } from './live-badge';
 import { OrderbookControlsPlaybackButtons } from './playback-buttons';
 import { OrderbookControlsTimeline } from './timeline';

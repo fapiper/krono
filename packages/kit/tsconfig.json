@@ -1,15 +1,17 @@
 {
-  "extends": "@krono/tsconfig/react-library.json",
+  "extends": "@krono/tsconfig/nextjs.json",
   "compilerOptions": {
-    "verbatimModuleSyntax": false,
-    "incremental": true,
     "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@kit/*": ["src/*"],
-      "@ui/*": ["../../packages/ui/src/*"]
+      "@krono/*": ["../*"],
+      "@krono/ui/*": ["./*"]
     }
   },
-  "include": ["src"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

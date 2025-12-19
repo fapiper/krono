@@ -1,6 +1,6 @@
 import { PopoverContent } from '@krono/ui/components/ui/popover';
 import { Separator } from '@krono/ui/components/ui/separator';
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import type { ComponentProps } from 'react';
 import { OrderbookSettingsDebounceInput } from '../debounce-input';
 import { OrderbookSettingsDebugSwitch } from '../debug-switch';

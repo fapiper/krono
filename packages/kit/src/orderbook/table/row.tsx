@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import type { OrderbookTableBaseProps, PriceLevelDataProps } from './types';
 import { formatDigits, formatUSD } from './utils';
 

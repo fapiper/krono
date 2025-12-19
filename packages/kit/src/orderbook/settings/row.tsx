@@ -1,5 +1,5 @@
-import { Label } from '@ui/components/ui/label';
-import { cn } from '@ui/lib';
+import { Label } from '@krono/ui/components/ui/label';
+import { cn } from '@krono/ui/lib';
 import type { ReactNode } from 'react';
 import type { OrderbookSettingsBaseProps } from './types';
 

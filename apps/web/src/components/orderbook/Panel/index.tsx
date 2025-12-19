@@ -1,7 +1,7 @@
 'use client';
 
 import { OrderbookTable } from '@krono/kit';
-import { Card, CardContent } from '@ui/components/ui/card';
+import { Card, CardContent } from '@krono/ui/components/ui/card';
 
 export function OrderbookPanel() {
   return (

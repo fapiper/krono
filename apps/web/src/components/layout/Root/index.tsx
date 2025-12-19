@@ -1,7 +1,7 @@
 'use client';
 
 import { Orderbook } from '@krono/kit';
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import type { HTMLAttributes } from 'react';
 import LayoutFooter from '@/components/layout/Footer';
 import LayoutHeader from '@/components/layout/Header';

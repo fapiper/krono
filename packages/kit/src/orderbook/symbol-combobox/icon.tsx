@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import { memo, useState } from 'react';
 import type { OrderbookSymbolComboboxBaseProps } from './types';
 

@@ -1,6 +1,6 @@
+import { Separator } from '@krono/ui/components/ui/separator';
+import { cn } from '@krono/ui/lib';
 import { Slot } from '@radix-ui/react-slot';
-import { Separator } from '@ui/components/ui/separator';
-import { cn } from '@ui/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const buttonGroupVariants = cva(

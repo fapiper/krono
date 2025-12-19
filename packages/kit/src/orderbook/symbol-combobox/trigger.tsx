@@ -2,7 +2,7 @@
 
 import { Button } from '@krono/ui/components/ui/button';
 import { PopoverTrigger } from '@krono/ui/components/ui/popover';
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import { ChevronsUpDown, Loader2 } from 'lucide-react';
 import {
   type ComponentProps,

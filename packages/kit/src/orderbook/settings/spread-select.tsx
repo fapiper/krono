@@ -1,6 +1,7 @@
 'use client';
 
 import { useOrderbookConfig } from '@krono/hooks';
+import { Button } from '@krono/ui/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@krono/ui/components/ui/select';
-import { Button } from '@ui/components/ui/button';
 import { useEffect, useState } from 'react';
 import { OrderbookSettingsRow } from './row';
 import type { OrderbookSettingsBaseProps } from './types';

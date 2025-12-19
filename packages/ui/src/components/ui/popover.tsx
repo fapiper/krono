@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@krono/ui/lib/utils';
+import { cn } from '@krono/ui/lib';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import * as React from 'react';
 

@@ -1,9 +1,8 @@
 'use client';
 
-import { Badge } from '@ui/components/ui/badge';
-import { Button } from '@ui/components/ui/button';
-import { Separator } from '@ui/components/ui/separator';
-import { cn } from '@ui/lib';
+import { Button } from '@krono/ui/components/ui/button';
+import { Separator } from '@krono/ui/components/ui/separator';
+import { cn } from '@krono/ui/lib';
 import { Github, Globe, Linkedin } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';

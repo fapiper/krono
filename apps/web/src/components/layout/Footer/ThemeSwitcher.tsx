@@ -1,14 +1,13 @@
 'use client';
 
-import { Button } from '@ui/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@ui/components/ui/select';
-import { Monitor, Moon, Sun } from 'lucide-react';
+} from '@krono/ui/components/ui/select';
+import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-app-theme/use-theme';
 
 export default function ThemeSwitcher() {

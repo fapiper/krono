@@ -1,7 +1,7 @@
 'use client';
 
 import { OrderbookSettingsPopover, OrderbookSymbolCombobox } from '@krono/kit';
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { HTMLAttributes } from 'react';

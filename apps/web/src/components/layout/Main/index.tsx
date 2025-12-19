@@ -1,4 +1,4 @@
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import type { HTMLAttributes } from 'react';
 
 export type LayoutMainProps = HTMLAttributes<HTMLDivElement>;

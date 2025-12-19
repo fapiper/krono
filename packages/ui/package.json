@@ -42,8 +42,7 @@
   "exports": {
     "./globals.css": "./src/globals.css",
     "./postcss.config": "./postcss.config.mjs",
-    "./tailwind.config": "./tailwind.config.ts",
-    "./lib/*": "./src/lib/index.ts",
+    "./lib": "./src/lib/index.ts",
     "./components/*": "./src/components/*.tsx"
   }
 }

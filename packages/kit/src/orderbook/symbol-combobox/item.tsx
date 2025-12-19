@@ -1,7 +1,7 @@
 'use client';
 
 import { CommandItem } from '@krono/ui/components/ui/command';
-import { cn } from '@ui/lib';
+import { cn } from '@krono/ui/lib';
 import { CheckIcon } from 'lucide-react';
 import { type ComponentProps, memo, useCallback } from 'react';
 import { OrderbookSymbolComboboxIcon } from './icon';

@@ -1,4 +1,4 @@
-import { cn } from '@ui/lib/utils';
+import { cn } from '@krono/ui/lib';
 import * as React from 'react';
 
 const Card = React.forwardRef<
