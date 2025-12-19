@@ -1,0 +1,42 @@
+---
+title: 'AssetPairsProvider'
+description: 'Context provider that manages fetching and caching of trading pairs.'
+---
+
+The `AssetPairsProvider` initializes the `AssetPairs` service. It allows hooks like `useAssetPairs` to access metadata about trading symbols (icons, display names, liquidity ranking) anywhere in your app.
+
+## Import
+
+```ts
+import { AssetPairsProvider } from '@krono/hooks'
+```
+
+## Usage
+
+```tsx
+<AssetPairsProvider config={{ autoFetch: true, topN: 100 }}>
+  <SymbolSelector />
+</AssetPairsProvider>
+```
+
+## Props
+
+<ParamField body="config" type="AssetPairsConfig" required>
+    Configuration for the asset fetching service.
+
+    <Expandable title="Properties">
+        <ParamField body="autoFetch" type="boolean" default="true">
+            If `true`, data is fetched immediately upon mounting.
+        </ParamField>
+        <ParamField body="topN" type="number" default="100">
+            How many pairs to load, ranked by liquidity.
+        </ParamField>
+        <ParamField body="debug" type="boolean" default="false">
+            Enable debug logging for fetch requests.
+        </ParamField>
+    </Expandable>
+</ParamField>
+
+<ParamField body="children" type="ReactNode">
+    Components that need access to symbol metadata.
+</ParamField>

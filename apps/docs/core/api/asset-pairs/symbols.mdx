@@ -1,0 +1,31 @@
+---
+title: 'Symbols'
+description: 'Access the processed list of available trading pairs.'
+---
+
+## Import
+
+```ts
+import { AssetPairs } from '@krono/core'
+```
+
+## Usage
+
+Access the array of all available symbols, sorted by their liquidity rank (top N) and label.
+
+```ts
+// Get all loaded symbols
+const options = assetPairs.symbols;
+
+options.forEach(opt => {
+  console.log(opt.displayLabel); // e.g. "BTC/USD"
+});
+```
+
+## Return Type
+
+```ts
+SymbolOption[]
+```
+
+The `SymbolOption` interface contains metadata for the UI, including display labels, icons, and normalized asset names.

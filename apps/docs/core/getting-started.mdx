@@ -1,6 +1,6 @@
 ---
 title: "Getting started"
-description: "Getting started with Krono Core."
+description: "Getting started with Krono Core - A facade and utilities for managing Kraken WebSocket connections and orderbook state."
 ---
 
 This page explains how to use the `@krono/core` SDK.
@@ -27,19 +27,60 @@ To get started, install the required packages.
     ```
 </CodeGroup>
 
-## Initialize
+## Orderbook
 
-Create and export a new Orderbook instance.
+The `Orderbook` class is the main entry point for real-time market data.
 
-```typescript create-config.ts
-import { Orderbook } from '@krono/hooks'
+```typescript create-orderbook.ts
+import { Orderbook } from '@krono/core'
 
 export const orderbook = new Orderbook({
     symbol: "BTC/USD",
+    limit: 25,
+    depth: 500,
+    debug: true
 })
 ```
 
-In this example, the Krono Orderbook is configured to use the BTC/USD pair. Check out the config docs for more configuration options.
+<ParamField body="config" type="OrderbookConfigOptions" required={true}>
+    The configuration object to initialize the orderbook.
 
-## Next Steps
-For more information on what to do next, check out the following topics.
+    [View full Orderbook Configuration](/core/configuration/orderbook)
+
+    ```ts
+    type OrderbookConfigOptions = {
+        symbol: string;
+        limit?: number;
+        depth?: 10 | 25 | 100 | 500 | 1000;
+        // ... other partial options
+    }
+    ```
+</ParamField>
+
+## AssetPairs
+
+The `AssetPairs` class handles fetching available trading pairs and their metadata (like icons and display names).
+
+```typescript create-assets.ts
+import { AssetPairs } from '@krono/core'
+
+export const assetPairs = new AssetPairs({
+    topN: 50,
+    autoFetch: true,
+    debug: false
+})
+```
+
+<ParamField body="config" type="AssetPairsConfig" required={false}>
+    Configuration for the asset fetcher.
+
+    [View full AssetPairs Configuration](/core/configuration/assetpairs)
+
+    ```ts
+    type AssetPairsConfig = {
+        topN?: number;
+        autoFetch?: boolean;
+        debug?: boolean;
+    }
+    ```
+</ParamField>

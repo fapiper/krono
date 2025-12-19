@@ -1,0 +1,26 @@
+---
+title: 'Refresh'
+description: 'Forces a re-fetch of the asset pairs data.'
+---
+
+## Import
+
+```ts
+import { AssetPairs } from '@krono/core'
+```
+
+## Usage
+
+Use this method to update the internal cache if you suspect the asset definitions on Kraken have changed or if a previous fetch failed.
+
+```ts
+await assetPairs.refresh();
+```
+
+## Return Type
+
+```ts
+Promise<AssetPairsData>
+```
+
+Returns a promise that resolves with the newly fetched and processed data.

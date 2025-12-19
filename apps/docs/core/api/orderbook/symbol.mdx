@@ -1,0 +1,33 @@
+---
+title: 'Symbol'
+description: 'Getter and Setter for the active trading pair.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from '@krono/core'
+```
+
+## Usage
+
+Get or set the trading symbol.
+
+<Warning>
+    Setting this property triggers a reset.
+    The connection will automatically reconnect to the new symbol, and all local history/data will be cleared.
+</Warning>
+
+```ts
+// Get
+const currentPair = orderbook.symbol
+
+// Set (Triggers reconnects if active)
+orderbook.symbol = 'ETH/USD'
+```
+
+## Type
+
+```ts
+string
+```

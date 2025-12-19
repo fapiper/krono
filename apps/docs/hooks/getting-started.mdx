@@ -1,69 +1,91 @@
 ---
 title: "Getting started"
-description: "Getting started with Krono Hooks."
+description: "Start building with Krono Hooks for React."
 ---
 
 This page explains how to use the `@krono/hooks` SDK, a React wrapper around the Core SDK.
-The `@krono/hooks` SDK provides convenient hooks for ....
+It manages the lifecycle of connections, handles context propagation, and offers reactive hooks for data consumption.
 You can find the `@krono/hooks` SDK source code on Github.
 
 To get started, install the required packages.
 
+
+## Installation
+
 <CodeGroup>
-
-    ```pnpm pnpm
-    pnpm add @krono/hooks
+    ```bash pnpm
+    pnpm add @krono/hooks @krono/core
     ```
-
-    ```npm npm
-    npm install @krono/hooks
+    ```bash npm
+    npm install @krono/hooks @krono/core
     ```
-
-    ```yarn yarn
-    yarn add @krono/hooks
+    ```bash yarn
+    yarn add @krono/hooks @krono/core
     ```
-
-    ```bun bun
-    bun add @krono/hooks
+    ```bash bun
+    bun add @krono/hooks @krono/core
     ```
 </CodeGroup>
 
-## Create Config
+## Setup Providers
 
-Create and export a new Krono config.
-
-```typescript create-config.ts
-import { OrderbookConfig } from '@krono/hooks'
-
-export const config = new OrderbookConfig({
-    symbol: "BTC/USD",
-})
-```
-In this example, Krono is configured to use the BTC/USD pair. Check out the config docs for more configuration options.
-
-
-## Wrap Component in Context Provider
-
-Wrap your component in the KronoProvider React Context Provider and pass the config you created earlier to the config property.
+To use the hooks, you must wrap your application (or the specific subtree using the hooks) with the context providers.
+You can use one or both depending on your needs.
 
 ```tsx App.tsx
-import { KronoProvider  } from '@krono/hooks'
-import { config } from './config'
+import { AssetPairsProvider, OrderbookProvider } from '@krono/hooks';
 
 function App() {
   return (
-    <KronoProvider config={config}>
-      {/** ... */}
-    </KronoProvider>
-  )
+    // 1. Provide asset metadata (optional, but recommended for symbol lookup)
+    <AssetPairsProvider config={{ topN: 50, autoFetch: true }}>
+
+      {/* 2. Provide real-time orderbook connection */}
+      <OrderbookProvider config={{ symbol: 'BTC/USD', depth: 100 }}>
+
+        <Dashboard />
+
+      </OrderbookProvider>
+    </AssetPairsProvider>
+  );
 }
 ```
 
-## Use Krono
-Now that everything is set up, every component inside the Krono Providers can use Krono Hooks.
+## Consume Data
+
+Now you can use any hook within your `Dashboard` component.
+
+```tsx Dashboard.tsx
+import { useOrderbookData, useAssetPairs } from '@krono/hooks';
+
+export function Dashboard() {
+  const { findSymbol } = useAssetPairs();
+  const { asks, bids } = useOrderbookData();
+
+  const pairInfo = findSymbol('BTC/USD');
+
+  return (
+    <div>
+      <h1>{pairInfo?.displayLabel || 'Loading...'}</h1>
+      <div>Best Ask: {asks[0]?.price}</div>
+    </div>
+  );
+}
+```
 
 ## Next Steps
-For more information on what to do next, check out the following topics.
 
-- **Playback** how to use time travel controls through the orderbook of a pair within your app using Krono.
-- **Hooks** Browse the collection of Hooks and learn how to use them.
+<CardGroup cols={2}>
+    <Card title="Orderbook Provider" icon="plug" href="/hooks/providers/orderbook-provider">
+        Configure connection settings and throttling.
+    </Card>
+    <Card title="AssetPairs Provider" icon="list" href="/hooks/providers/asset-pairs-provider">
+        Configure how trading pairs are fetched.
+    </Card>
+    <Card title="Browse Hooks" icon="code" href="/hooks/api">
+        See the full list of available hooks.
+    </Card>
+    <Card title="Playback" icon="film" href="/hooks/api/hooks/useOrderbookPlayback">
+        Learn how to implement time-traveling features.
+    </Card>
+</CardGroup>

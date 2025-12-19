@@ -1,0 +1,28 @@
+---
+title: 'OnConfigUpdate'
+description: 'Subscribe to configuration changes.'
+---
+
+## Usage
+
+Triggers when properties like `limit`, `symbol`, or `depth` are modified.
+
+```ts
+orderbook.onConfigUpdate((config) => {
+  console.log('New symbol:', config.symbol)
+})
+```
+
+## Parameters
+
+### callback
+
+`(config: OrderbookConfig) => void`
+
+The function to execute when new data is available.
+
+## Return Type
+
+```ts
+void
+```

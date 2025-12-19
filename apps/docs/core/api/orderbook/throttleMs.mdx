@@ -1,0 +1,25 @@
+---
+title: 'ThrottleMs'
+description: 'Getter and setter for the update interval.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from '@krono/core'
+```
+
+## Usage
+
+Limits the frequency of `DataUpdate` events.
+
+```ts
+// Updates max once every 500ms
+orderbook.throttleMs = 500
+```
+
+## Type
+
+```ts
+number | undefined
+```
