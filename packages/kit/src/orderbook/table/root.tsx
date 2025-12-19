@@ -94,5 +94,13 @@ export function OrderbookTableRoot({
     </>
   );
 
-  return <>{children || defaultContent}</>;
+  return (
+    <div
+      className={
+        'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-0.5 flex-1 group overflow-hidden'
+      }
+    >
+      {children || defaultContent}
+    </div>
+  );
 }

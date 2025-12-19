@@ -9,7 +9,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@krono/kit': path.resolve(__dirname, '../../packages/kit/src'),
       '@krono/ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@ui': path.resolve(__dirname, '../../packages/ui/src'),
     },

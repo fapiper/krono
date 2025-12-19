@@ -27,21 +27,15 @@ export function OrderbookControlsTimeline({
     <div className="absolute top-0 left-0 transform -translate-y-1/2 flex w-full">
       {showBuffer && (
         <div
-          className={
-            'absolute left-0 top-0 h-1 w-full pointer-events-none overflow-hidden'
-          }
-        >
-          <div
-            className="absolute left-0 top-0 h-full bg-black/15 dark:bg-white/15"
-            style={{
-              width: `${bufferWidth}%`,
-              left: `${(sliderValue / sliderMax) * 100}%`,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 1,
-            }}
-          />
-        </div>
+          className="absolute left-0 top-0 h-full bg-black/15 dark:bg-white/15"
+          style={{
+            width: `${bufferWidth}%`,
+            left: `${(sliderValue / sliderMax) * 100}%`,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 1,
+          }}
+        />
       )}
 
       <Slider

@@ -3,14 +3,5 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@ui/*": ["../../packages/ui/src/*"],
-      "@krono/kit/*": ["../../packages/kit/src/*"],
-      "@krono/ui/*": ["../../packages/ui/src/*"]
-    }
-  }
+  ]
 }
