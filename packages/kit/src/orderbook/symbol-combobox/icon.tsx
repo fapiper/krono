@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@ui/lib';
-import Image from 'next/image';
 import { memo, useState } from 'react';
 import type { OrderbookSymbolComboboxBaseProps } from './types';
 
@@ -38,14 +37,13 @@ export const OrderbookSymbolComboboxIcon = memo(function OrderbookSymbolIcon({
       className={cn('shrink-0 flex items-center justify-center', className)}
       {...props}
     >
-      <Image
+      <img
         src={src}
         alt={alt}
         width={20}
         height={20}
         className="rounded-sm shrink-0"
         onError={() => setError(true)}
-        unoptimized={true}
       />
     </div>
   );

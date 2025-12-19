@@ -1,2 +1,1 @@
-@import "tailwindcss";
-@import "@krono/ui/globals.css";
+@source "../src/**/*.{js,ts,jsx,tsx}";
