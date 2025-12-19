@@ -25,8 +25,10 @@ export const OrderbookSymbolComboboxRoot = memo(
     ...props
   }: OrderbookSymbolComboboxRootProps) {
     const [open, setOpen] = useState(false);
-    const { symbol, setSymbol } = useOrderbookConfig();
+
+    const { symbol, setSymbol, setTickSize } = useOrderbookConfig();
     const { symbols, symbolMap, loading, error } = useAssetPairs();
+
     const initializedRef = useRef(false);
 
     useEffect(() => {
@@ -36,10 +38,14 @@ export const OrderbookSymbolComboboxRoot = memo(
         symbols?.length > 0 &&
         !symbol
       ) {
-        setSymbol(symbols[0]?.value ?? '');
+        const first = symbols[0];
+        if (first) {
+          setTickSize(first.tickSize);
+          setSymbol(first.value);
+        }
         initializedRef.current = true;
       }
-    }, [loading, symbols, symbol, setSymbol]);
+    }, [loading, symbols, symbol, setSymbol, setTickSize]);
 
     const selectedSymbol = useMemo(() => {
       if (!symbol || !symbols.length) return null;
@@ -55,6 +61,19 @@ export const OrderbookSymbolComboboxRoot = memo(
         ) ?? null
       );
     }, [symbol, symbols]);
+
+    const handleSetSymbol = useCallback(
+      (value: string) => {
+        const found = symbolMap.get(value.toUpperCase());
+        if (found) {
+          setTickSize(found.tickSize);
+          setSymbol(found.value);
+        } else {
+          setSymbol(value);
+        }
+      },
+      [symbolMap, setSymbol, setTickSize],
+    );
 
     const data: SymbolData = { symbols, symbolMap, loading, error };
 
@@ -73,7 +92,7 @@ export const OrderbookSymbolComboboxRoot = memo(
         <OrderbookSymbolComboboxContent
           symbol={symbol}
           data={data}
-          setSymbol={setSymbol}
+          setSymbol={handleSetSymbol} // Pass the enhanced handler
           setOpen={setOpen}
         />
       </>

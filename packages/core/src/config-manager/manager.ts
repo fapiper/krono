@@ -5,6 +5,7 @@ import {
   type OrderbookConfigEventMap,
 } from './events';
 import type { IOrderbookConfig, OrderbookConfigOptions } from './types';
+import { generateGroupingOptions } from './utils';
 
 const KRAKEN_DEPTHS = [10, 25, 100, 500, 1000] as const;
 
@@ -22,9 +23,10 @@ export class OrderbookConfigManager
   /** Default configuration values */
   private static readonly _defaultConfig = {
     limit: 25,
-    depth: 500,
+    depth: 1_000,
     maxHistoryLength: 86_400,
     historyEnabled: true,
+    tickSize: 0.1,
     spreadGrouping: 0.1,
     debug: false,
     throttleMs: 1_000,
@@ -35,6 +37,9 @@ export class OrderbookConfigManager
       delayMs: 3000,
     },
   };
+
+  private _groupingOptions: number[];
+
   protected readonly updateAllEventKey = OrderbookConfigEventKey.ConfigUpdate;
 
   /**
@@ -47,12 +52,18 @@ export class OrderbookConfigManager
       'OrderbookConfig',
       mergeDeep(OrderbookConfigManager._defaultConfig, config),
     );
+    this._groupingOptions = generateGroupingOptions(this.tickSize);
   }
+
   /**
    * Maps limit to Kraken-supported depth.
    */
   private getRequiredDepth(limit: number): 10 | 25 | 100 | 500 | 1000 {
     return KRAKEN_DEPTHS.find((d) => d >= limit) ?? 1000;
+  }
+
+  get groupingOptions(): number[] {
+    return this._groupingOptions;
   }
 
   get symbol(): string {
@@ -136,6 +147,28 @@ export class OrderbookConfigManager
       this._config.historyEnabled = value;
       this.log.debug(`History recording ${value ? 'enabled' : 'disabled'}.`);
       this.emit(OrderbookConfigEventKey.ConfigHistoryEnabledUpdate, value);
+    }
+  }
+
+  get tickSize(): number {
+    return this._config.tickSize;
+  }
+
+  set tickSize(value: number) {
+    if (this._config.tickSize !== value) {
+      this._config.tickSize = value;
+      this.log.debug(`Tick size updated to ${value}`);
+
+      // Regenerate valid grouping options
+      this._groupingOptions = generateGroupingOptions(value);
+
+      // If current grouping is invalid for new tick size, reset to minimum
+      if (this.spreadGrouping < value) {
+        this.spreadGrouping = value;
+      }
+
+      // Note: You might want to add a specific event for tickSize update if needed
+      this.emit(OrderbookConfigEventKey.ConfigUpdate, this._config);
     }
   }
 

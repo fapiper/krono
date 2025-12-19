@@ -76,6 +76,8 @@ export type SymbolOption = {
   baseName?: string;
   /** Icon URL for base asset */
   icon: string;
+  /** Minimum price increment from exchange */
+  tickSize: number;
 };
 
 /**

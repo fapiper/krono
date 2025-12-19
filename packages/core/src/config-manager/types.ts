@@ -17,6 +17,12 @@ export interface IOrderbookConfig {
   /** Enables recording of historical snapshots */
   historyEnabled: boolean;
 
+  /** Minimum price increment for the current symbol */
+  tickSize: number;
+
+  /** Valid grouping steps (1 -> 2.5 -> 5 sequence) */
+  // groupingOptions: number[];
+
   /** Price grouping step size */
   spreadGrouping: number;
 
@@ -46,4 +52,4 @@ export interface IOrderbookConfig {
 export type OrderbookConfigOptions = {
   /** Trading pair symbol (e.g. "BTC/USD") */
   symbol: string;
-} & DeepPartial<Omit<IOrderbookConfig, 'symbol'>>;
+} & DeepPartial<Omit<IOrderbookConfig, 'symbol' | 'groupingOptions'>>;

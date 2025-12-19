@@ -93,7 +93,7 @@ export class Orderbook
       this.asksMap.clear();
       this.bidsMap.clear();
       this.historyManager.clear();
-
+      this.pipeline.clear();
       if (this.statusManager.connected || this.statusManager.connecting) {
         void this.connectionManager.connect();
       }
@@ -103,6 +103,7 @@ export class Orderbook
       if (this.depth < this.limit) {
         this.logger.debug('Depth is set lower than limit');
       }
+      this.pipeline.clear();
       this.emit(OrderbookEventKey.DataUpdate, this.createData());
     });
 
@@ -120,6 +121,7 @@ export class Orderbook
     );
 
     this.configManager.onUpdateConfigSpreadGrouping(() => {
+      this.pipeline.clear();
       this.emit(OrderbookEventKey.DataUpdate, this.createData());
     });
 
@@ -333,6 +335,14 @@ export class Orderbook
   }
 
   /** @inheritdoc */
+  get tickSize() {
+    return this.configManager.tickSize;
+  }
+  set tickSize(value) {
+    this.configManager.tickSize = value;
+  }
+
+  /** @inheritdoc */
   get spreadGrouping() {
     return this.configManager.spreadGrouping;
   }
@@ -393,6 +403,11 @@ export class Orderbook
   }
   set error(value) {
     this.statusManager.error = value;
+  }
+
+  /** @inheritdoc */
+  get groupingOptions() {
+    return this.configManager.groupingOptions;
   }
 
   /** Latest computed orderbook snapshot */

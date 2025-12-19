@@ -7,5 +7,6 @@ export abstract class UpdateProcessingStrategy<T> extends TypedEventEmitter<{
   update: T;
 }> {
   abstract handle(value: T): void;
+  abstract clear(): void;
   abstract destroy(): void;
 }

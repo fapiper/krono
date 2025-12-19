@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@krono/ui/components/ui/select';
 import { Button } from '@ui/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { OrderbookSettingsRow } from './row';
 import type { OrderbookSettingsBaseProps } from './types';
 
@@ -19,14 +19,19 @@ export function OrderbookSettingsSpreadSelect({
   className,
   ...props
 }: OrderbookSettingsSpreadSelectProps) {
-  const { spreadGrouping, setSpreadGrouping } = useOrderbookConfig();
+  const { spreadGrouping, setSpreadGrouping, groupingOptions } =
+    useOrderbookConfig();
+
   const [value, setValue] = useState(String(spreadGrouping));
-  const options = ['0.1', '0.5', '1', '2.5', '5', '10', '20', '50', '100'];
+
+  useEffect(() => {
+    setValue(String(spreadGrouping));
+  }, [spreadGrouping]);
 
   return (
     <OrderbookSettingsRow
-      label="Spread"
-      description="Price level grouping interval"
+      label="Grouping"
+      description="Price aggregation level"
       className={className}
       {...props}
       control={
@@ -35,10 +40,10 @@ export function OrderbookSettingsSpreadSelect({
             <SelectTrigger className="h-9 w-24">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="w-32">
-              {options.map((opt) => (
-                <SelectItem key={opt} value={opt}>
-                  {opt}
+            <SelectContent>
+              {groupingOptions.map((opt) => (
+                <SelectItem key={opt} value={String(opt)}>
+                  {opt < 1 ? opt.toFixed(4) : opt}
                 </SelectItem>
               ))}
             </SelectContent>

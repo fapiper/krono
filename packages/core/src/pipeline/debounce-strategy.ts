@@ -26,6 +26,14 @@ export class DebounceStrategy extends UpdateProcessingStrategy<OrderbookData> {
     }, this.delay);
   }
 
+  clear() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+    this.pending = null;
+  }
+
   destroy() {
     if (this.timer) clearTimeout(this.timer);
     this.pending = null;

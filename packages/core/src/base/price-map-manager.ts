@@ -59,16 +59,21 @@ export class PriceMapManager {
     if (grouping && grouping > 0) {
       processingMap = new Map();
 
+      // Determine needed decimals based on grouping (e.g. 0.01 needs 2, 50 needs 0)
+      const decimals = this.getPrecision(grouping);
+
       for (const [price, qty] of this.map.entries()) {
-        let groupedPrice: number;
+        let rawGrouped: number;
 
         if (ascending) {
-          groupedPrice = Math.ceil(price / grouping) * grouping;
+          // Asks: Round UP to next grouping bucket
+          rawGrouped = Math.ceil(price / grouping) * grouping;
         } else {
-          groupedPrice = Math.floor(price / grouping) * grouping;
+          // Bids: Round DOWN to current grouping bucket
+          rawGrouped = Math.floor(price / grouping) * grouping;
         }
 
-        groupedPrice = Number(groupedPrice.toFixed(8)); // Oder toFixed(2) je nach Asset
+        const groupedPrice = Number(rawGrouped.toFixed(decimals));
 
         const currentQty = processingMap.get(groupedPrice) || 0;
         processingMap.set(groupedPrice, currentQty + qty);
@@ -105,5 +110,17 @@ export class PriceMapManager {
    */
   get isEmpty(): boolean {
     return this.map.size === 0;
+  }
+
+  /**
+   * Helper to count decimal places for toFixed
+   */
+  private getPrecision(step: number): number {
+    if (Math.floor(step) === step) return 0;
+    const str = step.toString();
+    if (str.includes('e-')) {
+      return parseInt(str.split('e-')[1] ?? '0', 10);
+    }
+    return str.split('.')[1]?.length || 0;
   }
 }

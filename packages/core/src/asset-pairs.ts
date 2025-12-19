@@ -251,6 +251,14 @@ export class AssetPairs
       const quoteAsset = getStandardSymbol(pair.quote);
       const displayLabel = createDisplayLabel(baseAsset, quoteAsset);
 
+      // Extract or calculate tick size
+      let tickSize = 0.00000001; // Safe fallback
+      if (pair.tick_size) {
+        tickSize = parseFloat(pair.tick_size);
+      } else if (typeof pair.pair_decimals === 'number') {
+        tickSize = 10 ** -pair.pair_decimals;
+      }
+
       const symbol: SymbolOption = {
         value: pair.wsname ?? displayLabel,
         label: pair.altname,
@@ -260,6 +268,7 @@ export class AssetPairs
         baseAsset,
         quoteAsset,
         icon: getCryptoIconUrl(pair.base),
+        tickSize,
       };
 
       symbols.push(symbol);

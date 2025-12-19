@@ -22,6 +22,19 @@ export class UpdatePipeline<T> extends TypedEventEmitter<{ update: T }> {
     }
   }
 
+  /**
+   * Resets all strategies to their initial state.
+   */
+  clear() {
+    for (const s of this.strategies) {
+      if (typeof s.clear === 'function') {
+        s.clear();
+      } else if (typeof s.destroy === 'function') {
+        s.destroy();
+      }
+    }
+  }
+
   destroy() {
     for (const s of this.strategies) {
       s.destroy();
