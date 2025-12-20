@@ -5,6 +5,7 @@ import {
   formatDigits,
   formatUSD,
   Orderbook,
+  OrderbookControls,
   OrderbookTable,
 } from '@krono/kit';
 import { Card, CardContent } from '@krono/ui/components/ui/card';
@@ -35,11 +36,18 @@ export function OrderbookPanel() {
   return (
     <Card className={'flex flex-1'}>
       <CardContent className="flex flex-1 px-0 pb-px pt-2 overflow-hidden">
-        <Orderbook.Panel
-          renderTable={(props) => (
-            <OrderbookTable.Root columns={columns} {...props} />
-          )}
-        ></Orderbook.Panel>
+        <OrderbookControls.Root>
+          <Orderbook.Panel
+            renderTable={(props) => (
+              <OrderbookTable.Root columns={columns} {...props} />
+            )}
+          />
+          <OrderbookControls.LiveBadge />
+          <OrderbookControls.Toolbar>
+            <OrderbookControls.PlaybackButtons />
+            <OrderbookControls.Timeline />
+          </OrderbookControls.Toolbar>
+        </OrderbookControls.Root>
       </CardContent>
     </Card>
   );

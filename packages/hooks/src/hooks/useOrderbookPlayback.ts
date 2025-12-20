@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useOrderbookHistory } from './useOrderbookHistory';
 
+export type UseOrderbookPlaybackReturnType = ReturnType<
+  typeof useOrderbookPlayback
+>;
+
 export function useOrderbookPlayback() {
   const { getAll, size } = useOrderbookHistory();
   const frames = getAll();

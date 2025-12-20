@@ -1,13 +1,16 @@
+import { useOrderbookPlaybackContext } from '@krono/hooks';
 import { Slider } from '@krono/ui/components/ui/slider';
-import type { OrderbookControlsBaseProps } from './types';
+import { cn } from '@krono/ui/lib';
+import type { ComponentPropsWithoutRef } from 'react';
 
-export type OrderbookControlsTimelineProps = Pick<
-  OrderbookControlsBaseProps,
-  'controls'
->;
+export type OrderbookControlsTimelineProps = ComponentPropsWithoutRef<'div'> & {
+  showBuffer?: boolean;
+};
 
 export function OrderbookControlsTimeline({
-  controls,
+  showBuffer = true,
+  className,
+  ...props
 }: OrderbookControlsTimelineProps) {
   const {
     isLive,
@@ -15,19 +18,24 @@ export function OrderbookControlsTimeline({
     index: currentIndex,
     historyLength,
     nextFrameInfo,
-  } = controls;
+  } = useOrderbookPlaybackContext();
 
-  const showBuffer = !isLive && nextFrameInfo;
-  const bufferWidth = showBuffer ? nextFrameInfo.progress * 100 : 0;
-
+  const shouldShowBuffer = showBuffer && !isLive && nextFrameInfo;
+  const bufferWidth = shouldShowBuffer ? nextFrameInfo.progress * 100 : 0;
   const sliderMax = Math.max(0, historyLength - 1);
   const sliderValue = isLive ? sliderMax : currentIndex;
 
   return (
-    <div className="absolute top-0 left-0 transform -translate-y-1/2 flex w-full">
-      {showBuffer && (
+    <div
+      className={cn(
+        'absolute top-0 left-0 transform -translate-y-1/2 flex w-full',
+        className,
+      )}
+      {...props}
+    >
+      {shouldShowBuffer && (
         <div
-          className="absolute left-0 top-0 h-full bg-black/15 dark:bg-white/15"
+          className="absolute left-0 top-0 h-full bg-black/15 dark:bg-white/15 pointer-events-none"
           style={{
             width: `${bufferWidth}%`,
             left: `${(sliderValue / sliderMax) * 100}%`,
@@ -44,7 +52,11 @@ export function OrderbookControlsTimeline({
         min={0}
         max={sliderMax}
         value={[sliderValue]}
-        onValueChange={(values) => goToIndex(values[0] ?? 0)}
+        onValueChange={(values) => {
+          if (values[0]) {
+            goToIndex(values[0]);
+          }
+        }}
       />
     </div>
   );
