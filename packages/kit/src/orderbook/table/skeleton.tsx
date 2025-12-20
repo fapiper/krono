@@ -20,7 +20,7 @@ export function OrderbookTableSkeleton({ n }: OrderbookTableSkeletonProps) {
         <Skeleton className="w-24" />
       </div>
 
-      {rows.map((key, i) => (
+      {rows.map((key) => (
         <div
           key={key}
           className="grid grid-cols-3 grow shrink-0 py-0 relative w-full gap-1"

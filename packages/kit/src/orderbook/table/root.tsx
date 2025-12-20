@@ -99,6 +99,7 @@ export function OrderbookTableRoot({
       className={
         'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-0.5 flex-1 group overflow-hidden'
       }
+      {...props}
     >
       {children || defaultContent}
     </div>

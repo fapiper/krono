@@ -1,18 +1,15 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "StoryBook",
   "extends": "@krono/tsconfig/nextjs.json",
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./src/*"],
-      "@ui/*": ["../../packages/ui/src/*"]
-    }
+    "baseUrl": "."
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "next.config.ts",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ]
 }

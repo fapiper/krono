@@ -1,3 +1,8 @@
-import postcssConfig from '@krono/ui/postcss.config';
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+  },
+};
 
-export default postcssConfig;
+export default config;

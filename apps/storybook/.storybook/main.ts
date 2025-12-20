@@ -1,5 +1,10 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { StorybookConfig } from '@storybook/nextjs';
+import postcssConfig from '../postcss.config.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const config: StorybookConfig = {
   stories: [
@@ -26,7 +31,7 @@ const config: StorybookConfig = {
               {
                 loader: 'postcss-loader',
                 options: {
-                  postcssOptions: require('../postcss.config.mjs'),
+                  postcssOptions: postcssConfig,
                 },
               },
             ],
@@ -38,9 +43,6 @@ const config: StorybookConfig = {
   framework: {
     name: '@storybook/nextjs',
     options: {},
-  },
-  docs: {
-    autodocs: 'tag',
   },
   webpackFinal: async (config) => {
     if (config.resolve) {
