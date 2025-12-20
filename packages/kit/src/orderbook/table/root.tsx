@@ -1,107 +1,95 @@
-'use client';
+import { cn } from '@krono/ui/lib';
+import { OrderbookTableBody, type OrderbookTableBodyProps } from './body';
+import { OrderbookTableColumn, type OrderbookTableColumnProps } from './column';
+import { OrderbookTableHeader, type OrderbookTableHeaderProps } from './header';
+import type { OrderbookTableRowProps } from './row';
+import type { OrderbookTableDirection } from './types';
 
-import {
-  useOrderbookConfig,
-  useOrderbookPlayback,
-  useOrderbookStatus,
-} from '@krono/hooks';
-import { useEffect, useMemo } from 'react';
-import { createBreakpoint } from 'react-use';
-import { OrderbookControls } from '../controls';
-import { OrderbookTableChart } from './chart';
-import { OrderbookTableSkeleton } from './skeleton';
-import type { OrderbookTableBaseProps } from './types';
+type BodyPick = 'renderRow' | 'data' | 'columns' | 'type' | 'maxTotal';
 
-const useBreakpoint = createBreakpoint({
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  '2xl': 1536,
-  '3xl': 1800,
-  '4xl': 2600,
-});
-
-const BREAKPOINT_MAP: Record<string, number> = {
-  md: 11,
-  lg: 22,
-  xl: 22,
-  '2xl': 36,
-  '3xl': 44,
-  '4xl': 99,
-};
-
-export type OrderbookTableRootProps = OrderbookTableBaseProps;
+export type OrderbookTableRootProps = OrderbookTableColumnProps &
+  Pick<OrderbookTableBodyProps, BodyPick> & {
+    showHeader?: boolean;
+    direction?: OrderbookTableDirection;
+    headerProps?: Omit<OrderbookTableHeaderProps, 'children'>;
+    bodyProps?: Omit<OrderbookTableBodyProps, BodyPick>;
+    rowProps?: Omit<OrderbookTableRowProps, 'children'>;
+  };
 
 export function OrderbookTableRoot({
+  data,
+  columns,
+  type = 'bids',
+  direction = 'ltr',
+  showHeader = true,
+  renderRow,
+  maxTotal,
+  headerProps: _headerProps = {},
+  rowProps: _rowProps = {},
+  bodyProps,
+  className,
   children,
   ...props
 }: OrderbookTableRootProps) {
-  const status = useOrderbookStatus();
-  const controls = useOrderbookPlayback();
-  const { currentData } = controls;
+  const defaultBarColor = {
+    bids: 'rgba(34, 197, 94, 0.2)',
+    asks: 'rgba(239, 68, 68, 0.2)',
+  };
 
-  const { setLimit, limit } = useOrderbookConfig();
-  const breakpoint = useBreakpoint();
-  const n = BREAKPOINT_MAP[breakpoint] ?? 15;
+  const {
+    className: headerClassName,
+    columns: headerColumns,
+    ...headerProps
+  } = _headerProps;
 
-  useEffect(() => {
-    if (limit !== n) {
-      setLimit(n);
-    }
-  }, [n, setLimit, limit]);
+  const {
+    barProps: _rowBarProps = {},
+    className: rowClassName,
+    ...rowProps
+  } = _rowProps;
+  const { color, ...rowBarProps } = _rowBarProps;
+  const rowBarColor = color ?? defaultBarColor[type];
 
-  const processedData = useMemo(() => {
-    const asks = currentData?.asks.slice(0, n) ?? [];
-    const bids = currentData?.bids.slice(0, n) ?? [];
+  const orderedColumns = direction === 'ltr' ? columns : [...columns].reverse();
 
-    const maxAsk = (asks.length > 0 ? asks[asks.length - 1]?.total : 0) ?? 0;
-    const maxBid = (bids.length > 0 ? bids[bids.length - 1]?.total : 0) ?? 0;
+  const gridColsClassName = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-2',
+    3: 'grid-cols-3',
+    4: 'grid-cols-4',
+  }[columns.length];
 
-    return { asks, bids, maxAsk, maxBid };
-  }, [currentData, n]);
-
-  const loading = status !== 'connected' || !currentData;
-
-  const defaultContent = (
-    <>
-      {loading ? (
-        <>
-          <OrderbookTableSkeleton n={n} />
-          <OrderbookTableSkeleton n={n} />
-
-          <div className="absolute inset-0 flex items-center justify-center bg-background/25 z-10">
-            <span className="text-foreground text-lg p-4">
-              Connecting to feed...
-            </span>
-          </div>
-        </>
-      ) : (
-        <>
-          <OrderbookTableChart
-            data={processedData.bids}
-            maxTotal={processedData.maxBid}
-            type="bids"
-          />
-          <OrderbookTableChart
-            data={processedData.asks}
-            maxTotal={processedData.maxAsk}
-            type="asks"
-          />
-          <OrderbookControls.Root controls={controls} />
-        </>
-      )}
-    </>
-  );
+  if (children) {
+    return (
+      <OrderbookTableColumn className={cn('w-full', className)} {...props}>
+        {children}
+      </OrderbookTableColumn>
+    );
+  }
 
   return (
-    <div
-      className={
-        'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-0.5 flex-1 group overflow-hidden'
-      }
-      {...props}
-    >
-      {children || defaultContent}
-    </div>
+    <OrderbookTableColumn className={cn('w-full', className)} {...props}>
+      {showHeader && (
+        <OrderbookTableHeader
+          columns={headerColumns ?? orderedColumns}
+          type={type}
+          className={cn(headerClassName, gridColsClassName)}
+          {...headerProps}
+        />
+      )}
+      <OrderbookTableBody
+        rowProps={{
+          barProps: { color: rowBarColor, direction, ...rowBarProps },
+          className: cn(rowClassName, gridColsClassName),
+          ...rowProps,
+        }}
+        data={data}
+        columns={columns}
+        type={type}
+        renderRow={renderRow}
+        maxTotal={maxTotal}
+        {...bodyProps}
+      />
+    </OrderbookTableColumn>
   );
 }

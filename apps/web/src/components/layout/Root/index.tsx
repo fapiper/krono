@@ -15,12 +15,12 @@ export default function LayoutRoot({
   ...props
 }: LayoutRootProps) {
   return (
-    <Orderbook.Root config={{ symbol: 'BTC/USD', debug: true }}>
+    <Orderbook.RootProvider config={{ symbol: 'BTC/USD', debug: true }}>
       <div className={cn('flex flex-col lg:h-screen', className)} {...props}>
         <LayoutHeader />
         <LayoutMain>{children}</LayoutMain>
         <LayoutFooter />
       </div>
-    </Orderbook.Root>
+    </Orderbook.RootProvider>
   );
 }

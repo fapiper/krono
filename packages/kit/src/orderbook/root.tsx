@@ -1,27 +1,16 @@
+import { OrderbookPanel, type OrderbookPanelProps } from './panel';
 import {
-  AssetPairsProvider,
-  type AssetPairsProviderProps,
-  OrderbookProvider,
-  type OrderbookProviderProps,
-} from '@krono/hooks';
-import type { PropsWithChildren } from 'react';
+  OrderbookRootProvider,
+  type OrderbookRootProviderProps,
+} from './root-provider';
 
-export type OrderbookRootProps = PropsWithChildren<{
-  config: OrderbookProviderProps['config'] & {
-    assetPairs?: AssetPairsProviderProps['config'];
-  };
-}>;
+export type OrderbookRootProps = Pick<OrderbookRootProviderProps, 'config'> &
+  OrderbookPanelProps;
 
-const OrderbookRoot = ({ children, config }: OrderbookRootProps) => {
-  const { assetPairs: assetPairsConfig = {}, ...orderbookConfig } = config;
-
+export function OrderbookRoot({ config, ...props }: OrderbookRootProps) {
   return (
-    <AssetPairsProvider config={assetPairsConfig}>
-      <OrderbookProvider config={orderbookConfig}>{children}</OrderbookProvider>
-    </AssetPairsProvider>
+    <OrderbookRootProvider config={config}>
+      <OrderbookPanel {...props} />
+    </OrderbookRootProvider>
   );
-};
-
-export const Orderbook = {
-  Root: OrderbookRoot,
-};
+}

@@ -1,15 +1,22 @@
 import type { PriceLevel } from '@krono/core';
-import type { useOrderbookPlayback } from '@krono/hooks';
-import type { HTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 
-export type OrderbookTableBaseProps = HTMLAttributes<HTMLDivElement>;
+export type OrderbookType = 'bids' | 'asks';
 
-export interface PriceLevelDataProps {
-  data: PriceLevel[];
-  maxTotal: number;
-  type?: 'bids' | 'asks';
-}
+export type OrderbookTableDirection = 'ltr' | 'rtl';
 
-export type OrderbookTableControlsProps = OrderbookTableBaseProps & {
-  controls: ReturnType<typeof useOrderbookPlayback>;
+export type ColumnDef<TData = PriceLevel> = {
+  id: string;
+  header: ReactNode | ((props: { type: OrderbookType }) => ReactNode);
+  cell: (props: {
+    value: TData;
+    type: OrderbookType;
+    index: number;
+  }) => ReactNode;
+  accessorKey?: keyof TData;
+  className?: string;
+  headerClassName?: string;
+  cellClassName?:
+    | string
+    | ((props: { type: OrderbookType; index: number }) => string);
 };
