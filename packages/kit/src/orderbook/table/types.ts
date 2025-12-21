@@ -1,22 +1,23 @@
 import type { PriceLevel } from '@krono/core';
 import type { ReactNode } from 'react';
+import type { OrderbookTableCellProps } from './cell';
 
 export type OrderbookType = 'bids' | 'asks';
-
 export type OrderbookTableDirection = 'ltr' | 'rtl';
 
-export type ColumnDef<TData = PriceLevel> = {
-  id: string;
-  header: ReactNode | ((props: { type: OrderbookType }) => ReactNode);
-  cell: (props: {
-    value: TData;
-    type: OrderbookType;
-    index: number;
-  }) => ReactNode;
-  accessorKey?: keyof TData;
-  className?: string;
-  headerClassName?: string;
-  cellClassName?:
-    | string
-    | ((props: { type: OrderbookType; index: number }) => string);
+export type OrderbookColumnRenderContext = {
+  value: PriceLevel;
+  type: OrderbookType;
+  index: number;
+};
+
+export type OrderbookColumnProps = Omit<OrderbookTableCellProps, 'children'> & {
+  label?: ReactNode;
+  children?: ReactNode | ((context: OrderbookColumnRenderContext) => ReactNode);
+};
+
+export type OrderbookTableColumns = {
+  price?: OrderbookColumnProps;
+  quantity?: OrderbookColumnProps;
+  total?: OrderbookColumnProps;
 };

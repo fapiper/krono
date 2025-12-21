@@ -37,13 +37,13 @@ export function OrderbookTableSkeleton({
     <OrderbookTable.Column className={cn('', className)} {...props}>
       {showHeader && (
         <OrderbookTable.Row
-          className={cn('gap-0.5 items-stretch', headerRowClassName)}
+          className={cn('gap-px items-stretch', headerRowClassName)}
           {...headerRowProps}
         >
           {colArray.map((i) => (
             <Skeleton
               key={`header-${i}`}
-              className={cn('h-4 md:h-unset', cellClassName)}
+              className={cn('h-4 shrink-0 grow md:h-unset', cellClassName)}
               {...cellProps}
             />
           ))}
@@ -53,7 +53,7 @@ export function OrderbookTableSkeleton({
       {rowArray.map((rowIndex) => (
         <OrderbookTable.Row
           key={`row-${rowIndex}`}
-          className={cn('gap-0.5 items-stretch', bodyRowClassName)}
+          className={cn('gap-px items-stretch', bodyRowClassName)}
           {...bodyRowProps}
         >
           {colArray.map((colIndex) => (

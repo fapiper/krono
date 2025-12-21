@@ -28,7 +28,7 @@ export function OrderbookTableRow({
         ...style,
       }}
       className={cn(
-        'relative flex shrink-0 grow px-2 py-1 items-center',
+        'relative flex shrink-0 grow px-3 py-2 items-center',
         direction === 'ltr' ? 'md:flex-row-reverse' : 'md:flex-row',
         getBarClassName(barProps),
         className,

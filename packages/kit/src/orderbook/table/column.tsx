@@ -9,7 +9,10 @@ export function OrderbookTableColumn({
   ...props
 }: OrderbookTableColumnProps) {
   return (
-    <div className={cn('flex flex-col flex-1', className)} {...props}>
+    <div
+      className={cn('flex flex-col flex-1 w-full gap-y-px', className)}
+      {...props}
+    >
       {children}
     </div>
   );

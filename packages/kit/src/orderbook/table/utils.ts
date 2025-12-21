@@ -1,27 +1,44 @@
 import type { OrderbookType } from './types';
 
-export const formatUSD = (value: number) => {
+export const formatUSD = (value: number, decimals = 2) => {
+  if (!Number.isFinite(value)) return String(value);
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+    roundingMode: 'halfExpand',
   }).format(value);
 };
 
-export const formatDigits = (value: number, digits = 8) => {
-  if (value === 0) return '0';
+export const formatDigits = (
+  value: number,
+  opts: {
+    decimals?: number; // How many decimal places to show (default: 8)
+    minVal?: number; // Threshold to show "< 0.00..." instead of "0.00..."
+    useGrouping?: boolean;
+  } = {},
+) => {
+  const { decimals = 8, minVal = 1e-8, useGrouping = true } = opts;
+
   if (!Number.isFinite(value)) return String(value);
 
-  const rounded = Number(value.toPrecision(digits));
-  const integerDigits = Math.floor(Math.abs(rounded)).toString().length;
-  const decimalPlaces = Math.max(0, digits - integerDigits);
+  if (value === 0) {
+    return `0.${'0'.repeat(decimals)}`;
+  }
+
+  const absVal = Math.abs(value);
+
+  if (absVal > 0 && absVal < minVal) {
+    return `< ${minVal.toFixed(decimals)}`;
+  }
 
   return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: decimalPlaces,
-    maximumFractionDigits: decimalPlaces,
-    useGrouping: false,
-  }).format(rounded);
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+    useGrouping,
+  }).format(value);
 };
 
 export const defaultBarColorMap: Record<OrderbookType, string> = {

@@ -4,21 +4,23 @@ import { OrderbookTableBody, type OrderbookTableBodyProps } from './body';
 import { OrderbookTableColumn, type OrderbookTableColumnProps } from './column';
 import { OrderbookTableHeader, type OrderbookTableHeaderProps } from './header';
 import type { OrderbookTableRowProps } from './row';
+import type { OrderbookTableColumns } from './types';
 
-type HeaderPick = 'columns' | 'type' | 'direction';
+type HeaderPick = 'type' | 'direction' | 'columns';
 type BodyPick = HeaderPick | 'renderRow' | 'data' | 'maxTotal';
 
 export type OrderbookTableRootProps = OrderbookTableColumnProps &
   Pick<OrderbookTableBodyProps, BodyPick> & {
+    columns?: OrderbookTableColumns;
     showHeader?: boolean;
-    headerProps?: Omit<OrderbookTableHeaderProps, HeaderPick | 'children'>;
+    headerProps?: Omit<OrderbookTableHeaderProps, HeaderPick>;
     bodyProps?: Omit<OrderbookTableBodyProps, BodyPick>;
     rowProps?: Omit<OrderbookTableRowProps, 'children'>;
   };
 
 export function OrderbookTableRoot({
   data,
-  columns,
+  columns = {},
   type = 'bids',
   direction = 'ltr',
   showHeader = true,
@@ -37,14 +39,20 @@ export function OrderbookTableRoot({
 
   if (children) {
     return (
-      <OrderbookTableColumn className={cn('w-full', className)} {...props}>
+      <OrderbookTableColumn className={cn(className)} {...props}>
         {children}
       </OrderbookTableColumn>
     );
   }
 
   return (
-    <OrderbookTableColumn className={cn('w-full', className)} {...props}>
+    <OrderbookTableColumn
+      className={cn(
+        direction === 'ltr' ? 'md:text-left' : 'md:text-right',
+        className,
+      )}
+      {...props}
+    >
       {showHeader && (
         <OrderbookTableHeader
           columns={columns}

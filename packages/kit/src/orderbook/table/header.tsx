@@ -1,45 +1,35 @@
 import { cn } from '@krono/ui/lib';
-import { OrderbookTableCell, type OrderbookTableCellProps } from './cell';
+import { OrderbookTableCell } from './cell';
 import { OrderbookTableRow, type OrderbookTableRowProps } from './row';
-import type { ColumnDef, OrderbookType } from './types';
+import type { OrderbookTableColumns, OrderbookType } from './types';
 
 export type OrderbookTableHeaderProps = Omit<
   OrderbookTableRowProps,
   'children'
 > & {
-  columns?: ColumnDef[];
+  columns?: OrderbookTableColumns;
   type?: OrderbookType;
-  cellProps?: Omit<OrderbookTableCellProps, 'children'>;
 };
 
 export function OrderbookTableHeader({
-  columns,
+  columns = {},
   type = 'bids',
-  cellProps: _cellProps = {},
   className,
   ...props
 }: OrderbookTableHeaderProps) {
-  const { className: cellClassName, ...cellProps } = _cellProps;
+  const renderHeaderCell = (column?: { label?: React.ReactNode }) => (
+    <OrderbookTableCell>{column?.label}</OrderbookTableCell>
+  );
+
   return (
     <OrderbookTableRow
-      className={cn('font-bold text-foreground/50 uppercase', className)}
+      className={cn('font-bold text-foreground uppercase', className)}
       barProps={{ enabled: false }}
       {...props}
     >
-      {columns?.map((col) => {
-        const headerContent =
-          typeof col.header === 'function' ? col.header({ type }) : col.header;
-
-        return (
-          <OrderbookTableCell
-            key={col.id}
-            className={cn(col.headerClassName, col.className, cellClassName)}
-            {...cellProps}
-          >
-            {headerContent}
-          </OrderbookTableCell>
-        );
-      })}
+      {renderHeaderCell(columns.total)}
+      {renderHeaderCell(columns.quantity)}
+      {renderHeaderCell(columns.price)}
     </OrderbookTableRow>
   );
 }

@@ -94,7 +94,7 @@ export function OrderbookPanel({
   return (
     <div
       className={cn(
-        'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-0.5 shrink grow overflow-hidden',
+        'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-px shrink grow overflow-hidden',
         !loading && 'group',
         className,
       )}
