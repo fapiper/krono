@@ -1,5 +1,0 @@
-@import "tailwindcss";
-@import "@krono/ui/globals.css";
-@import "@krono/kit/globals.css";
-@source "../../node_modules/@krono/ui";
-@source "../../node_modules/@krono/kit";

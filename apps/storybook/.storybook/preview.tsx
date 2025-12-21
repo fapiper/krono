@@ -1,5 +1,9 @@
+import { Orderbook } from '@krono/kit';
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react';
+
+import '@krono/ui/globals.css';
+import '@krono/kit/globals.css';
 
 const preview: Preview = {
   parameters: {
@@ -22,6 +26,11 @@ const preview: Preview = {
       },
       defaultTheme: 'light',
     }),
+    (Story) => (
+      <Orderbook.RootProvider config={{ symbol: 'BTC/USD' }}>
+        <Story />
+      </Orderbook.RootProvider>
+    ),
   ],
 };
 
