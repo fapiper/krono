@@ -1,31 +1,28 @@
 import { cn } from '@krono/ui/lib';
-import type { ComponentPropsWithoutRef } from 'react';
-import { OrderbookTableCell } from './cell';
-import { OrderbookTableRow } from './row';
+import { OrderbookTableCell, type OrderbookTableCellProps } from './cell';
+import { OrderbookTableRow, type OrderbookTableRowProps } from './row';
 import type { ColumnDef, OrderbookType } from './types';
 
-export type OrderbookTableHeaderProps = ComponentPropsWithoutRef<'div'> & {
+export type OrderbookTableHeaderProps = Omit<
+  OrderbookTableRowProps,
+  'children'
+> & {
   columns?: ColumnDef[];
   type?: OrderbookType;
-  gridCols?: string;
-  cellClassName?: string;
+  cellProps?: Omit<OrderbookTableCellProps, 'children'>;
 };
 
 export function OrderbookTableHeader({
   columns,
   type = 'bids',
-  gridCols,
-  cellClassName,
+  cellProps: _cellProps = {},
   className,
   ...props
 }: OrderbookTableHeaderProps) {
+  const { className: cellClassName, ...cellProps } = _cellProps;
   return (
     <OrderbookTableRow
-      className={cn(
-        'font-bold text-foreground/50 uppercase',
-        gridCols,
-        className,
-      )}
+      className={cn('font-bold text-foreground/50 uppercase', className)}
       barProps={{ enabled: false }}
       {...props}
     >
@@ -37,6 +34,7 @@ export function OrderbookTableHeader({
           <OrderbookTableCell
             key={col.id}
             className={cn(col.headerClassName, col.className, cellClassName)}
+            {...cellProps}
           >
             {headerContent}
           </OrderbookTableCell>

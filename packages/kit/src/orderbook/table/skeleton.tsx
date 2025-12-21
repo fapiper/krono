@@ -2,7 +2,6 @@ import { Skeleton } from '@krono/ui/components/ui/skeleton';
 import { cn } from '@krono/ui/lib';
 import type { ComponentPropsWithoutRef } from 'react';
 import {
-  gridColsClassNameMap,
   OrderbookTable,
   type OrderbookTableCellProps,
   type OrderbookTableRowProps,
@@ -29,7 +28,6 @@ export function OrderbookTableSkeleton({
 }: OrderbookTableSkeletonProps) {
   const rowArray = Array.from({ length: rows }, (_, i) => i);
   const colArray = Array.from({ length: columns }, (_, i) => i);
-  const gridColsClassName = gridColsClassNameMap[columns];
 
   const { className: headerRowClassName, ...headerRowProps } = _headerRowProps;
   const { className: bodyRowClassName, ...bodyRowProps } = _bodyRowProps;
@@ -39,17 +37,13 @@ export function OrderbookTableSkeleton({
     <OrderbookTable.Column className={cn('', className)} {...props}>
       {showHeader && (
         <OrderbookTable.Row
-          className={cn(
-            'gap-0 items-stretch',
-            gridColsClassName,
-            headerRowClassName,
-          )}
+          className={cn('gap-0.5 items-stretch', headerRowClassName)}
           {...headerRowProps}
         >
           {colArray.map((i) => (
             <Skeleton
               key={`header-${i}`}
-              className={cn('w-24 shrink-0 grow', cellClassName)}
+              className={cn('h-4 md:h-unset', cellClassName)}
               {...cellProps}
             />
           ))}
@@ -59,17 +53,13 @@ export function OrderbookTableSkeleton({
       {rowArray.map((rowIndex) => (
         <OrderbookTable.Row
           key={`row-${rowIndex}`}
-          className={cn(
-            'gap-0.5 items-stretch',
-            gridColsClassName,
-            bodyRowClassName,
-          )}
+          className={cn('gap-0.5 items-stretch', bodyRowClassName)}
           {...bodyRowProps}
         >
           {colArray.map((colIndex) => (
             <Skeleton
               key={`cell-${rowIndex}-${colIndex}`}
-              className={cn('w-full shrink-0 grow', cellClassName)}
+              className={cn('shrink-0 grow h-4 md:h-unset', cellClassName)}
               {...cellProps}
             />
           ))}

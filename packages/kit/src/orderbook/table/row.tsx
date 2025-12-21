@@ -1,3 +1,4 @@
+import type { OrderbookTableDirection } from '@krono/kit';
 import { cn } from '@krono/ui/lib';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import {
@@ -8,6 +9,7 @@ import {
 
 export type OrderbookTableRowProps = ComponentPropsWithoutRef<'div'> & {
   children: ReactNode;
+  direction?: OrderbookTableDirection;
   barProps?: OrderbookTableRowBarProps;
 };
 
@@ -16,6 +18,7 @@ export function OrderbookTableRow({
   className,
   barProps = {},
   style,
+  direction,
   ...props
 }: OrderbookTableRowProps) {
   return (
@@ -25,7 +28,8 @@ export function OrderbookTableRow({
         ...style,
       }}
       className={cn(
-        'relative grid shrink-0 grow px-2 py-0.5 items-center',
+        'relative flex shrink-0 grow px-2 py-1 items-center',
+        direction === 'ltr' ? 'md:flex-row-reverse' : 'md:flex-row',
         getBarClassName(barProps),
         className,
       )}

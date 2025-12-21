@@ -28,12 +28,3 @@ export const defaultBarColorMap: Record<OrderbookType, string> = {
   bids: 'rgba(34, 197, 94, 0.2)',
   asks: 'rgba(239, 68, 68, 0.2)',
 };
-
-export const gridColsClassNameMap: Record<number, string> = {
-  1: 'grid-cols-1',
-  2: 'grid-cols-2',
-  3: 'grid-cols-3',
-  4: 'grid-cols-4',
-  5: 'grid-cols-5',
-  6: 'grid-cols-6',
-};

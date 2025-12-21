@@ -23,7 +23,7 @@ export default function LayoutFooter({
   return (
     <footer
       className={cn(
-        'shrink-0 flex flex-col lg:flex-row items-center w-full bg-background lg:h-12 px-4 py-4 gap-2 lg:gap-4',
+        'shrink-0 flex flex-col md:flex-row items-center w-full bg-background md:h-12 px-4 py-4 gap-2 md:gap-4',
         className,
       )}
       {...props}

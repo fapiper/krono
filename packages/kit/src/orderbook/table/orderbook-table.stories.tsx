@@ -25,7 +25,6 @@ const generateData = (
   return data;
 };
 
-// --- DEFAULT COLUMNS ---
 const defaultColumns: ColumnDef[] = [
   {
     id: 'price',
@@ -100,7 +99,7 @@ export const Asks: Story = {
 export const RightToLeft: Story = {
   args: {
     type: 'bids',
-    direction: 'rtl', // Useful if you want the bar to grow from right to left
+    direction: 'rtl',
     data: generateData('bids'),
   },
 };
