@@ -38,7 +38,7 @@ const standardColumns: ColumnDef[] = [
  * depth visualization bars, and flexible styling options.
  */
 const meta: Meta<typeof OrderbookTable.Root> = {
-  title: 'Orderbook/Table',
+  title: 'OrderbookTable',
   component: OrderbookTable.Root,
   parameters: {
     layout: 'fullscreen',

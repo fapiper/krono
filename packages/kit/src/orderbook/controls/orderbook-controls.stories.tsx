@@ -42,7 +42,7 @@ const standardColumns: ColumnDef[] = [
  * or is in "time travel" mode showing historical data.
  */
 const liveBadgeMeta: Meta<typeof OrderbookControls.LiveBadge> = {
-  title: 'Orderbook/Controls/LiveBadge',
+  title: 'OrderbookControls/LiveBadge',
   component: OrderbookControls.LiveBadge,
   parameters: {
     layout: 'centered',
@@ -146,7 +146,7 @@ export const InContext: LiveBadgeStory = {
 export const playbackButtonsMeta: Meta<
   typeof OrderbookControls.PlaybackButtons
 > = {
-  title: 'Orderbook/Controls/PlaybackButtons',
+  title: 'OrderbookControls/PlaybackButtons',
   component: OrderbookControls.PlaybackButtons,
   parameters: {
     layout: 'centered',
@@ -282,7 +282,7 @@ export const PlaybackInContext: PlaybackButtonsStory = {
  * Shows buffer progress and allows direct navigation to any point in time.
  */
 export const timelineMeta: Meta<typeof OrderbookControls.Timeline> = {
-  title: 'Orderbook/Controls/Timeline',
+  title: 'OrderbookControls/Timeline',
   component: OrderbookControls.Timeline,
   parameters: {
     layout: 'centered',
@@ -395,7 +395,7 @@ export const TimelineInContext: TimelineStory = {
  * Automatically hides when live and shows on hover, or can be configured to always be visible.
  */
 export const toolbarMeta: Meta<typeof OrderbookControls.Toolbar> = {
-  title: 'Orderbook/Controls/Toolbar',
+  title: 'OrderbookControls/Toolbar',
   component: OrderbookControls.Toolbar,
   parameters: {
     layout: 'fullscreen',
