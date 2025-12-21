@@ -8,197 +8,157 @@ The `Orderbook.Root` component serves as the context provider for all orderbook-
 ## Basic Setup
 
 The minimal configuration requires only a trading pair symbol:
-
-<CodeGroup>
-    ```tsx Basic
-    import { Orderbook } from '@krono/kit'
-
-    export const App = () => {
-    return (
-    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
-    {/* Your orderbook components */}
-</Orderbook.Root>
-)
-}
-```
-```tsx With Components
-import { Orderbook, OrderbookTable } from '@krono/kit'
+```tsx
+import { Orderbook } from '@krono/kit'
 
 export const App = () => {
-return (
-<Orderbook.Root config={{ symbol: 'BTC/USD' }}>
-    <Orderbook.Panel
-        renderTable={(props) => <OrderbookTable.Root {...props} />}
-    />
-</Orderbook.Root>
-)
+  return (
+    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+      {/* Your components */}
+    </Orderbook.Root>
+  )
 }
 ```
-</CodeGroup>
 
 ## Configuration Structure
 
 The `config` prop accepts an object with orderbook settings and optional asset pairs configuration:
+```tsx
+import { Orderbook } from '@krono/kit'
 
-<CodeGroup>
-    ```tsx Basic
+export const App = () => {
+  return (
     <Orderbook.Root
-        config={{
-            symbol: 'BTC/USD',
-            depth: 100,
-            limit: 50
-        }}
+      config={{
+        // Core orderbook settings
+        symbol: 'BTC/USD',
+        depth: 100,
+        limit: 50,
+        tickSize: 0.1,
+        spreadGrouping: 1,
+
+        // Performance settings
+        throttleMs: 100,
+        debounceMs: 0,
+
+        // Reconnection settings
+        reconnect: {
+          enabled: true,
+          maxAttempts: 5,
+          delayMs: 1000
+        },
+
+        // History settings
+        historyEnabled: false,
+        maxHistoryLength: 100,
+
+        // Asset pairs settings
+        assetPairs: {
+          autoFetch: true,
+          topN: 100,
+          debug: false
+        },
+
+        // Debug logging
+        debug: false
+      }}
     >
-        {/* Components */}
+      <Orderbook.Panel />
     </Orderbook.Root>
-    ```
-    ```tsx With Asset Pairs
-    <Orderbook.Root
-        config={{
-            symbol: 'BTC/USD',
-            depth: 100,
-            limit: 50,
-            assetPairs: {
-                topN: 100,
-                autoFetch: true
-            }
-        }}
-    >
-        {/* Components */}
-    </Orderbook.Root>
-    ```
-    ```tsx Complete
-    <Orderbook.Root
-        config={{
-            symbol: 'BTC/USD',
-            depth: 100,
-            limit: 50,
-            throttleMs: 100,
-            historyEnabled: true,
-            maxHistoryLength: 50,
-            reconnect: {
-                enabled: true,
-                maxAttempts: 5,
-                delayMs: 1000
-            },
-            assetPairs: {
-                topN: 100,
-                autoFetch: true
-            }
-        }}
-    >
-        {/* Components */}
-    </Orderbook.Root>
-    ```
-</CodeGroup>
+  )
+}
+```
 
 ## Configuration Sections
 
 <CardGroup cols={2}>
     <Card title="Orderbook Settings" icon="chart-line" href="/kit/configuration/orderbook">
-        Core orderbook behavior, depth, limits, and performance tuning
+        Core settings for symbol, depth, limits, and reconnection
+    </Card>
+    <Card title="Performance Settings" icon="gauge-high" href="/kit/configuration/performance">
+        Throttling and debouncing for optimal performance
+    </Card>
+    <Card title="History Configuration" icon="clock-rotate-left" href="/kit/configuration/history">
+        Enable snapshot tracking and playback features
     </Card>
     <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
-        Trading pair metadata and automatic fetching options
-    </Card>
-    <Card title="Performance" icon="gauge-high" href="/kit/configuration/performance">
-        Throttling, debouncing, and optimization settings
-    </Card>
-    <Card title="History" icon="clock-rotate-left" href="/kit/configuration/history">
-        Historical snapshot tracking and playback features
+        Configure trading pair metadata fetching
     </Card>
 </CardGroup>
 
 ## Quick Reference
 
 <AccordionGroup>
-    <Accordion title="Minimal Configuration">
-        Only the symbol is required. All other settings use sensible defaults.
+    <Accordion title="Essential Settings">
         ```tsx
-        <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
-            <OrderbookTable.Root data={data} type="bids" />
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',     // Trading pair (required)
+                depth: 100,            // API subscription depth
+                limit: 50              // Client-side max levels
+            }}
+        >
+            <Orderbook.Panel />
         </Orderbook.Root>
         ```
     </Accordion>
 
-    <Accordion title="Production Configuration">
-        Recommended settings for production deployments with reliability and performance optimization.
+    <Accordion title="Performance Tuning">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                throttleMs: 100,       // Update frequency (ms)
+                debounceMs: 0,         // Debounce delay (ms)
+                depth: 25,             // Lower depth = faster
+                limit: 10              // Fewer levels = less memory
+            }}
+        >
+            <Orderbook.Panel />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Production Setup">
         ```tsx
         <Orderbook.Root
             config={{
                 symbol: 'BTC/USD',
                 depth: 100,
                 limit: 50,
-                throttleMs: 100,
-                historyEnabled: true,
-                maxHistoryLength: 50,
                 reconnect: {
                     enabled: true,
                     maxAttempts: 5,
                     delayMs: 1000
                 },
                 assetPairs: {
-                    topN: 100,
-                    autoFetch: true
-                }
+                    autoFetch: true,
+                    topN: 100
+                },
+                debug: false
             }}
         >
-            <OrderbookPanel />
+            <Orderbook.Panel />
         </Orderbook.Root>
         ```
     </Accordion>
 
-    <Accordion title="Development Configuration">
-        Enable debugging features for local development.
+    <Accordion title="Development Setup">
         ```tsx
         <Orderbook.Root
             config={{
                 symbol: 'BTC/USD',
-                debug: true,
+                depth: 100,
+                limit: 50,
                 historyEnabled: true,
+                debug: true,
                 assetPairs: {
                     autoFetch: true,
                     debug: true
                 }
             }}
         >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="High-Frequency Trading">
-        Optimized for minimal latency and high update rates.
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 25,
-                limit: 10,
-                throttleMs: 50
-            }}
-        >
-            <OrderbookTable.Root data={data} type="bids" />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Memory-Efficient Configuration">
-        Reduced memory footprint for resource-constrained environments.
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 25,
-                limit: 25,
-                historyEnabled: false,
-                assetPairs: {
-                    topN: 20,
-                    autoFetch: true
-                }
-            }}
-        >
-            <OrderbookPanel />
+            <Orderbook.Panel />
         </Orderbook.Root>
         ```
     </Accordion>
@@ -209,22 +169,16 @@ The `config` prop accepts an object with orderbook settings and optional asset p
 The `Orderbook.Root` component automatically provides three context providers:
 
 <Steps>
-    <Step title="AssetPairsProvider">
-        Manages trading pair metadata including tick sizes, lot sizes, and pair information.
-
-        Accessible via the `useAssetPairs()` hook from `@krono/hooks`.
+    <Step title="Orderbook Context">
+        Provides live orderbook data, connection state, and control methods via `useOrderbook()`.
     </Step>
 
-    <Step title="OrderbookProvider">
-        Handles WebSocket connection, orderbook data streaming, and reconnection logic.
-
-        Accessible via the `useOrderbook()` hook from `@krono/hooks`.
+    <Step title="Asset Pairs Context">
+        Manages trading pair metadata via `useAssetPairs()`.
     </Step>
 
-    <Step title="OrderbookPlaybackProvider">
-        Enables historical snapshot tracking and playback features.
-
-        Accessible via the `useOrderbookPlayback()` hook from `@krono/hooks`.
+    <Step title="Playback Context">
+        Enables historical playback features via `useOrderbookPlayback()`.
     </Step>
 </Steps>
 
@@ -233,35 +187,99 @@ All child components can access these contexts through the provided hooks.
 ## Props
 
 <ParamField path="config" type="OrderbookRootConfig" required>
-    Configuration object for orderbook and asset pairs.
+    Configuration object for the orderbook provider.
 
     <Expandable title="config properties">
         <ParamField path="symbol" type="string" required>
-            The trading pair symbol (e.g., `BTC/USD`, `ETH/EUR`).
+            Trading pair symbol (e.g., `BTC/USD`)
         </ParamField>
 
-        <ParamField path="assetPairs" type="AssetPairsConfig">
-            Optional asset pairs configuration. See [Asset Pairs Configuration](/kit/configuration/asset-pairs).
+        <ParamField path="depth" type="number">
+            Subscription depth: `10`, `25`, `100`, `500`, or `1000`. Default: `1000`
         </ParamField>
 
-        <ParamField path="...orderbookConfig" type="OrderbookConfig">
-            All other orderbook configuration options. See [Orderbook Configuration](/kit/configuration/orderbook).
+        <ParamField path="limit" type="number">
+            Maximum price levels per side. Default: `100`
+        </ParamField>
+
+        <ParamField path="tickSize" type="number">
+            Minimum price increment. Auto-fetched if not provided.
+        </ParamField>
+
+        <ParamField path="spreadGrouping" type="number">
+            Group price levels by this increment. Default: `0`
+        </ParamField>
+
+        <ParamField path="throttleMs" type="number">
+            Update frequency in milliseconds. Default: `100`
+        </ParamField>
+
+        <ParamField path="debounceMs" type="number">
+            Debounce delay in milliseconds. Default: `0`
+        </ParamField>
+
+        <ParamField path="reconnect" type="object">
+            Reconnection settings.
+
+            <Expandable title="reconnect properties">
+                <ParamField path="enabled" type="boolean">
+                    Enable auto-reconnect. Default: `true`
+                </ParamField>
+
+                <ParamField path="maxAttempts" type="number">
+                    Max reconnection attempts. Default: `Infinity`
+                </ParamField>
+
+                <ParamField path="delayMs" type="number">
+                    Delay between attempts. Default: `1000`
+                </ParamField>
+            </Expandable>
+        </ParamField>
+
+        <ParamField path="historyEnabled" type="boolean">
+            Enable snapshot history. Default: `false`
+        </ParamField>
+
+        <ParamField path="maxHistoryLength" type="number">
+            Max snapshots to store. Default: `100`
+        </ParamField>
+
+        <ParamField path="assetPairs" type="object">
+            Asset pairs configuration.
+
+            <Expandable title="assetPairs properties">
+                <ParamField path="autoFetch" type="boolean">
+                    Auto-fetch on mount. Default: `false`
+                </ParamField>
+
+                <ParamField path="topN" type="number">
+                    Limit to top N pairs. Default: `undefined`
+                </ParamField>
+
+                <ParamField path="debug" type="boolean">
+                    Enable debug logging. Default: `false`
+                </ParamField>
+            </Expandable>
+        </ParamField>
+
+        <ParamField path="debug" type="boolean">
+            Enable debug logging. Default: `false`
         </ParamField>
     </Expandable>
 </ParamField>
 
 <ParamField path="children" type="ReactNode" required>
-    Child components that will have access to the orderbook context.
+    Child components that will have access to orderbook context.
 </ParamField>
 
 ## Notes
 
 <Note>
-    The `symbol` property is the only required configuration field. All other settings have sensible defaults.
+    The `Orderbook.Root` component must wrap all components that need access to orderbook data. It cannot be nested.
 </Note>
 
 <Tip>
-    Enable `debug` mode during development to see detailed logging of connection events, updates, and errors.
+    For optimal performance, keep the `config` object stable. Use `useMemo` or define it outside the component to prevent unnecessary re-initializations.
 </Tip>
 
 <Warning>
