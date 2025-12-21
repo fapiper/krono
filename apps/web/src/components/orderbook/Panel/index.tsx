@@ -34,20 +34,21 @@ export function OrderbookPanel() {
   ];
 
   return (
-    <Card className={'flex flex-1'}>
-      <CardContent className="flex flex-1 px-0 pb-px pt-2 overflow-hidden">
-        <OrderbookControls.Root>
-          <Orderbook.Panel
-            renderTable={(props) => (
-              <OrderbookTable.Root columns={columns} {...props} />
-            )}
-          />
-          <OrderbookControls.LiveBadge />
-          <OrderbookControls.Toolbar>
-            <OrderbookControls.PlaybackButtons />
-            <OrderbookControls.Timeline />
-          </OrderbookControls.Toolbar>
-        </OrderbookControls.Root>
+    <Card className={'flex shrink grow overflow-hidden'}>
+      <CardContent className="flex shrink grow overflow-hidden px-0 pb-px pt-2">
+        <Orderbook.Panel
+          renderTable={(props) => (
+            <OrderbookTable.Root columns={columns} {...props} />
+          )}
+        >
+          <OrderbookControls.Root>
+            <OrderbookControls.LiveBadge />
+            <OrderbookControls.Toolbar>
+              <OrderbookControls.PlaybackButtons />
+              <OrderbookControls.Timeline />
+            </OrderbookControls.Toolbar>
+          </OrderbookControls.Root>
+        </Orderbook.Panel>
       </CardContent>
     </Card>
   );

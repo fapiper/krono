@@ -11,7 +11,6 @@ import {
 import { OrderbookTableSkeleton } from './skeleton';
 
 export type { OrderbookTableCellProps } from './cell';
-export type { OrderbookTableChartProps } from './chart';
 export type { OrderbookTableColumnProps } from './column';
 export type { OrderbookTableRootProps } from './root';
 export type { OrderbookTableRowProps } from './row';

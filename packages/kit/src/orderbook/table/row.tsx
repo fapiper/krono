@@ -25,7 +25,7 @@ export function OrderbookTableRow({
         ...style,
       }}
       className={cn(
-        'relative grid shrink-0 px-2 py-1 w-full items-center',
+        'relative grid shrink-0 grow px-2 py-0.5 items-center',
         getBarClassName(barProps),
         className,
       )}

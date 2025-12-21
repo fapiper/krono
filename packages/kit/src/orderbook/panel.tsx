@@ -2,7 +2,7 @@
 
 import {
   useOrderbookConfig,
-  useOrderbookPlayback,
+  useOrderbookPlaybackContext,
   useOrderbookStatus,
 } from '@krono/hooks';
 import { cn } from '@krono/ui/lib';
@@ -54,7 +54,7 @@ export function OrderbookPanel({
   ...props
 }: OrderbookPanelProps) {
   const status = useOrderbookStatus();
-  const controls = useOrderbookPlayback();
+  const controls = useOrderbookPlaybackContext();
   const { currentData } = controls;
   const { setLimit, limit } = useOrderbookConfig();
 
@@ -94,7 +94,8 @@ export function OrderbookPanel({
   return (
     <div
       className={cn(
-        'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-0.5 flex-1 group overflow-hidden',
+        'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-0.5 shrink grow overflow-hidden',
+        !loading && 'group',
         className,
       )}
       {...props}
@@ -107,14 +108,13 @@ export function OrderbookPanel({
             </span>
           </OrderbookPanelSkeleton>
         ))
-      ) : children ? (
-        children
       ) : renderTable ? (
         <>
-          {renderTable(processedData.bids)}
-          {renderTable(processedData.asks)}
+          {renderTable({ ...processedData.bids, direction: 'rtl' })}
+          {renderTable({ ...processedData.asks })}
         </>
       ) : null}
+      {children}
     </div>
   );
 }

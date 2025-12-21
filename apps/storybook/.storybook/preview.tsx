@@ -1,8 +1,6 @@
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react';
 
-import '@krono/ui/globals.css';
-
 const preview: Preview = {
   parameters: {
     nextjs: {

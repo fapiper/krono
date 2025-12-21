@@ -12,6 +12,7 @@ const config: StorybookConfig = {
     '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../../../apps/web/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    '../../../packages/kit/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-links',
@@ -49,6 +50,7 @@ const config: StorybookConfig = {
       config.resolve.alias = {
         ...config.resolve.alias,
         '@krono/ui': path.resolve(__dirname, '../../../packages/ui/src'),
+        '@krono/kit': path.resolve(__dirname, '../../../packages/kit/src'),
         '@krono/web': path.resolve(__dirname, '../../../apps/web/src'),
       };
     }

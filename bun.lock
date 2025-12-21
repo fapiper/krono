@@ -38,6 +38,7 @@
       "name": "@krono/storybook",
       "version": "0.1.0",
       "dependencies": {
+        "@krono/kit": "workspace:*",
         "@krono/ui": "workspace:*",
         "@krono/web": "workspace:*",
         "next": "16.0.10",

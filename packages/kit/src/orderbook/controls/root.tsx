@@ -1,19 +1,9 @@
-import { cn } from '@krono/ui/lib';
-import type { ComponentPropsWithoutRef } from 'react';
-import { OrderbookControlsRootProvider } from './root-provider';
+import type { PropsWithChildren } from 'react';
 
-export type OrderbookControlsRootProps = ComponentPropsWithoutRef<'div'>;
+export type OrderbookControlsRootProps = PropsWithChildren;
 
 export function OrderbookControlsRoot({
-  className,
   children,
-  ...props
 }: OrderbookControlsRootProps) {
-  return (
-    <OrderbookControlsRootProvider>
-      <div className={cn('relative group', className)} {...props}>
-        {children}
-      </div>
-    </OrderbookControlsRootProvider>
-  );
+  return <>{children}</>;
 }

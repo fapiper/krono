@@ -1,4 +1,4 @@
-import { intervalToDuration } from 'date-fns';
+import type { OrderbookType } from './types';
 
 export const formatUSD = (value: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -24,20 +24,16 @@ export const formatDigits = (value: number, digits = 8) => {
   }).format(rounded);
 };
 
-export const formatDistanceInterval = (
-  laterDate: number,
-  earlierDate: number,
-) => {
-  const diffMs = Math.max(0, earlierDate - laterDate);
-  const duration = intervalToDuration({ start: 0, end: diffMs });
+export const defaultBarColorMap: Record<OrderbookType, string> = {
+  bids: 'rgba(34, 197, 94, 0.2)',
+  asks: 'rgba(239, 68, 68, 0.2)',
+};
 
-  const zeroPad = (num?: number) => String(num ?? 0).padStart(2, '0');
-
-  if ((duration.hours ?? 0) > 0) {
-    return `${zeroPad(duration.hours)}:${zeroPad(duration.minutes)}:${zeroPad(
-      duration.seconds,
-    )}`;
-  }
-
-  return `${zeroPad(duration.minutes)}:${zeroPad(duration.seconds)}`;
+export const gridColsClassNameMap: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-4',
+  5: 'grid-cols-5',
+  6: 'grid-cols-6',
 };

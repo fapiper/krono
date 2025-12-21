@@ -9,7 +9,7 @@ export function OrderbookTableCell({
   ...props
 }: OrderbookTableCellProps) {
   return (
-    <div className={cn('block relative tabular-nums', className)} {...props}>
+    <div className={cn('tabular-nums', className)} {...props}>
       {children}
     </div>
   );

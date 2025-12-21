@@ -23,11 +23,7 @@ export function OrderbookPanelSkeleton({
         )}
         {...props}
       >
-        {children ?? (
-          <span className="text-foreground text-lg p-4">
-            Connecting to feed...
-          </span>
-        )}
+        {children}
       </div>
     </>
   );

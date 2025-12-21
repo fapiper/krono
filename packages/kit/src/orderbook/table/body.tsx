@@ -35,7 +35,7 @@ export function OrderbookTableBody({
   const { className: cellClassName, ...cellProps } = _cellProps;
 
   return (
-    <div className={cn('flex flex-col', className)} {...props}>
+    <>
       {data.map((level, index) => {
         const depth = maxTotalValue > 0 ? level.total / maxTotalValue : 0;
         const key = `${level.price}-${index}`;
@@ -81,6 +81,6 @@ export function OrderbookTableBody({
           <OrderbookTableRow key={key} {...rowProps} />
         );
       })}
-    </div>
+    </>
   );
 }

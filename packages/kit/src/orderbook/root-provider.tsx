@@ -1,6 +1,7 @@
 import {
   AssetPairsProvider,
   type AssetPairsProviderProps,
+  OrderbookPlaybackProvider,
   OrderbookProvider,
   type OrderbookProviderProps,
 } from '@krono/hooks';
@@ -20,7 +21,9 @@ export function OrderbookRootProvider({
 
   return (
     <AssetPairsProvider config={assetPairsConfig}>
-      <OrderbookProvider config={orderbookConfig}>{children}</OrderbookProvider>
+      <OrderbookProvider config={orderbookConfig}>
+        <OrderbookPlaybackProvider>{children}</OrderbookPlaybackProvider>
+      </OrderbookProvider>
     </AssetPairsProvider>
   );
 }

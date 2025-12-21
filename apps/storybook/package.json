@@ -10,6 +10,7 @@
     "lint:fix": "biome check . --write"
   },
   "dependencies": {
+    "@krono/kit": "workspace:*",
     "@krono/ui": "workspace:*",
     "@krono/web": "workspace:*",
     "next": "16.0.10",

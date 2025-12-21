@@ -1,3 +1,4 @@
+import { defaultBarColorMap, gridColsClassNameMap } from '@krono/kit';
 import { cn } from '@krono/ui/lib';
 import { OrderbookTableBody, type OrderbookTableBodyProps } from './body';
 import { OrderbookTableColumn, type OrderbookTableColumnProps } from './column';
@@ -31,11 +32,6 @@ export function OrderbookTableRoot({
   children,
   ...props
 }: OrderbookTableRootProps) {
-  const defaultBarColor = {
-    bids: 'rgba(34, 197, 94, 0.2)',
-    asks: 'rgba(239, 68, 68, 0.2)',
-  };
-
   const {
     className: headerClassName,
     columns: headerColumns,
@@ -48,16 +44,11 @@ export function OrderbookTableRoot({
     ...rowProps
   } = _rowProps;
   const { color, ...rowBarProps } = _rowBarProps;
-  const rowBarColor = color ?? defaultBarColor[type];
+  const rowBarColor = color ?? defaultBarColorMap[type];
 
   const orderedColumns = direction === 'ltr' ? columns : [...columns].reverse();
 
-  const gridColsClassName = {
-    1: 'grid-cols-1',
-    2: 'grid-cols-2',
-    3: 'grid-cols-3',
-    4: 'grid-cols-4',
-  }[columns.length];
+  const gridColsClassName = gridColsClassNameMap[columns.length];
 
   if (children) {
     return (

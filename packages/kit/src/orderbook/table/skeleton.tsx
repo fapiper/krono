@@ -2,6 +2,7 @@ import { Skeleton } from '@krono/ui/components/ui/skeleton';
 import { cn } from '@krono/ui/lib';
 import type { ComponentPropsWithoutRef } from 'react';
 import {
+  gridColsClassNameMap,
   OrderbookTable,
   type OrderbookTableCellProps,
   type OrderbookTableRowProps,
@@ -26,28 +27,29 @@ export function OrderbookTableSkeleton({
   className,
   ...props
 }: OrderbookTableSkeletonProps) {
-  const gridCols = `grid-cols-${columns}`;
   const rowArray = Array.from({ length: rows }, (_, i) => i);
   const colArray = Array.from({ length: columns }, (_, i) => i);
+  const gridColsClassName = gridColsClassNameMap[columns];
 
   const { className: headerRowClassName, ...headerRowProps } = _headerRowProps;
   const { className: bodyRowClassName, ...bodyRowProps } = _bodyRowProps;
   const { className: cellClassName, ...cellProps } = _cellProps;
 
   return (
-    <OrderbookTable.Column
-      className={cn('w-full overflow-hidden gap-1 pb-1', className)}
-      {...props}
-    >
+    <OrderbookTable.Column className={cn('', className)} {...props}>
       {showHeader && (
         <OrderbookTable.Row
-          className={cn('py-1', gridCols, headerRowClassName)}
+          className={cn(
+            'gap-0 items-stretch',
+            gridColsClassName,
+            headerRowClassName,
+          )}
           {...headerRowProps}
         >
           {colArray.map((i) => (
             <Skeleton
               key={`header-${i}`}
-              className={cn('w-24', cellClassName)}
+              className={cn('w-24 shrink-0 grow', cellClassName)}
               {...cellProps}
             />
           ))}
@@ -57,13 +59,17 @@ export function OrderbookTableSkeleton({
       {rowArray.map((rowIndex) => (
         <OrderbookTable.Row
           key={`row-${rowIndex}`}
-          className={cn('gap-1', gridCols, bodyRowClassName)}
+          className={cn(
+            'gap-0.5 items-stretch',
+            gridColsClassName,
+            bodyRowClassName,
+          )}
           {...bodyRowProps}
         >
           {colArray.map((colIndex) => (
             <Skeleton
               key={`cell-${rowIndex}-${colIndex}`}
-              className={cn('w-full', cellClassName)}
+              className={cn('w-full shrink-0 grow', cellClassName)}
               {...cellProps}
             />
           ))}
