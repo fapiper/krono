@@ -1,0 +1,25 @@
+---
+title: 'DebounceMs'
+description: 'Getter and setter for update stability delay.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from '@krono/core'
+```
+
+## Usage
+
+Waits for the stream to settle before emitting data.
+
+```ts
+// Wait for 100ms silence before updating
+orderbook.debounceMs = 100
+```
+
+## Type
+
+```ts
+number | undefined
+```

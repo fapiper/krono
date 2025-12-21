@@ -1,0 +1,25 @@
+---
+title: 'Limit'
+description: 'Getter and Setter for the number of visible price levels.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from '@krono/core'
+```
+
+## Usage
+
+Controls the size of the `asks` and `bids` arrays in the output data.
+
+```ts
+// Only show top 5 bids/asks
+orderbook.limit = 5
+```
+
+## Type
+
+```ts
+number
+```

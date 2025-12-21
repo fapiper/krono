@@ -1,0 +1,91 @@
+---
+title: useOrderbookData
+description: |
+    The hook for accessing a live snapshot of the current orderbook.
+    Provides the latest aggregated bids, asks, spread, and volume totals.
+---
+
+<Note>
+    This hook requires the `OrderbookProvider` to be present in your component tree to provide the underlying `Orderbook` instance.
+</Note>
+
+## Import
+
+```ts
+import { useOrderbookData } from '@krono/hooks'
+```
+
+---
+
+## Usage
+
+```tsx
+import { useOrderbookData } from '@krono/hooks'
+
+function PriceDisplay() {
+  const { asks, bids, spread } = useOrderbookData();
+
+  return (
+    <div>
+      <div className="text-red-500">Best Ask: {asks[0]?.price}</div>
+      <div className="font-bold">Spread: {spread}</div>
+      <div className="text-green-500">Best Bid: {bids[0]?.price}</div>
+    </div>
+  );
+}
+```
+
+---
+
+## Parameters
+
+<ResponseField name="disabled" type="boolean" default={false}>
+    If true, the hook will unsubscribe from the data pipeline and stop updating state. Useful for optimizing performance in background tabs or collapsed UI elements.
+</ResponseField>
+
+## Return Type
+
+Returns an `OrderbookData` object containing:
+
+### State
+
+<ResponseField name="asks" type="Level[]">
+    An array of ask price levels (sorted ascending).
+</ResponseField>
+
+<ResponseField name="bids" type="Level[]">
+    An array of bid price levels (sorted descending).
+</ResponseField>
+
+<ResponseField name="spread" type="number">
+    The absolute difference between the best ask and best bid.
+</ResponseField>
+
+<ResponseField name="spreadPct" type="number">
+    The spread expressed as a percentage of the best ask.
+</ResponseField>
+
+<ResponseField name="maxTotal" type="number">
+    The highest cumulative total across both sides, used for calculating depth bar widths.
+</ResponseField>
+
+<ResponseField name="timestamp" type="number">
+    The unix timestamp (ms) of when this update was generated.
+</ResponseField>
+
+## Related
+
+<CardGroup cols={2}>
+    <Card title="Orderbook Core" icon="toy-brick" href="/core/api/classes/Orderbook">
+        Explore the underlying class logic and event emitters.
+    </Card>
+    <Card title="useOrderbookHistory" icon="history" href="/hooks/api/hooks/useOrderbookHistory">
+        Access historical orderbook data.
+    </Card>
+    <Card title="useOrderbookStatus" icon="signal" href="/hooks/api/hooks/useOrderbookStatus">
+        Check if the data is currently "live" or "disconnected".
+    </Card>
+    <Card title="Kraken API" icon="link" href="https://docs.kraken.com/api/docs/websocket-v2/book">
+        Explore the `book` channel streams level 2 order book docs.
+    </Card>
+</CardGroup>

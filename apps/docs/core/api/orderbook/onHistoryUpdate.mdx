@@ -1,0 +1,28 @@
+---
+title: 'OnHistoryUpdate'
+description: 'Subscribe to history buffer changes.'
+---
+
+## Usage
+
+Triggers whenever a new snapshot is added to the historical data array.
+
+```ts
+orderbook.onHistoryUpdate((history) => {
+  console.log('History length:', history.length)
+})
+```
+
+## Parameters
+
+### callback
+
+`(history: OrderbookData[]) => void`
+
+The function to execute when new history updates.
+
+## Return Type
+
+```ts
+void
+```

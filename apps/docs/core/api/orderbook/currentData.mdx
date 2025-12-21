@@ -1,0 +1,34 @@
+---
+title: 'CurrentData'
+description: 'Read-only property for the latest snapshot.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from '@krono/core'
+```
+
+## Usage
+
+Computes and returns the current orderbook state based on `asksMap` and `bidsMap`.
+
+```ts
+const data = orderbook.currentData;
+console.log(`Spread: ${data.spread}`);
+```
+
+## Type
+
+```ts
+interface OrderbookData {
+  timestamp: number;
+  asks: { price: number; volume: number; total: number }[];
+  bids: { price: number; volume: number; total: number }[];
+  spread: number;
+  spreadPct: number;
+  maxAskTotal: number;
+  maxBidTotal: number;
+  maxTotal: number;
+}
+```

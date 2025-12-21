@@ -1,0 +1,30 @@
+---
+title: 'Find Symbol'
+description: 'Look up a trading pair using string identifiers.'
+---
+
+## Import
+
+```ts
+import { AssetPairs } from '@krono/core'
+```
+
+## Usage
+
+This helper method searches the internal `symbolMap` for a match. It supports searching by standard format (e.g., "BTC/USD"), WebSocket name (e.g., "XBT/USD"), or altname.
+
+```ts
+const symbol = assetPairs.findSymbol('BTC/USD');
+
+if (symbol) {
+  console.log(`Found: ${symbol.displayLabel}`);
+}
+```
+
+## Return Type
+
+```ts
+SymbolOption | undefined
+```
+
+Returns the symbol configuration object if found, or `undefined` if no match exists.

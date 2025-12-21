@@ -1,0 +1,62 @@
+---
+title: useOrderbookLifecycle
+description: |
+    Provides methods to manage the orderbook lifecycle.
+---
+
+<Warning>
+    Destroying the orderbook is an irreversible action for that specific instance. Use primarily when unmounting top-level providers.
+</Warning>
+
+<Note>
+    This hook requires the `OrderbookProvider` to be present in your component tree to provide the underlying `Orderbook` instance.
+</Note>
+
+## Import
+
+```ts
+import { useOrderbookLifecycle } from '@krono/hooks'
+```
+
+## Usage
+
+```tsx
+import { useOrderbookLifecycle } from '@krono/hooks'
+
+function AdminControls() {
+  const { destroy } = useOrderbookLifecycle();
+
+  return (
+    <button onClick={destroy}>
+      Destroy orderbook
+    </button>
+  );
+}
+```
+
+---
+
+## Return Type
+
+### Actions
+
+<ResponseField name="destroy" type="() => void">
+    Disconnects the Websocket, clears the price maps, empties the history buffer, and removes all internal event listeners.
+</ResponseField>
+
+## Related
+
+<CardGroup cols={2}>
+    <Card title="Orderbook Core" icon="toy-brick" href="/core/api/classes/Orderbook">
+        Explore the underlying class logic and event emitters.
+    </Card>
+    <Card title="useOrderbookConnection" icon="plug" href="/hooks/api/hooks/useOrderbookConnection">
+        Trigger connect/disconnect actions.
+    </Card>
+    <Card title="useOrderbookData" icon="chevrons-left-right-ellipsis" href="/hooks/api/hooks/useOrderbookData">
+        Access the live snapshot of the current orderbook.
+    </Card>
+    <Card title="Kraken API" icon="link" href="https://docs.kraken.com/api/docs/websocket-v2/book">
+        Explore the `book` channel streams level 2 order book docs.
+    </Card>
+</CardGroup>

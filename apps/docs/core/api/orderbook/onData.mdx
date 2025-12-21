@@ -1,0 +1,34 @@
+---
+title: 'OnData'
+description: 'Subscribe to processed orderbook updates.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from 'krono-coin'
+```
+
+## Usage
+
+This is the main listener for UI updates. It emits data after it has passed through the internal pipeline (throttling and debouncing).
+
+```ts
+orderbook.onData((data) => {
+  console.log('Processed Price:', data.asks[0]?.price)
+})
+```
+
+## Parameters
+
+### callback
+
+`(data: OrderbookData) => void`
+
+The function to execute when new data is available.
+
+## Return Type
+
+```ts
+void
+```

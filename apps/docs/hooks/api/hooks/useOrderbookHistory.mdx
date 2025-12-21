@@ -1,0 +1,80 @@
+---
+title: useOrderbookHistory
+description: |
+    Access historical snapshots of the orderbook stored in the local buffer.
+---
+
+<Note>
+    This hook requires the `OrderbookProvider` to be present in your component tree and history recording must be enabled (via `historyEnabled`). The number of snapshots available depends on `maxHistoryLength`.
+</Note>
+
+## Import
+
+```ts
+import { useOrderbookHistory } from '@krono/hooks'
+```
+
+## Usage
+
+```tsx
+import { useOrderbookHistory } from '@krono/hooks'
+
+function HistoryList() {
+  const { getAll, size } = useOrderbookHistory();
+  const history = getAll();
+
+  return (
+    <ul>
+      <li>Total Snapshots: {size}</li>
+      {history.map((snap) => (
+        <li key={snap.timestamp}>Spread at {snap.timestamp}: {snap.spread}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+---
+
+## Return Type
+
+### State
+
+<ResponseField name="size" type="number">
+    The current number of items in the buffer.
+</ResponseField>
+
+<ResponseField name="isEmpty" type="boolean">
+    Helper indicating if the buffer contains zero snapshots.
+</ResponseField>
+
+### Actions
+
+<ResponseField name="get" type="(index: number) => OrderbookData | undefined">
+    Retrieves a specific snapshot by index.
+</ResponseField>
+
+<ResponseField name="getAll" type="() => OrderbookData[]">
+    Returns the entire array of snapshots currently in the buffer.
+</ResponseField>
+
+<ResponseField name="getLatest" type="() => OrderbookData | undefined">
+    Returns the most recent snapshot in the history.
+</ResponseField>
+
+## Related
+
+<CardGroup cols={2}>
+    <Card title="Orderbook Core" icon="toy-brick" href="/core/api/classes/Orderbook">
+        Explore the underlying class logic and event emitters.
+    </Card>
+    <Card title="useOrderbookConfig" icon="cog" href="/hooks/api/hooks/useOrderbookConfig">
+        Configure `historyEnabled` and `maxHistoryLength` to manage memory usage.
+    </Card>
+    <Card title="useOrderbookPlayback" icon="square-play" href="/hooks/api/hooks/useOrderbookPlayback">
+        Use historical orderbook data to travel in time.
+    </Card>
+    <Card title="Kraken API" icon="link" href="https://docs.kraken.com/api/docs/websocket-v2/book">
+        Explore the `book` channel streams level 2 order book docs.
+    </Card>
+</CardGroup>

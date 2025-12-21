@@ -1,0 +1,29 @@
+---
+title: 'Fetch'
+description: 'Triggers a request to the Kraken REST API to retrieve and process asset pairs.'
+---
+
+## Import
+
+```ts
+import { AssetPairs } from '@krono/core'
+```
+
+## Usage
+
+Call this method to manually trigger the fetching sequence. This is automatically called in the constructor if `autoFetch` is set to `true`.
+
+```ts
+const assetPairs = new AssetPairs({ autoFetch: false })
+
+// Manually fetch data
+await assetPairs.fetch()
+```
+
+## Return Type
+
+```ts
+Promise<AssetPairsData>
+```
+
+Returns a promise that resolves with the processed asset data (list of symbols and the lookup map) once the HTTP request completes successfully.

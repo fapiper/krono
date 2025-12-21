@@ -1,0 +1,26 @@
+---
+title: 'Connecting'
+description: 'Read-only property checking if status is connecting.'
+---
+
+## Import
+
+```ts
+import { Orderbook } from '@krono/core'
+```
+
+## Usage
+
+Convenience boolean getter. Useful for showing loading spinners.
+
+```ts
+if (orderbook.connecting) {
+  showLoader();
+}
+```
+
+## Type
+
+```ts
+boolean
+```

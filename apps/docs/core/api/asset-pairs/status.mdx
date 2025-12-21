@@ -1,0 +1,38 @@
+---
+title: 'Status'
+description: 'Properties indicating the current operational state of the data fetcher.'
+---
+
+## Import
+
+```ts
+import { AssetPairs } from '@krono/core'
+```
+
+## Usage
+
+You can check the general status string or use the boolean convenience getters (`loading`, `loaded`).
+
+```ts
+if (assetPairs.loading) {
+  console.log('Fetching pairs...');
+}
+
+if (assetPairs.status === 'error') {
+  console.error(assetPairs.error);
+}
+```
+
+## Type
+
+```ts
+type AssetPairsStatus = 'idle' | 'loading' | 'loaded' | 'error';
+```
+
+## Related Properties
+
+| Property  | Type      | Description                                               |
+|:----------|:----------|:----------------------------------------------------------|
+| `loading` | `boolean` | True if a fetch request is currently in progress.         |
+| `loaded`  | `boolean` | True if data has been successfully fetched at least once. |
+| `error`   | `Error    | null`                                                     | Contains the last error object if the status is 'error'. |
