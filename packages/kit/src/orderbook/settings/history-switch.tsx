@@ -2,23 +2,22 @@
 
 import { useOrderbookConfig } from '@krono/hooks';
 import { Switch } from '@krono/ui/components/ui/switch';
-import { OrderbookSettingsRow } from './row';
-import type { OrderbookSettingsBaseProps } from './types';
+import { OrderbookSettingsRow, type OrderbookSettingsRowProps } from './row';
 
-export type OrderbookSettingsHistorySwitchProps = OrderbookSettingsBaseProps;
+export type OrderbookSettingsHistorySwitchProps = Omit<
+  OrderbookSettingsRowProps,
+  'label' | 'control'
+>;
 
-export function OrderbookSettingsHistorySwitch({
-  className,
-  ...props
-}: OrderbookSettingsHistorySwitchProps) {
+export function OrderbookSettingsHistorySwitch(
+  props: OrderbookSettingsHistorySwitchProps,
+) {
   const { historyEnabled, setHistoryEnabled } = useOrderbookConfig();
 
   return (
     <OrderbookSettingsRow
       label="Store History"
       description="Keep a history buffer of orderbook updates"
-      className={className}
-      {...props}
       control={
         <Switch
           id="history"
@@ -26,6 +25,7 @@ export function OrderbookSettingsHistorySwitch({
           onCheckedChange={setHistoryEnabled}
         />
       }
+      {...props}
     />
   );
 }

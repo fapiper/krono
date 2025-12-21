@@ -2,24 +2,24 @@
 
 import { useOrderbookConfig } from '@krono/hooks';
 import { Switch } from '@krono/ui/components/ui/switch';
-import { OrderbookSettingsRow } from './row';
-import type { OrderbookSettingsBaseProps } from './types';
+import { OrderbookSettingsRow, type OrderbookSettingsRowProps } from './row';
 
-export type OrderbookSettingsDebugSwitchProps = OrderbookSettingsBaseProps;
+export type OrderbookSettingsDebugSwitchProps = Omit<
+  OrderbookSettingsRowProps,
+  'label' | 'control'
+>;
 
-export function OrderbookSettingsDebugSwitch({
-  className,
-  ...props
-}: OrderbookSettingsDebugSwitchProps) {
+export function OrderbookSettingsDebugSwitch(
+  props: OrderbookSettingsDebugSwitchProps,
+) {
   const { debug, setDebug } = useOrderbookConfig();
 
   return (
     <OrderbookSettingsRow
       label="Debug Mode"
       description="Enable logging and debug information"
-      className={className}
-      {...props}
       control={<Switch id="debug" checked={debug} onCheckedChange={setDebug} />}
+      {...props}
     />
   );
 }

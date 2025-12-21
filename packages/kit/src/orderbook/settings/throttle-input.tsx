@@ -3,46 +3,41 @@
 import { useOrderbookConfig } from '@krono/hooks';
 import { Button } from '@krono/ui/components/ui/button';
 import { Input } from '@krono/ui/components/ui/input';
-import { useState } from 'react';
-import { OrderbookSettingsRow } from './row';
-import type { OrderbookSettingsBaseProps } from './types';
+import { OrderbookSettingsRow, type OrderbookSettingsRowProps } from './row';
+import { useBufferedSetting } from './use-buffered-setting';
 
-export type OrderbookSettingsThrottleInputProps = OrderbookSettingsBaseProps;
+export type OrderbookSettingsThrottleInputProps = Omit<
+  OrderbookSettingsRowProps,
+  'label' | 'control'
+>;
 
-export function OrderbookSettingsThrottleInput({
-  className,
-  ...props
-}: OrderbookSettingsThrottleInputProps) {
+export function OrderbookSettingsThrottleInput(
+  props: OrderbookSettingsThrottleInputProps,
+) {
   const { throttleMs, setThrottle } = useOrderbookConfig();
-  const [value, setValue] = useState(String(throttleMs ?? ''));
-  const isValid = value === '' || Number(value) >= 0;
+  const { localValue, setLocalValue, apply, isValid, isDirty } =
+    useBufferedSetting(throttleMs, (prev = 0) =>
+      setThrottle(prev > 0 ? prev : undefined),
+    );
 
   return (
     <OrderbookSettingsRow
       label="Throttle (ms)"
       description="Limit update frequency to improve performance"
-      className={className}
-      {...props}
       control={
         <>
           <Input
             type="number"
-            value={value}
+            value={localValue}
             className="h-9 w-24"
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => setLocalValue(e.target.value)}
           />
-          <Button
-            size="sm"
-            onClick={() => {
-              const val = Number(value);
-              setThrottle(val > 0 ? val : undefined);
-            }}
-            disabled={!isValid}
-          >
+          <Button size="sm" onClick={apply} disabled={!isValid || !isDirty}>
             Apply
           </Button>
         </>
       }
+      {...props}
     />
   );
 }

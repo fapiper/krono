@@ -1,13 +1,10 @@
 import { Label } from '@krono/ui/components/ui/label';
 import { cn } from '@krono/ui/lib';
-import type { ReactNode } from 'react';
-import type { OrderbookSettingsBaseProps } from './types';
+import type { ComponentPropsWithoutRef } from 'react';
+import type { OrderbookSettingsRowBaseProps } from './types';
 
-export type OrderbookSettingsRowProps = OrderbookSettingsBaseProps & {
-  label: string;
-  description?: string;
-  control?: ReactNode;
-};
+export type OrderbookSettingsRowProps = ComponentPropsWithoutRef<'div'> &
+  OrderbookSettingsRowBaseProps;
 
 export function OrderbookSettingsRow({
   label,
@@ -19,16 +16,16 @@ export function OrderbookSettingsRow({
 }: OrderbookSettingsRowProps) {
   return (
     <div
-      className={cn('flex items-center justify-between gap-4', className)}
+      className={cn('flex items-end justify-between gap-1', className)}
       {...props}
     >
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-y-0">
         <Label className="text-xs font-semibold">{label}</Label>
         {description && (
           <p className="text-muted-foreground text-xs">{description}</p>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-end gap-x-2">
         {control}
         {children}
       </div>

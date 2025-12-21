@@ -3,10 +3,10 @@
 import { Button } from '@krono/ui/components/ui/button';
 import { PopoverTrigger } from '@krono/ui/components/ui/popover';
 import { Settings } from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 export interface OrderbookSettingsPopoverTriggerProps
-  extends ComponentProps<typeof PopoverTrigger> {
+  extends ComponentPropsWithoutRef<typeof PopoverTrigger> {
   icon?: ReactNode;
 }
 
@@ -28,7 +28,7 @@ export function OrderbookSettingsPopoverTrigger({
   return (
     <PopoverTrigger asChild={true} className={className} {...props}>
       <Button variant="outline" size="icon-sm">
-        {children || icon}
+        {children ?? icon}
       </Button>
     </PopoverTrigger>
   );

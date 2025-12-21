@@ -4,6 +4,7 @@ import { OrderbookSettingsDepthSelect } from './depth-select';
 import { OrderbookSettingsHistorySwitch } from './history-switch';
 import { OrderbookSettingsMaxHistoryInput } from './max-history-input';
 import { OrderbookSettingsRow } from './row';
+import { OrderbookSettingsSeparator } from './separator';
 import { OrderbookSettingsSpreadSelect } from './spread-select';
 import { OrderbookSettingsThrottleInput } from './throttle-input';
 
@@ -14,6 +15,7 @@ export type { OrderbookSettingsHistorySwitchProps } from './history-switch';
 export type { OrderbookSettingsMaxHistoryInputProps } from './max-history-input';
 export * from './popover';
 export type { OrderbookSettingsRowProps } from './row';
+export type { OrderbookSettingsSeparatorProps } from './separator';
 export type { OrderbookSettingsSpreadSelectProps } from './spread-select';
 export type { OrderbookSettingsThrottleInputProps } from './throttle-input';
 export type { OrderbookSettingsBaseProps } from './types';
@@ -25,6 +27,7 @@ export const OrderbookSettings = {
   HistorySwitch: OrderbookSettingsHistorySwitch,
   MaxHistoryInput: OrderbookSettingsMaxHistoryInput,
   Row: OrderbookSettingsRow,
+  Separator: OrderbookSettingsSeparator,
   SpreadSelect: OrderbookSettingsSpreadSelect,
   ThrottleInput: OrderbookSettingsThrottleInput,
 };
