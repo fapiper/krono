@@ -68,14 +68,14 @@
           {
             "group": "Hooks",
             "pages": [
-              "hooks/api/hooks/useAssetPairs",
-              "hooks/api/hooks/useOrderbookConfig",
-              "hooks/api/hooks/useOrderbookConnection",
-              "hooks/api/hooks/useOrderbookData",
-              "hooks/api/hooks/useOrderbookHistory",
-              "hooks/api/hooks/useOrderbookLifecycle",
-              "hooks/api/hooks/useOrderbookPlayback",
-              "hooks/api/hooks/useOrderbookStatus"
+              "hooks/api/useAssetPairs",
+              "hooks/api/useOrderbookConfig",
+              "hooks/api/useOrderbookConnection",
+              "hooks/api/useOrderbookData",
+              "hooks/api/useOrderbookHistory",
+              "hooks/api/useOrderbookLifecycle",
+              "hooks/api/useOrderbookPlayback",
+              "hooks/api/useOrderbookStatus"
             ]
           }
         ]
@@ -91,7 +91,7 @@
             "group": "Configuration",
             "pages": [
               "core/configuration/orderbook",
-              "core/configuration/assetpairs"
+              "core/configuration/asset-pairs"
             ]
           },
           {
@@ -144,13 +144,13 @@
       "anchors": [
         {
           "anchor": "Storybook",
-          "href": "https://krono.fabianpiper.com/storybook",
-          "icon": "http://storybook.js.org/icon.svg"
+          "href": "https://krono-storybook.vercel.app",
+          "icon": "book-text"
         },
         {
           "anchor": "Taikai Project",
           "href": "https://taikai.network/kraken/hackathons/kraken-forge/projects/cmit01auz00d9jk8jju0g0vtc",
-          "icon": "https://taikai.network/icon.svg"
+          "icon": "external-link"
         }
       ]
     }
