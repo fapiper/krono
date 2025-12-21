@@ -1,7 +1,6 @@
 import { OrderbookControlsLiveBadge } from './live-badge';
 import { OrderbookControlsPlaybackButtons } from './playback-buttons';
 import { OrderbookControlsRoot } from './root';
-import { OrderbookControlsRootProvider } from './root-provider';
 import { OrderbookControlsTimeline } from './timeline';
 import { OrderbookControlsToolbar } from './toolbar';
 

@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/storybook",
+      "destination": "https://krono-storybook.vercel.app"
+    },
+    {
+      "source": "/storybook/:match*",
+      "destination": "https://krono-storybook.vercel.app/:match*"
+    },
+    {
       "source": "/docs",
       "destination": "https://fabianpiper.mintlify.dev/docs"
     },
