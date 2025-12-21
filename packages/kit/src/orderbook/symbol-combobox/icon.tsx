@@ -1,16 +1,15 @@
 'use client';
 
 import { cn } from '@krono/ui/lib';
-import { memo, useState } from 'react';
-import type { OrderbookSymbolComboboxBaseProps } from './types';
+import { type ComponentPropsWithoutRef, useState } from 'react';
 
 export type OrderbookSymbolComboboxIconProps =
-  OrderbookSymbolComboboxBaseProps & {
+  ComponentPropsWithoutRef<'div'> & {
     src: string;
     alt: string;
   };
 
-export const OrderbookSymbolComboboxIcon = memo(function OrderbookSymbolIcon({
+export function OrderbookSymbolComboboxIcon({
   src,
   alt,
   className,
@@ -47,4 +46,4 @@ export const OrderbookSymbolComboboxIcon = memo(function OrderbookSymbolIcon({
       />
     </div>
   );
-});
+}

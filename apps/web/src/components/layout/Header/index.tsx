@@ -31,7 +31,10 @@ export default function LayoutHeader({
           height={40}
         />
         <span className="sr-only">Krono</span>
-        <OrderbookSymbolCombobox.Root />
+        <OrderbookSymbolCombobox.Root>
+          <OrderbookSymbolCombobox.Trigger className={'w-40'} />
+          <OrderbookSymbolCombobox.Content />
+        </OrderbookSymbolCombobox.Root>
       </div>
       <div className={'flex justify-end items-center gap-6'}>
         <Link

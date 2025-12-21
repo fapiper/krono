@@ -3,11 +3,11 @@
 import { CommandItem } from '@krono/ui/components/ui/command';
 import { cn } from '@krono/ui/lib';
 import { CheckIcon } from 'lucide-react';
-import { type ComponentProps, memo, useCallback } from 'react';
+import { type ComponentPropsWithoutRef, useCallback } from 'react';
 import { OrderbookSymbolComboboxIcon } from './icon';
 import type { AssetPairOption } from './types';
 
-export type OrderbookSymbolComboboxItemProps = ComponentProps<
+export type OrderbookSymbolComboboxItemProps = ComponentPropsWithoutRef<
   typeof CommandItem
 > & {
   option: AssetPairOption;
@@ -15,7 +15,7 @@ export type OrderbookSymbolComboboxItemProps = ComponentProps<
   onSelect: (value: string) => void;
 };
 
-export const OrderbookSymbolComboboxItem = memo(function OrderbookSymbolItem({
+export function OrderbookSymbolComboboxItem({
   option,
   isSelected,
   onSelect,
@@ -35,13 +35,10 @@ export const OrderbookSymbolComboboxItem = memo(function OrderbookSymbolItem({
       {...props}
     >
       <CheckIcon
-        className={cn(
-          'shrink-0 h-4 w-4',
-          isSelected ? 'opacity-100' : 'opacity-0',
-        )}
+        className={cn('shrink-0', isSelected ? 'opacity-100' : 'opacity-0')}
       />
       <OrderbookSymbolComboboxIcon src={option.icon} alt={option.baseAsset} />
       <span>{children || option.displayLabel}</span>
     </CommandItem>
   );
-});
+}
