@@ -1,0 +1,191 @@
+---
+title: "Asset Pairs Configuration"
+description: "Configure trading pair metadata fetching and management."
+---
+
+The asset pairs configuration controls how `Orderbook.Root` fetches and manages trading pair metadata from the Kraken API.
+
+## Basic Configuration
+```tsx
+import { Orderbook } from '@krono/kit'
+
+export const App = () => {
+  return (
+    <Orderbook.Root
+      config={{
+        symbol: 'BTC/USD',
+        assetPairs: {
+          autoFetch: true,
+          topN: 100
+        }
+      }}
+    >
+      {/* Components */}
+    </Orderbook.Root>
+  )
+}
+```
+
+## Configuration Options
+
+### autoFetch
+
+Automatically fetch asset pair metadata when the component mounts.
+
+**Type:** `boolean`
+
+**Default:** `false`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    assetPairs: {
+      autoFetch: true
+    }
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+### topN
+
+Limit stored asset pairs to the top N pairs.
+
+**Type:** `number`
+
+**Default:** `undefined` (all pairs)
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    assetPairs: {
+      topN: 50,
+      autoFetch: true
+    }
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+<Tip>
+    Set `topN` to reduce memory usage when you only need popular trading pairs.
+</Tip>
+
+### debug
+
+Enable logging for asset pairs operations.
+
+**Type:** `boolean`
+
+**Default:** `false`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    assetPairs: {
+      autoFetch: true,
+      debug: true
+    }
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+## Usage Examples
+
+<AccordionGroup>
+    <Accordion title="Automatic Loading">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                assetPairs: {
+                    autoFetch: true
+                }
+            }}
+        >
+            <SymbolSelector />
+            <OrderbookPanel />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Memory-Efficient">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                assetPairs: {
+                    topN: 20,
+                    autoFetch: true
+                }
+            }}
+        >
+            <OrderbookPanel />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Manual Fetching">
+        ```tsx
+        import { useAssetPairs } from '@krono/hooks'
+
+        const Manager = () => {
+        const { fetch, loading } = useAssetPairs()
+
+        return (
+        <button onClick={fetch} disabled={loading}>
+        Load Pairs
+    </button>
+    )
+    }
+
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            assetPairs: {
+                autoFetch: false
+            }
+        }}
+    >
+        <Manager />
+    </Orderbook.Root>
+    ```
+</Accordion>
+</AccordionGroup>
+
+## Using Asset Pairs
+```tsx
+import { useAssetPairs } from '@krono/hooks'
+
+const SymbolInfo = () => {
+  const { pairs, loading, error } = useAssetPairs()
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error.message}</div>
+
+  return (
+    <div>
+      <h3>Pairs: {pairs.length}</h3>
+      {pairs.map(pair => (
+        <div key={pair.wsname}>
+          {pair.wsname} - Tick: {pair.tick_size}
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+## Notes
+
+<Note>
+    Asset pair metadata is cached in memory and shared across components.
+</Note>
+
+<Warning>
+    The Kraken API has rate limits. Avoid excessive refresh calls.
+</Warning>

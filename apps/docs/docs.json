@@ -32,21 +32,20 @@
           {
             "group": "Configuration",
             "pages": [
-              "kit/api/configuration/debug",
-              "kit/api/configuration/historyEnabled",
-              "kit/api/configuration/maxHistorySize",
-              "kit/api/configuration/orderbookDepth",
-              "kit/api/configuration/debounce",
-              "kit/api/configuration/throttle"
+              "kit/configuration/overview",
+              "kit/configuration/orderbook",
+              "kit/configuration/history",
+              "kit/configuration/asset-pairs",
+              "kit/configuration/performance"
             ]
           },
           {
             "group": "Components",
             "pages": [
-              "kit/api/components/OrderbookTable",
-              "kit/api/components/OrderbookSettings",
-              "kit/api/components/OrderbookControls",
-              "kit/api/components/OrderbookSymbolCombobox"
+              "kit/components/OrderbookTable",
+              "kit/components/OrderbookSettings",
+              "kit/components/OrderbookControls",
+              "kit/components/OrderbookSymbolCombobox"
             ]
           }
         ]

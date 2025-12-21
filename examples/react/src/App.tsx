@@ -1,5 +1,4 @@
 import {
-  type ColumnDef,
   formatDigits,
   formatUSD,
   Orderbook,
@@ -9,28 +8,6 @@ import {
 import { Card, CardContent } from '@krono/ui/components/ui/card.tsx';
 
 function App() {
-  const columns: ColumnDef[] = [
-    {
-      id: 'total',
-      header: 'Total',
-      cell: ({ value }) => formatDigits(value.total),
-    },
-    {
-      id: 'quantity',
-      header: 'Quantity',
-      cell: ({ value }) => formatDigits(value.quantity),
-    },
-    {
-      id: 'price',
-      header: 'Price',
-      cell: ({ value }) => formatUSD(value.price),
-      cellClassName: ({ type }) =>
-        type === 'bids'
-          ? 'font-medium text-green-500 dark:text-green-600'
-          : 'font-medium text-red-500 dark:text-red-600',
-    },
-  ];
-
   return (
     <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
       <div className={'lg:h-screen flex p-4'}>
@@ -38,7 +15,27 @@ function App() {
           <CardContent className="flex shrink grow overflow-hidden px-0 pb-px pt-2">
             <Orderbook.Panel
               renderTable={(props) => (
-                <OrderbookTable.Root columns={columns} {...props} />
+                <OrderbookTable.Root
+                  columns={{
+                    total: {
+                      label: 'Total',
+                      children: ({ value }) => formatDigits(value.total),
+                    },
+                    quantity: {
+                      label: 'Quantity',
+                      children: ({ value }) => formatDigits(value.quantity),
+                    },
+                    price: {
+                      label: 'Price',
+                      className:
+                        props.type === 'bids'
+                          ? 'font-semibold text-green-500 dark:text-green-600'
+                          : 'font-semibold text-red-500 dark:text-red-600',
+                      children: ({ value }) => formatUSD(value.price, 4),
+                    },
+                  }}
+                  {...props}
+                />
               )}
             >
               <OrderbookControls.Root>

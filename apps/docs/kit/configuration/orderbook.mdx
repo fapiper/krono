@@ -1,0 +1,288 @@
+---
+title: "Orderbook Configuration"
+description: "Configure orderbook behavior, depth, limits, and reconnection strategy."
+---
+
+The orderbook configuration controls how the `Orderbook.Root` component connects to the Kraken WebSocket, manages price levels, and handles reconnections.
+
+## Basic Configuration
+```tsx
+import { Orderbook } from '@krono/kit'
+
+export const App = () => {
+  return (
+    <Orderbook.Root
+      config={{
+        symbol: 'BTC/USD',
+        depth: 100,
+        limit: 50
+      }}
+    >
+      {/* Components */}
+    </Orderbook.Root>
+  )
+}
+```
+
+## Core Settings
+
+### symbol
+
+The trading pair symbol to subscribe to.
+
+**Type:** `string` (required)
+
+**Examples:** `BTC/USD`, `ETH/EUR`, `XRP/GBP`
+```tsx
+<Orderbook.Root config={{ symbol: 'ETH/USD' }}>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+### depth
+
+The subscription depth requested from the Kraken WebSocket API.
+
+**Type:** `number`
+
+**Default:** `1000`
+
+**Allowed values:** `10`, `25`, `100`, `500`, `1000`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    depth: 100
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+<Note>
+    Higher depth values increase network traffic. Choose the lowest value that satisfies your needs.
+</Note>
+
+### limit
+
+Maximum number of price levels (per side) to keep in memory and display.
+
+**Type:** `number`
+
+**Default:** `100`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    depth: 100,
+    limit: 50
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+<Tip>
+    Set `limit` to match your UI's maximum displayed rows for optimal memory usage.
+</Tip>
+
+### tickSize
+
+The minimum price increment for the asset pair.
+
+**Type:** `number`
+
+**Default:** Fetched from asset pairs metadata
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    tickSize: 0.1
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+### spreadGrouping
+
+Groups price levels into buckets of this size.
+
+**Type:** `number`
+
+**Default:** `0` (no grouping)
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    tickSize: 0.1,
+    spreadGrouping: 1
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+**Grouping Examples:**
+
+- `spreadGrouping: 0` - No grouping (default)
+- `spreadGrouping: 1` - Group by $1
+- `spreadGrouping: 10` - Group by $10
+- `spreadGrouping: 100` - Group by $100
+
+## Reconnection Settings
+
+### reconnect
+
+Configuration for automatic reconnection on disconnect or error.
+
+**Type:** `object`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    reconnect: {
+      enabled: true,
+      maxAttempts: 5,
+      delayMs: 2000
+    }
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+#### reconnect.enabled
+
+Enable automatic reconnection attempts.
+
+**Type:** `boolean`
+
+**Default:** `true`
+
+#### reconnect.maxAttempts
+
+Maximum number of consecutive reconnection attempts.
+
+**Type:** `number`
+
+**Default:** `Infinity`
+
+#### reconnect.delayMs
+
+Delay in milliseconds between reconnection attempts.
+
+**Type:** `number`
+
+**Default:** `1000`
+
+### debug
+
+Enable verbose logging to console.
+
+**Type:** `boolean`
+
+**Default:** `false`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    debug: true
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+## Configuration Examples
+
+<AccordionGroup>
+    <Accordion title="Minimal Configuration">
+        ```tsx
+        <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+            <OrderbookTable.Root data={data} type="bids" />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="High-Frequency Trading">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                depth: 25,
+                limit: 10,
+                throttleMs: 50
+            }}
+        >
+            <OrderbookTable.Root data={data} type="bids" />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Deep Book Analysis">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                depth: 1000,
+                limit: 500,
+                spreadGrouping: 100
+            }}
+        >
+            <OrderbookTable.Root data={data} type="bids" />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Production Setup">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                depth: 100,
+                limit: 50,
+                reconnect: {
+                    enabled: true,
+                    maxAttempts: 5,
+                    delayMs: 1000
+                },
+                debug: false
+            }}
+        >
+            <OrderbookPanel />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+</AccordionGroup>
+
+## Related Configuration
+
+<CardGroup cols={2}>
+    <Card title="Performance Settings" icon="gauge-high" href="/kit/configuration/performance">
+        Throttling and debouncing options
+    </Card>
+    <Card title="History Configuration" icon="clock-rotate-left" href="/kit/configuration/history">
+        Snapshot tracking and playback
+    </Card>
+    <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
+        Trading pair metadata
+    </Card>
+    <Card title="Configuration Overview" icon="cog" href="/kit/configuration/overview">
+        Complete configuration reference
+    </Card>
+</CardGroup>
+
+## Notes
+
+<Note>
+    The orderbook will automatically reconnect on network failures unless `reconnect.enabled` is set to `false`.
+</Note>
+
+<Tip>
+    Use `depth: 25` and `limit: 10` for the lowest latency. Higher values increase network traffic and processing time.
+</Tip>
+
+<Warning>
+    Changing the `symbol` will close the current connection and establish a new subscription. Store the symbol in stable state to avoid unnecessary reconnections.
+</Warning>

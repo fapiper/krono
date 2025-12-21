@@ -1,0 +1,164 @@
+---
+title: "Performance Configuration"
+description: "Optimize orderbook performance with throttling and debouncing."
+---
+
+Performance configuration options allow you to balance responsiveness with resource usage.
+
+## Basic Configuration
+```tsx
+import { Orderbook } from '@krono/kit'
+
+export const App = () => {
+  return (
+    <Orderbook.Root
+      config={{
+        symbol: 'BTC/USD',
+        throttleMs: 100,
+        debounceMs: 50
+      }}
+    >
+      {/* Components */}
+    </Orderbook.Root>
+  )
+}
+```
+
+## Update Control
+
+### throttleMs
+
+Limits how frequently the orderbook updates.
+
+**Type:** `number`
+
+**Default:** `100`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    throttleMs: 100
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+**Use Cases:**
+
+- `50ms` - High-frequency trading
+- `100ms` - Standard interfaces (recommended)
+- `250ms` - Low-priority displays
+- `500ms` - Historical analysis
+
+### debounceMs
+
+Delays processing of rapid updates.
+
+**Type:** `number`
+
+**Default:** `0`
+```tsx
+<Orderbook.Root
+  config={{
+    symbol: 'BTC/USD',
+    debounceMs: 50
+  }}
+>
+  {/* Components */}
+</Orderbook.Root>
+```
+
+<Warning>
+    High `debounceMs` values introduce latency. Use sparingly.
+</Warning>
+
+## Configuration Examples
+
+<AccordionGroup>
+    <Accordion title="High-Frequency Trading">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                depth: 25,
+                limit: 10,
+                throttleMs: 50,
+                debounceMs: 0
+            }}
+        >
+            <OrderbookTable.Root data={data} type="bids" />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Standard Interface">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                depth: 100,
+                limit: 50,
+                throttleMs: 100,
+                debounceMs: 0
+            }}
+        >
+            <OrderbookPanel />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+
+    <Accordion title="Resource-Constrained">
+        ```tsx
+        <Orderbook.Root
+            config={{
+                symbol: 'BTC/USD',
+                depth: 25,
+                limit: 25,
+                throttleMs: 250,
+                debounceMs: 100
+            }}
+        >
+            <OrderbookPanel />
+        </Orderbook.Root>
+        ```
+    </Accordion>
+</AccordionGroup>
+
+## Performance Comparison
+
+| Use Case | throttleMs | debounceMs | Updates/sec | Latency |
+|----------|------------|------------|-------------|---------|
+| HFT | 50 | 0 | 20 | ~50ms |
+| Standard | 100 | 0 | 10 | ~100ms |
+| Low Priority | 250 | 100 | 4 | ~350ms |
+
+## Optimization Tips
+
+<Steps>
+    <Step title="Profile Your App">
+        Use DevTools to measure render performance.
+    </Step>
+
+    <Step title="Match Update Frequency">
+        Trading: 50-100ms. Monitoring: 250-500ms.
+    </Step>
+
+    <Step title="Reduce Depth">
+        Lower `depth` and `limit` improve performance.
+    </Step>
+
+    <Step title="Use Throttle Over Debounce">
+        Throttle provides predictable intervals.
+    </Step>
+</Steps>
+
+## Notes
+
+<Note>
+    Lower `throttleMs` increases CPU usage and re-renders.
+</Note>
+
+<Tip>
+    For most apps, `throttleMs: 100` and `debounceMs: 0` is optimal.
+</Tip>

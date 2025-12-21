@@ -1,0 +1,515 @@
+---
+title: "OrderbookSettings"
+description: "Configure orderbook display preferences and behavior settings with composable components."
+---
+
+The OrderbookSettings component provides a collection of UI controls for adjusting orderbook configuration options like depth limits, update frequency, grouping, and debug settings.
+
+## Basic Usage
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+
+export const SettingsBasic = () => {
+  return (
+    <div className="space-y-4">
+      <OrderbookSettings.Row label="Depth">
+        <OrderbookSettings.DepthSelect />
+      </OrderbookSettings.Row>
+      <OrderbookSettings.Row label="Spread">
+        <OrderbookSettings.SpreadSelect />
+      </OrderbookSettings.Row>
+    </div>
+  )
+}
+```
+
+## Anatomy
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+
+<div>
+  <OrderbookSettings.Row label="...">
+    <OrderbookSettings.DepthSelect />
+  </OrderbookSettings.Row>
+  <OrderbookSettings.Separator />
+  <OrderbookSettings.Row label="...">
+    <OrderbookSettings.ThrottleInput />
+  </OrderbookSettings.Row>
+  <OrderbookSettings.Row label="...">
+    <OrderbookSettings.DebounceInput />
+  </OrderbookSettings.Row>
+  <OrderbookSettings.Row label="...">
+    <OrderbookSettings.HistorySwitch />
+  </OrderbookSettings.Row>
+  <OrderbookSettings.Row label="...">
+    <OrderbookSettings.MaxHistoryInput />
+  </OrderbookSettings.Row>
+  <OrderbookSettings.Row label="...">
+    <OrderbookSettings.DebugSwitch />
+  </OrderbookSettings.Row>
+</div>
+```
+
+## Examples
+
+### Complete Settings Panel
+
+A full settings panel with all available controls.
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+
+export const SettingsPanel = () => {
+  return (
+    <div className="space-y-4">
+      <OrderbookSettings.Row label="Depth">
+        <OrderbookSettings.DepthSelect />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Row label="Spread Grouping">
+        <OrderbookSettings.SpreadSelect />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Separator />
+
+      <OrderbookSettings.Row label="Throttle (ms)">
+        <OrderbookSettings.ThrottleInput />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Row label="Debounce (ms)">
+        <OrderbookSettings.DebounceInput />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Separator />
+
+      <OrderbookSettings.Row label="Enable History">
+        <OrderbookSettings.HistorySwitch />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Row label="Max History">
+        <OrderbookSettings.MaxHistoryInput />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Separator />
+
+      <OrderbookSettings.Row label="Debug Mode">
+        <OrderbookSettings.DebugSwitch />
+      </OrderbookSettings.Row>
+    </div>
+  )
+}
+```
+
+### In a Popover
+
+Display settings in a popover for space-efficient UI.
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+import { Button } from '@/components/ui/button'
+import { Settings } from 'lucide-react'
+
+export const SettingsPopover = () => {
+  return (
+    <OrderbookSettings.Popover.Root>
+      <OrderbookSettings.Popover.Trigger asChild>
+        <Button variant="outline" size="icon">
+          <Settings className="h-4 w-4" />
+        </Button>
+      </OrderbookSettings.Popover.Trigger>
+      <OrderbookSettings.Popover.Content className="w-80">
+        <div className="space-y-4">
+          <OrderbookSettings.Row label="Depth">
+            <OrderbookSettings.DepthSelect />
+          </OrderbookSettings.Row>
+          <OrderbookSettings.Row label="Spread">
+            <OrderbookSettings.SpreadSelect />
+          </OrderbookSettings.Row>
+        </div>
+      </OrderbookSettings.Popover.Content>
+    </OrderbookSettings.Popover.Root>
+  )
+}
+```
+
+### Display Settings Only
+
+A minimal settings panel with just display options.
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+
+export const DisplaySettings = () => {
+  return (
+    <div className="space-y-4">
+      <OrderbookSettings.Row label="Price Levels">
+        <OrderbookSettings.DepthSelect />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Row label="Price Grouping">
+        <OrderbookSettings.SpreadSelect />
+      </OrderbookSettings.Row>
+    </div>
+  )
+}
+```
+
+### Performance Settings
+
+Focus on performance-related controls.
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+
+export const PerformanceSettings = () => {
+  return (
+    <div className="space-y-4">
+      <OrderbookSettings.Row label="Update Throttle (ms)">
+        <OrderbookSettings.ThrottleInput />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Row label="Input Debounce (ms)">
+        <OrderbookSettings.DebounceInput />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Separator />
+
+      <OrderbookSettings.Row label="Enable History">
+        <OrderbookSettings.HistorySwitch />
+      </OrderbookSettings.Row>
+
+      <OrderbookSettings.Row label="Max History Entries">
+        <OrderbookSettings.MaxHistoryInput />
+      </OrderbookSettings.Row>
+    </div>
+  )
+}
+```
+
+### In a Sidebar
+
+Use settings in a sidebar layout.
+
+```tsx
+import { OrderbookSettings } from '@krono/kit'
+import { Orderbook, OrderbookTable } from '@krono/kit'
+
+export const SettingsSidebar = () => {
+  return (
+    <div className="flex h-screen">
+      <aside className="w-80 border-r p-4 overflow-y-auto">
+        <h2 className="text-lg font-semibold mb-4">Orderbook Settings</h2>
+        <div className="space-y-4">
+          <OrderbookSettings.Row label="Depth">
+            <OrderbookSettings.DepthSelect />
+          </OrderbookSettings.Row>
+          <OrderbookSettings.Row label="Spread">
+            <OrderbookSettings.SpreadSelect />
+          </OrderbookSettings.Row>
+          <OrderbookSettings.Separator />
+          <OrderbookSettings.Row label="Debug">
+            <OrderbookSettings.DebugSwitch />
+          </OrderbookSettings.Row>
+        </div>
+      </aside>
+
+      <main className="flex-1">
+        <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+          <Orderbook.Panel
+            renderTable={(props) => <OrderbookTable.Root {...props} />}
+          />
+        </Orderbook.Root>
+      </main>
+    </div>
+  )
+}
+```
+
+## Components
+
+### DepthSelect
+
+Select the number of price levels to display.
+
+```tsx
+<OrderbookSettings.Row label="Depth">
+  <OrderbookSettings.DepthSelect />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### SpreadSelect
+
+Configure price level grouping based on spread.
+
+```tsx
+<OrderbookSettings.Row label="Spread Grouping">
+  <OrderbookSettings.SpreadSelect />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### ThrottleInput
+
+Control the update throttle interval in milliseconds.
+
+```tsx
+<OrderbookSettings.Row label="Throttle (ms)">
+  <OrderbookSettings.ThrottleInput />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### DebounceInput
+
+Set the input debounce delay in milliseconds.
+
+```tsx
+<OrderbookSettings.Row label="Debounce (ms)">
+  <OrderbookSettings.DebounceInput />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### HistorySwitch
+
+Toggle historical data tracking.
+
+```tsx
+<OrderbookSettings.Row label="Enable History">
+  <OrderbookSettings.HistorySwitch />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### MaxHistoryInput
+
+Set the maximum number of historical entries to retain.
+
+```tsx
+<OrderbookSettings.Row label="Max History">
+  <OrderbookSettings.MaxHistoryInput />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### DebugSwitch
+
+Enable or disable debug mode.
+
+```tsx
+<OrderbookSettings.Row label="Debug Mode">
+  <OrderbookSettings.DebugSwitch />
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Row
+
+Container for a label and control pair.
+
+```tsx
+<OrderbookSettings.Row label="Setting Name">
+  {/* Control component */}
+</OrderbookSettings.Row>
+```
+
+**Props:**
+
+<ResponseField name="label" type="string" required>
+    The label text for the setting.
+</ResponseField>
+
+<ResponseField name="children" type="ReactNode" required>
+    The control component to display.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Separator
+
+Visual separator between setting groups.
+
+```tsx
+<OrderbookSettings.Separator />
+```
+
+**Props:**
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Popover
+
+Popover components for displaying settings in an overlay.
+
+#### Popover.Root
+
+Root container for the popover.
+
+```tsx
+<OrderbookSettings.Popover.Root>
+  {/* Trigger and Content */}
+</OrderbookSettings.Popover.Root>
+```
+
+#### Popover.Trigger
+
+Trigger element to open the popover.
+
+```tsx
+<OrderbookSettings.Popover.Trigger asChild>
+  <Button>Settings</Button>
+</OrderbookSettings.Popover.Trigger>
+```
+
+**Props:**
+
+<ResponseField name="asChild" type="boolean">
+    Merge props with child element instead of wrapping.
+</ResponseField>
+
+<ResponseField name="children" type="ReactNode" required>
+    The trigger element.
+</ResponseField>
+
+#### Popover.Content
+
+Content container for the popover.
+
+```tsx
+<OrderbookSettings.Popover.Content className="w-80">
+  {/* Settings components */}
+</OrderbookSettings.Popover.Content>
+```
+
+**Props:**
+
+<ResponseField name="children" type="ReactNode" required>
+    Settings components to display.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+## Integration Example
+
+Complete example with all settings in a popover.
+
+```tsx
+import { Orderbook, OrderbookSettings, OrderbookTable } from '@krono/kit'
+import { Button } from '@/components/ui/button'
+import { Settings } from 'lucide-react'
+
+export const OrderbookWithSettings = () => {
+  return (
+    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+      <div className="relative">
+        <Orderbook.Panel
+          renderTable={(props) => <OrderbookTable.Root {...props} />}
+        />
+
+        <div className="absolute top-4 right-4">
+          <OrderbookSettings.Popover.Root>
+            <OrderbookSettings.Popover.Trigger asChild>
+              <Button variant="outline" size="icon">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </OrderbookSettings.Popover.Trigger>
+            <OrderbookSettings.Popover.Content className="w-80">
+              <div className="space-y-4">
+                <h3 className="font-semibold">Display</h3>
+                <OrderbookSettings.Row label="Depth">
+                  <OrderbookSettings.DepthSelect />
+                </OrderbookSettings.Row>
+                <OrderbookSettings.Row label="Grouping">
+                  <OrderbookSettings.SpreadSelect />
+                </OrderbookSettings.Row>
+
+                <OrderbookSettings.Separator />
+
+                <h3 className="font-semibold">Performance</h3>
+                <OrderbookSettings.Row label="Throttle (ms)">
+                  <OrderbookSettings.ThrottleInput />
+                </OrderbookSettings.Row>
+                <OrderbookSettings.Row label="Debounce (ms)">
+                  <OrderbookSettings.DebounceInput />
+                </OrderbookSettings.Row>
+
+                <OrderbookSettings.Separator />
+
+                <h3 className="font-semibold">Advanced</h3>
+                <OrderbookSettings.Row label="History">
+                  <OrderbookSettings.HistorySwitch />
+                </OrderbookSettings.Row>
+                <OrderbookSettings.Row label="Max History">
+                  <OrderbookSettings.MaxHistoryInput />
+                </OrderbookSettings.Row>
+                <OrderbookSettings.Row label="Debug">
+                  <OrderbookSettings.DebugSwitch />
+                </OrderbookSettings.Row>
+              </div>
+            </OrderbookSettings.Popover.Content>
+          </OrderbookSettings.Popover.Root>
+        </div>
+      </div>
+    </Orderbook.Root>
+  )
+}
+```
+
+## Notes
+
+<Note>
+    All settings components must be used within an `Orderbook.Root` context to function properly.
+</Note>
+
+<Tip>
+    Use `OrderbookSettings.Row` to maintain consistent spacing and alignment between labels and controls.
+</Tip>
+
+<Warning>
+    Enabling debug mode may impact performance. Use only during development.
+</Warning>
+```

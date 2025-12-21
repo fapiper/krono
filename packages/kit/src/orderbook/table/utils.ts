@@ -8,7 +8,6 @@ export const formatUSD = (value: number, decimals = 2) => {
     currency: 'USD',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-    roundingMode: 'halfExpand',
   }).format(value);
 };
 

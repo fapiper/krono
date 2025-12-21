@@ -1,0 +1,297 @@
+---
+title: "OrderbookControls"
+description: "Interactive controls for orderbook playback, including timeline navigation and live/replay modes."
+---
+
+The OrderbookControls component provides time-travel functionality for reviewing historical orderbook states with playback controls and timeline navigation.
+
+## Basic Usage
+
+```tsx
+import { OrderbookControls } from '@krono/kit'
+
+export const ControlsBasic = () => {
+  return (
+    <OrderbookControls.Root>
+      <OrderbookControls.LiveBadge />
+      <OrderbookControls.PlaybackButtons />
+    </OrderbookControls.Root>
+  )
+}
+```
+
+## Anatomy
+
+```tsx
+import { OrderbookControls } from '@krono/kit'
+
+<OrderbookControls.Root>
+  <OrderbookControls.LiveBadge />
+  <OrderbookControls.Toolbar>
+    <OrderbookControls.PlaybackButtons />
+    <OrderbookControls.Timeline />
+  </OrderbookControls.Toolbar>
+</OrderbookControls.Root>
+```
+
+## Examples
+
+### Complete Control Panel
+
+Full-featured control panel with all available controls.
+
+```tsx
+import { OrderbookControls } from '@krono/kit'
+
+export const ControlsComplete = () => {
+  return (
+    <OrderbookControls.Root>
+      <OrderbookControls.LiveBadge />
+      <OrderbookControls.Toolbar>
+        <OrderbookControls.PlaybackButtons />
+        <OrderbookControls.Timeline />
+      </OrderbookControls.Toolbar>
+    </OrderbookControls.Root>
+  )
+}
+```
+
+### Minimal Controls
+
+Simple control setup with just playback buttons.
+
+```tsx
+import { OrderbookControls } from '@krono/kit'
+
+export const ControlsMinimal = () => {
+  return (
+    <OrderbookControls.Root>
+      <OrderbookControls.PlaybackButtons />
+    </OrderbookControls.Root>
+  )
+}
+```
+
+### Custom Styling
+
+Apply custom styling to control components.
+
+```tsx
+import { OrderbookControls } from '@krono/kit'
+
+export const ControlsCustomStyle = () => {
+  return (
+    <OrderbookControls.Root className="bg-card border-t p-4">
+      <div className="flex items-center justify-between max-w-4xl mx-auto">
+        <OrderbookControls.LiveBadge className="text-sm" />
+        <OrderbookControls.Toolbar className="flex-1 mx-4">
+          <OrderbookControls.PlaybackButtons className="gap-2" />
+          <OrderbookControls.Timeline className="flex-1" />
+        </OrderbookControls.Toolbar>
+      </div>
+    </OrderbookControls.Root>
+  )
+}
+```
+
+### With Orderbook Integration
+
+Integrate controls directly with the Orderbook component.
+
+```tsx
+import { Orderbook, OrderbookControls, OrderbookTable } from '@krono/kit'
+
+export const ControlsIntegrated = () => {
+  return (
+    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+      <Orderbook.Panel
+        renderTable={(props) => <OrderbookTable.Root {...props} />}
+      >
+        <OrderbookControls.Root>
+          <OrderbookControls.LiveBadge />
+          <OrderbookControls.Toolbar>
+            <OrderbookControls.PlaybackButtons />
+            <OrderbookControls.Timeline />
+          </OrderbookControls.Toolbar>
+        </OrderbookControls.Root>
+      </Orderbook.Panel>
+    </Orderbook.Root>
+  )
+}
+```
+
+### Only Timeline
+
+Display just the timeline scrubber without buttons.
+
+```tsx
+import { OrderbookControls } from '@krono/kit'
+
+export const TimelineOnly = () => {
+  return (
+    <OrderbookControls.Root>
+      <OrderbookControls.Timeline />
+    </OrderbookControls.Root>
+  )
+}
+```
+
+### With Settings
+
+Combine controls with settings panel.
+
+```tsx
+import { OrderbookControls, OrderbookSettings } from '@krono/kit'
+
+export const ControlsWithSettings = () => {
+  return (
+    <div className="space-y-4">
+      <OrderbookControls.Root>
+        <OrderbookControls.LiveBadge />
+        <OrderbookControls.Toolbar>
+          <OrderbookControls.PlaybackButtons />
+          <OrderbookControls.Timeline />
+        </OrderbookControls.Toolbar>
+      </OrderbookControls.Root>
+
+      <OrderbookSettings />
+    </div>
+  )
+}
+```
+
+## Components
+
+### Root
+
+Wrapper component that provides context for all control elements.
+
+```tsx
+<OrderbookControls.Root className="p-4">
+  {/* Control components */}
+</OrderbookControls.Root>
+```
+
+### LiveBadge
+
+Indicator showing whether the orderbook is displaying live data or historical replay.
+
+```tsx
+<OrderbookControls.LiveBadge />
+```
+
+Displays:
+- **LIVE** badge when showing real-time data
+- **REPLAY** badge when in historical playback mode
+
+### PlaybackButtons
+
+Control buttons for playback navigation.
+
+```tsx
+<OrderbookControls.PlaybackButtons />
+```
+
+Features:
+- Play/Pause toggle
+- Step backward (previous frame)
+- Step forward (next frame)
+- Return to live mode
+
+### Timeline
+
+Interactive timeline slider for scrubbing through historical data.
+
+```tsx
+<OrderbookControls.Timeline />
+```
+
+Features:
+- Drag to scrub through history
+- Click to jump to specific point
+- Visual representation of current position
+- Timestamp display
+
+### Toolbar
+
+Container for organizing multiple control elements in a horizontal layout.
+
+```tsx
+<OrderbookControls.Toolbar>
+  <OrderbookControls.PlaybackButtons />
+  <OrderbookControls.Timeline />
+</OrderbookControls.Toolbar>
+```
+
+## Props
+
+### Root
+
+<ResponseField name="children" type="ReactNode" required>
+    Control components to render.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling.
+</ResponseField>
+
+### LiveBadge
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the badge.
+</ResponseField>
+
+### PlaybackButtons
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the button group.
+</ResponseField>
+
+### Timeline
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the timeline.
+</ResponseField>
+
+### Toolbar
+
+<ResponseField name="children" type="ReactNode" required>
+    Control components to display in the toolbar.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the toolbar.
+</ResponseField>
+
+## Playback Behavior
+
+The controls automatically manage orderbook playback state:
+
+1. **Live Mode**: Default state showing real-time data
+2. **Replay Mode**: Activated when interacting with timeline or playback buttons
+3. **Auto-resume**: Optionally return to live mode after reaching the end of historical data
+
+## Keyboard Shortcuts
+
+The controls support keyboard navigation:
+
+- `Space`: Play/Pause
+- `←`: Step backward
+- `→`: Step forward
+- `L`: Return to live mode
+- `Home`: Jump to start of history
+- `End`: Jump to end of history
+
+## Notes
+
+<Note>
+    OrderbookControls must be used within an `OrderbookProvider` or `Orderbook.RootProvider` context to function properly.
+</Note>
+
+<Tip>
+    The Timeline component provides smooth scrubbing with debounced updates to prevent excessive re-renders during rapid seeking.
+</Tip>
+
+<Warning>
+    Playback functionality requires historical data to be available. The controls will be disabled if no historical data is present.
+</Warning>

@@ -1,0 +1,487 @@
+---
+title: "OrderbookTable"
+description: "Display orderbook data in a structured table format with customizable columns and formatting."
+---
+
+The OrderbookTable component renders bid and ask data in a tabular format with support for custom columns, styling, and depth visualization.
+
+## Basic Usage
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+export const TableBasic = () => {
+  return <OrderbookTable.Root data={data} type="bids" maxTotal={1000} />
+}
+```
+
+## Anatomy
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+<OrderbookTable.Root>
+  <OrderbookTable.Header />
+  <OrderbookTable.Body>
+    <OrderbookTable.Row>
+      <OrderbookTable.Cell />
+    </OrderbookTable.Row>
+  </OrderbookTable.Body>
+</OrderbookTable.Root>
+
+// Or use individual components
+
+<OrderbookTable.Column>
+  <OrderbookTable.Header />
+  <OrderbookTable.Body />
+</OrderbookTable.Column>
+```
+
+## Examples
+
+### Custom Column Configuration
+
+Define how each column renders and formats data.
+
+```tsx
+import { OrderbookTable, formatDigits, formatUSD } from '@krono/kit'
+
+export const TableCustomColumns = () => {
+  const columns = {
+    price: {
+      label: 'Price (USD)',
+      children: ({ value }) => formatUSD(value.price),
+      className: 'font-bold',
+    },
+    quantity: {
+      label: 'Size',
+      children: ({ value }) => formatDigits(value.quantity, { decimals: 4 }),
+    },
+    total: {
+      label: 'Total',
+      children: ({ value }) => formatDigits(value.total, { decimals: 2 }),
+    },
+  }
+
+  return (
+    <OrderbookTable.Root
+      data={data}
+      type="bids"
+      columns={columns}
+      maxTotal={maxTotal}
+    />
+  )
+}
+```
+
+### With Color Coding
+
+Apply different styling for bids and asks.
+
+```tsx
+import { OrderbookTable, type ColumnDef } from '@krono/kit'
+
+export const TableColorCoded = () => {
+  const columns: ColumnDef[] = [
+    {
+      id: 'price',
+      header: 'Price',
+      cell: ({ value }) => value.price.toFixed(2),
+      cellClassName: ({ type }) =>
+        type === 'bids'
+          ? 'text-green-600 dark:text-green-500'
+          : 'text-red-600 dark:text-red-500',
+    },
+    {
+      id: 'quantity',
+      header: 'Quantity',
+      cell: ({ value }) => value.quantity.toFixed(8),
+    },
+  ]
+
+  return (
+    <OrderbookTable.Root
+      columns={columns}
+      data={data}
+      type="bids"
+      maxTotal={maxTotal}
+    />
+  )
+}
+```
+
+### Depth Visualization
+
+Show cumulative depth with background bars.
+
+```tsx
+import { OrderbookTable, defaultBarColorMap } from '@krono/kit'
+
+export const TableWithDepth = () => {
+  return (
+    <OrderbookTable.Root
+      data={data}
+      type="asks"
+      maxTotal={1000}
+      rowProps={{
+        barProps: {
+          enabled: true,
+          color: defaultBarColorMap.asks,
+        },
+      }}
+    />
+  )
+}
+```
+
+### Right-to-Left Layout
+
+Display the table with right-to-left text direction.
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+export const TableRTL = () => {
+  return (
+    <OrderbookTable.Root
+      data={data}
+      type="bids"
+      direction="rtl"
+      maxTotal={maxTotal}
+    />
+  )
+}
+```
+
+### Without Header
+
+Hide the table header for a cleaner look.
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+export const TableNoHeader = () => {
+  return (
+    <OrderbookTable.Root
+      data={data}
+      type="bids"
+      showHeader={false}
+      maxTotal={maxTotal}
+    />
+  )
+}
+```
+
+### Custom Row Rendering
+
+Provide complete control over row rendering.
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+export const TableCustomRow = () => {
+  return (
+    <OrderbookTable.Root
+      data={data}
+      type="bids"
+      maxTotal={maxTotal}
+      renderRow={({ value, index, type }) => (
+        <div className="flex justify-between p-2 hover:bg-accent">
+          <span className="text-green-500">{value.price}</span>
+          <span>{value.quantity}</span>
+          <span className="text-muted-foreground">{value.total}</span>
+        </div>
+      )}
+    />
+  )
+}
+```
+
+### Skeleton Loading
+
+Display a loading skeleton while data is being fetched.
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+export const TableSkeleton = () => {
+  return <OrderbookTable.Skeleton rows={20} />
+}
+```
+
+### Building Custom Tables
+
+Use individual table components for complete customization.
+
+```tsx
+import { OrderbookTable } from '@krono/kit'
+
+export const CustomTable = () => {
+  return (
+    <OrderbookTable.Column>
+      <OrderbookTable.Header
+        columns={{
+          price: { label: 'Price' },
+          quantity: { label: 'Size' },
+          total: { label: 'Total' },
+        }}
+        type="bids"
+      />
+      <OrderbookTable.Body
+        data={data}
+        type="bids"
+        maxTotal={maxTotal}
+      />
+    </OrderbookTable.Column>
+  )
+}
+```
+
+## Props
+
+### Root
+
+<ResponseField name="data" type="PriceLevel[]" required>
+    Array of price level objects containing price, quantity, and total.
+</ResponseField>
+
+<ResponseField name="type" type="'bids' | 'asks'">
+    The type of orderbook side to display.
+
+    Default: `'bids'`
+</ResponseField>
+
+<ResponseField name="direction" type="'ltr' | 'rtl'">
+    Text direction for the table layout.
+
+    Default: `'ltr'`
+</ResponseField>
+
+<ResponseField name="columns" type="OrderbookTableColumns">
+    Column configuration object defining how data is displayed.
+
+    <Expandable title="columns properties">
+        <ResponseField name="price" type="OrderbookColumnProps">
+            Configuration for the price column.
+        </ResponseField>
+
+        <ResponseField name="quantity" type="OrderbookColumnProps">
+            Configuration for the quantity column.
+        </ResponseField>
+
+        <ResponseField name="total" type="OrderbookColumnProps">
+            Configuration for the total/cumulative column.
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+
+<ResponseField name="maxTotal" type="number">
+    Maximum total value for calculating depth bar widths.
+</ResponseField>
+
+<ResponseField name="showHeader" type="boolean">
+    Whether to display the table header row.
+
+    Default: `true`
+</ResponseField>
+
+<ResponseField name="renderRow" type="(context) => ReactNode">
+    Custom render function for table rows.
+</ResponseField>
+
+<ResponseField name="rowProps" type="OrderbookTableRowProps">
+    Props to pass to each row component.
+
+    <Expandable title="rowProps properties">
+        <ResponseField name="barProps" type="object">
+            Configuration for depth visualization bars.
+
+            <Expandable title="barProps properties">
+                <ResponseField name="enabled" type="boolean">
+                    Enable depth bars. Default: `true`
+                </ResponseField>
+
+                <ResponseField name="color" type="string">
+                    CSS color for the depth bar.
+                </ResponseField>
+
+                <ResponseField name="depth" type="number">
+                    Normalized depth value (0-1).
+                </ResponseField>
+
+                <ResponseField name="direction" type="'ltr' | 'rtl'">
+                    Direction of depth bar growth.
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+
+<ResponseField name="headerProps" type="OrderbookTableHeaderProps">
+    Props to pass to the header component.
+</ResponseField>
+
+<ResponseField name="bodyProps" type="OrderbookTableBodyProps">
+    Props to pass to the body component.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Column
+
+<ResponseField name="children" type="ReactNode" required>
+    Table components to render within the column.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Header
+
+<ResponseField name="columns" type="OrderbookTableColumns">
+    Column configuration for header labels.
+</ResponseField>
+
+<ResponseField name="type" type="'bids' | 'asks'">
+    Orderbook side type.
+</ResponseField>
+
+<ResponseField name="direction" type="'ltr' | 'rtl'">
+    Text direction.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Body
+
+<ResponseField name="data" type="PriceLevel[]" required>
+    Array of price levels to render.
+</ResponseField>
+
+<ResponseField name="type" type="'bids' | 'asks'">
+    Orderbook side type.
+</ResponseField>
+
+<ResponseField name="maxTotal" type="number">
+    Maximum total for depth calculations.
+</ResponseField>
+
+<ResponseField name="columns" type="OrderbookTableColumns">
+    Column configuration.
+</ResponseField>
+
+<ResponseField name="renderRow" type="(context) => ReactNode">
+    Custom row renderer.
+</ResponseField>
+
+<ResponseField name="rowProps" type="OrderbookTableRowProps">
+    Props to pass to each row.
+</ResponseField>
+
+<ResponseField name="direction" type="'ltr' | 'rtl'">
+    Text direction.
+</ResponseField>
+
+### Row
+
+<ResponseField name="children" type="ReactNode" required>
+    Cell components to render.
+</ResponseField>
+
+<ResponseField name="barProps" type="OrderbookTableRowBarProps">
+    Depth bar configuration.
+</ResponseField>
+
+<ResponseField name="direction" type="'ltr' | 'rtl'">
+    Text direction.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Cell
+
+<ResponseField name="children" type="ReactNode" required>
+    Content to render in the cell.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes to apply.
+</ResponseField>
+
+### Skeleton
+
+<ResponseField name="rows" type="number">
+    Number of skeleton rows to display.
+
+    Default: `20`
+</ResponseField>
+
+## Formatting Utilities
+
+The `OrderbookTable` includes utility functions for formatting numeric values.
+
+### formatUSD
+
+Format numbers as USD currency.
+
+```tsx
+import { formatUSD } from '@krono/kit'
+
+formatUSD(1234.56) // "$1,234.56"
+formatUSD(0.99, 4) // "$0.9900"
+```
+
+**Parameters:**
+- `value: number` - The number to format
+- `decimals?: number` - Number of decimal places (default: 2)
+
+### formatDigits
+
+Format numbers with specific decimal precision.
+
+```tsx
+import { formatDigits } from '@krono/kit'
+
+formatDigits(0.00000123, { decimals: 8 }) // "0.00000123"
+formatDigits(0.00000001, { decimals: 8, minVal: 1e-7 }) // "< 0.00000010"
+formatDigits(1234.5678, { decimals: 2, useGrouping: true }) // "1,234.57"
+```
+
+**Parameters:**
+- `value: number` - The number to format
+- `options: object` - Formatting options
+- `decimals?: number` - Decimal places (default: 8)
+- `minVal?: number` - Threshold for "< X" display (default: 1e-8)
+- `useGrouping?: boolean` - Use thousand separators (default: true)
+
+### defaultBarColorMap
+
+Default colors for depth visualization bars.
+
+```tsx
+import { defaultBarColorMap } from '@krono/kit'
+
+const bidColor = defaultBarColorMap.bids // 'rgba(34, 197, 94, 0.2)'
+const askColor = defaultBarColorMap.asks // 'rgba(239, 68, 68, 0.2)'
+```
+
+## Notes
+
+<Note>
+    The table automatically calculates depth percentages based on the `maxTotal` prop. Ensure this value represents the maximum cumulative total for accurate visualization.
+</Note>
+
+<Tip>
+    For optimal performance with large datasets, consider limiting the number of rendered rows using the responsive breakpoint feature in the Orderbook component.
+</Tip>
+
+<Warning>
+    When using custom `renderRow`, you're responsible for implementing depth visualization and proper styling for bids vs asks.
+</Warning>

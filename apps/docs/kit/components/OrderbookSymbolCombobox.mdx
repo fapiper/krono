@@ -1,0 +1,477 @@
+---
+title: "SymbolCombobox"
+description: "Searchable dropdown for selecting trading pairs and switching between symbols."
+---
+
+The SymbolCombobox component provides a user-friendly interface for searching and selecting trading pairs from available asset pairs.
+
+## Basic Usage
+
+```tsx
+import { OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxBasic = () => {
+  return (
+    <OrderbookSymbolCombobox.Root>
+      <OrderbookSymbolCombobox.Trigger />
+      <OrderbookSymbolCombobox.Content />
+    </OrderbookSymbolCombobox.Root>
+  )
+}
+```
+
+## Anatomy
+
+```tsx
+import { OrderbookSymbolCombobox } from '@krono/kit'
+
+<OrderbookSymbolCombobox.Root>
+  <OrderbookSymbolCombobox.Trigger />
+  <OrderbookSymbolCombobox.Content>
+    <OrderbookSymbolCombobox.Item />
+  </OrderbookSymbolCombobox.Content>
+</OrderbookSymbolCombobox.Root>
+```
+
+## Examples
+
+### With Orderbook Integration
+
+The symbol combobox automatically connects to the orderbook context and updates the trading pair.
+
+```tsx
+import { Orderbook, OrderbookTable, OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxWithOrderbook = () => {
+  return (
+    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold">Orderbook</h2>
+          <OrderbookSymbolCombobox.Root>
+            <OrderbookSymbolCombobox.Trigger />
+            <OrderbookSymbolCombobox.Content />
+          </OrderbookSymbolCombobox.Root>
+        </div>
+
+        <Orderbook.Panel
+          renderTable={(props) => <OrderbookTable.Root {...props} />}
+        />
+      </div>
+    </Orderbook.Root>
+  )
+}
+```
+
+### Custom Trigger Button
+
+Customize the appearance of the trigger button.
+
+```tsx
+import { OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxCustomTrigger = () => {
+  return (
+    <OrderbookSymbolCombobox.Root>
+      <OrderbookSymbolCombobox.Trigger className="w-48 font-semibold">
+        Custom Label
+      </OrderbookSymbolCombobox.Trigger>
+      <OrderbookSymbolCombobox.Content />
+    </OrderbookSymbolCombobox.Root>
+  )
+}
+```
+
+### Custom Content Width
+
+Adjust the width of the dropdown content.
+
+```tsx
+import { OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxCustomWidth = () => {
+  return (
+    <OrderbookSymbolCombobox.Root>
+      <OrderbookSymbolCombobox.Trigger />
+      <OrderbookSymbolCombobox.Content className="w-80 p-0" />
+    </OrderbookSymbolCombobox.Root>
+  )
+}
+```
+
+### Custom Item Rendering
+
+Use the Item component directly for complete customization.
+
+```tsx
+import { OrderbookSymbolCombobox } from '@krono/kit'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandList,
+} from '@krono/ui/components/ui/command'
+import { useOrderbookSymbolComboboxContext } from '@krono/kit'
+
+export const ComboboxCustomItems = () => {
+  return (
+    <OrderbookSymbolCombobox.Root>
+      <OrderbookSymbolCombobox.Trigger />
+      <OrderbookSymbolCombobox.Content>
+        <CustomContent />
+      </OrderbookSymbolCombobox.Content>
+    </OrderbookSymbolCombobox.Root>
+  )
+}
+
+function CustomContent() {
+  const { symbols, currentSymbol, onSelectSymbol } =
+    useOrderbookSymbolComboboxContext()
+
+  return (
+    <Command>
+      <CommandInput placeholder="Search trading pairs..." />
+      <CommandList>
+        <CommandEmpty>No trading pair found.</CommandEmpty>
+        <CommandGroup heading="Available Pairs">
+          {symbols?.map((option) => (
+            <OrderbookSymbolCombobox.Item
+              key={option.value}
+              option={option}
+              isSelected={currentSymbol === option.value}
+              onSelect={onSelectSymbol}
+            >
+              <div className="flex items-center justify-between w-full">
+                <span>{option.displayLabel}</span>
+                <span className="text-xs text-muted-foreground">
+                  {option.baseAsset}/{option.quoteAsset}
+                </span>
+              </div>
+            </OrderbookSymbolCombobox.Item>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  )
+}
+```
+
+### Controlled State
+
+Control the open/close state externally.
+
+```tsx
+import { useState } from 'react'
+import { OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxControlled = () => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="space-y-4">
+      <button onClick={() => setOpen(!open)}>
+        Toggle Combobox
+      </button>
+
+      <OrderbookSymbolCombobox.Root
+        open={open}
+        onOpenChange={setOpen}
+      >
+        <OrderbookSymbolCombobox.Trigger />
+        <OrderbookSymbolCombobox.Content />
+      </OrderbookSymbolCombobox.Root>
+    </div>
+  )
+}
+```
+
+### In Navigation Bar
+
+Place the symbol selector in a navigation bar.
+
+```tsx
+import { Orderbook, OrderbookTable, OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxInNav = () => {
+  return (
+    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+      <div className="h-screen flex flex-col">
+        <nav className="border-b p-4">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <h1 className="text-xl font-bold">Trading Platform</h1>
+
+            <OrderbookSymbolCombobox.Root>
+              <OrderbookSymbolCombobox.Trigger />
+              <OrderbookSymbolCombobox.Content />
+            </OrderbookSymbolCombobox.Root>
+          </div>
+        </nav>
+
+        <main className="flex-1 overflow-hidden">
+          <Orderbook.Panel
+            renderTable={(props) => <OrderbookTable.Root {...props} />}
+          />
+        </main>
+      </div>
+    </Orderbook.Root>
+  )
+}
+```
+
+### With Custom Icon
+
+Customize the icon display for each symbol.
+
+```tsx
+import { OrderbookSymbolCombobox } from '@krono/kit'
+
+export const ComboboxCustomIcon = () => {
+  return (
+    <OrderbookSymbolCombobox.Root>
+      <OrderbookSymbolCombobox.Trigger />
+      <OrderbookSymbolCombobox.Content>
+        {/* Icon component handles fallbacks automatically */}
+      </OrderbookSymbolCombobox.Content>
+    </OrderbookSymbolCombobox.Root>
+  )
+}
+```
+
+## Components
+
+### Root
+
+Wrapper component that provides context and manages state.
+
+```tsx
+<OrderbookSymbolCombobox.Root open={open} onOpenChange={setOpen}>
+  {/* Trigger and Content components */}
+</OrderbookSymbolCombobox.Root>
+```
+
+**Features:**
+- Manages open/close state
+- Fetches available symbols from asset pairs configuration
+- Handles symbol selection and orderbook updates
+- Provides context to child components
+
+### Trigger
+
+Button that opens the symbol selection dropdown.
+
+```tsx
+<OrderbookSymbolCombobox.Trigger className="w-48" />
+```
+
+**Features:**
+- Shows currently selected symbol with icon
+- Displays loading state while fetching symbols
+- Automatically disabled during loading or on error
+- Supports custom children for complete customization
+
+### Content
+
+Dropdown panel containing the symbol list and search.
+
+```tsx
+<OrderbookSymbolCombobox.Content className="w-80 p-0" />
+```
+
+**Features:**
+- Built-in search functionality
+- Loading and error states
+- Empty state when no symbols found
+- Default implementation with Command component
+- Supports custom children for full control
+
+### Item
+
+Individual symbol item in the dropdown list.
+
+```tsx
+<OrderbookSymbolCombobox.Item
+  option={option}
+  isSelected={selected}
+  onSelect={handleSelect}
+/>
+```
+
+**Features:**
+- Displays symbol icon and label
+- Shows check mark for selected symbol
+- Handles click/keyboard selection
+- Supports custom children for layout control
+
+### Icon
+
+Symbol icon component with automatic fallback.
+
+```tsx
+<OrderbookSymbolCombobox.Icon
+  src={iconUrl}
+  alt={symbolName}
+/>
+```
+
+**Features:**
+- Loads symbol icon from URL
+- Automatic fallback to first letter on error
+- Consistent sizing and styling
+
+## Props
+
+### Root
+
+<ResponseField name="open" type="boolean">
+    Controlled open state of the dropdown.
+</ResponseField>
+
+<ResponseField name="onOpenChange" type="(open: boolean) => void">
+    Callback fired when the open state changes.
+</ResponseField>
+
+### Trigger
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the trigger button.
+</ResponseField>
+
+<ResponseField name="children" type="ReactNode">
+    Custom content to display in the trigger. When provided, replaces the default symbol display.
+</ResponseField>
+
+### Content
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the dropdown content.
+
+    Default: `"w-60 p-0"`
+</ResponseField>
+
+<ResponseField name="children" type="ReactNode">
+    Custom content to display in the dropdown. When provided, replaces the default command list.
+</ResponseField>
+
+### Item
+
+<ResponseField name="option" type="AssetPairOption" required>
+    The symbol option data to display.
+
+    <Expandable title="AssetPairOption properties">
+        <ResponseField name="value" type="string">
+            The symbol value (e.g., 'BTC/USD')
+        </ResponseField>
+
+        <ResponseField name="displayLabel" type="string">
+            Display label for the symbol
+        </ResponseField>
+
+        <ResponseField name="baseAsset" type="string">
+            Base currency (e.g., 'BTC')
+        </ResponseField>
+
+        <ResponseField name="quoteAsset" type="string">
+            Quote currency (e.g., 'USD')
+        </ResponseField>
+
+        <ResponseField name="icon" type="string">
+            URL to the symbol icon
+        </ResponseField>
+
+        <ResponseField name="altname" type="string">
+            Alternative name for the symbol
+        </ResponseField>
+
+        <ResponseField name="tickSize" type="number">
+            Minimum price increment
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+
+<ResponseField name="isSelected" type="boolean" required>
+    Whether this symbol is currently selected.
+</ResponseField>
+
+<ResponseField name="onSelect" type="(value: string) => void" required>
+    Callback fired when the symbol is selected.
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the item.
+</ResponseField>
+
+<ResponseField name="children" type="ReactNode">
+    Custom content to display. When provided, replaces the default label.
+</ResponseField>
+
+### Icon
+
+<ResponseField name="src" type="string" required>
+    URL of the icon image.
+</ResponseField>
+
+<ResponseField name="alt" type="string" required>
+    Alt text for the icon (used in fallback).
+</ResponseField>
+
+<ResponseField name="className" type="string">
+    Additional CSS classes for styling the icon.
+</ResponseField>
+
+## Context Hook
+
+Access the symbol combobox context in custom components.
+
+```tsx
+import { useOrderbookSymbolComboboxContext } from '@krono/kit'
+
+function CustomComponent() {
+  const {
+    open,
+    setOpen,
+    symbols,
+    symbolMap,
+    loading,
+    error,
+    selectedSymbol,
+    currentSymbol,
+    onSelectSymbol,
+  } = useOrderbookSymbolComboboxContext()
+
+  // Your custom logic
+}
+```
+
+**Context Properties:**
+
+- `open: boolean` - Current open state
+- `setOpen: (open: boolean) => void` - Update open state
+- `symbols: AssetPairOption[]` - Available symbols
+- `symbolMap: Map<string, AssetPairOption>` - Symbol lookup map
+- `loading: boolean` - Loading state
+- `error: Error | null` - Error state
+- `selectedSymbol: AssetPairOption | null` - Currently selected symbol object
+- `currentSymbol: string` - Current symbol string value
+- `onSelectSymbol: (value: string) => void` - Select symbol handler
+
+## Search Behavior
+
+The built-in search matches against:
+
+- Symbol value (e.g., "BTC/USD")
+- Display label
+- Alternative name
+- Base and quote assets
+
+The search is case-insensitive and updates results in real-time.
+
+## Notes
+
+<Note>
+    The SymbolCombobox must be used within an `OrderbookProvider` or `Orderbook.RootProvider` context to access symbol data and update the orderbook.
+</Note>
+
+<Tip>
+    The component automatically handles symbol initialization, selecting the first available symbol if none is set.
+</Tip>
