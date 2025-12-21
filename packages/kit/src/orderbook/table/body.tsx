@@ -2,23 +2,25 @@
 
 import type { PriceLevel } from '@krono/core';
 import { cn } from '@krono/ui/lib';
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { OrderbookTableCell, type OrderbookTableCellProps } from './cell';
 import { OrderbookTableRow, type OrderbookTableRowProps } from './row';
 import type { ColumnDef, OrderbookType } from './types';
 
-export type OrderbookTableBodyProps = ComponentPropsWithoutRef<'div'> &
-  Pick<OrderbookTableRowProps, 'direction'> & {
-    data: PriceLevel[];
-    columns: ColumnDef[];
-    type?: OrderbookType;
-    maxTotal?: number;
-    rowProps?: Omit<OrderbookTableRowProps, 'children' | 'direction'>;
-    cellProps?: Omit<OrderbookTableCellProps, 'children'>;
-    renderRow?:
-      | ((props: OrderbookTableRowProps, index: number) => ReactNode)
-      | ReactNode;
-  };
+export type OrderbookTableBodyProps = Pick<
+  OrderbookTableRowProps,
+  'direction'
+> & {
+  data: PriceLevel[];
+  columns: ColumnDef[];
+  type?: OrderbookType;
+  maxTotal?: number;
+  rowProps?: Omit<OrderbookTableRowProps, 'children' | 'direction'>;
+  cellProps?: Omit<OrderbookTableCellProps, 'children'>;
+  renderRow?:
+    | ((props: OrderbookTableRowProps, index: number) => ReactNode)
+    | ReactNode;
+};
 
 export function OrderbookTableBody({
   data,
@@ -26,11 +28,9 @@ export function OrderbookTableBody({
   type = 'bids',
   maxTotal,
   renderRow,
-  className,
   rowProps: _rowProps = {},
   cellProps: _cellProps = {},
   direction,
-  ...props
 }: OrderbookTableBodyProps) {
   const maxTotalValue = maxTotal ?? Math.max(...data.map((d) => d.total));
   const { barProps } = _rowProps;

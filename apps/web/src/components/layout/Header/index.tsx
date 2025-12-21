@@ -5,11 +5,22 @@ import {
   OrderbookSettingsPopover,
   OrderbookSymbolCombobox,
 } from '@krono/kit';
+import { Button } from '@krono/ui/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@krono/ui/components/ui/sheet';
 import { cn } from '@krono/ui/lib';
+import { Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { HTMLAttributes } from 'react';
 import kronoImage from '@/assets/krono.png';
+import LayoutHeaderContent from '@/components/layout/Header/Content';
 
 export type LayoutHeaderProps = HTMLAttributes<HTMLDivElement>;
 
@@ -19,74 +30,62 @@ export default function LayoutHeader({
   ...props
 }: LayoutHeaderProps) {
   return (
-    <header
-      className={cn(
-        'shrink-0 flex items-center justify-between w-full px-4 h-16 bg-background',
-        className,
-      )}
-      {...props}
-    >
-      <div className="flex items-center gap-4">
-        <Image
-          src={kronoImage}
-          alt={'Krono'}
-          className="w-8 h-8 rounded-lg"
-          width={40}
-          height={40}
+    <Sheet>
+      <header
+        className={cn(
+          'shrink-0 flex items-center justify-between w-full px-4 h-16 bg-background',
+          className,
+        )}
+        {...props}
+      >
+        <div className="flex items-center gap-4">
+          <Image
+            src={kronoImage}
+            alt={'Krono'}
+            className="w-8 h-8 rounded-lg"
+            width={40}
+            height={40}
+          />
+          <span className="sr-only">Krono</span>
+          <OrderbookSymbolCombobox.Root>
+            <OrderbookSymbolCombobox.Trigger className={'w-40'} />
+            <OrderbookSymbolCombobox.Content />
+          </OrderbookSymbolCombobox.Root>
+        </div>
+        <div className={'flex justify-end items-center gap-6'}>
+          <SheetTrigger asChild={true}>
+            <Button
+              size={'icon-sm'}
+              variant={'outline'}
+              className={'md:hidden'}
+            >
+              <Menu />
+            </Button>
+          </SheetTrigger>
+
+          <LayoutHeaderContent
+            className={
+              'hidden md:flex flex-row justify-end items-center gap-x-6 text-sm'
+            }
+          />
+        </div>
+
+        {children}
+      </header>
+
+      <SheetContent>
+        <LayoutHeaderContent
+          className={'flex py-14 px-4 flex-1 flex-col text-lg gap-y-4'}
+          settingsTriggerProps={{
+            children: (
+              <Button size={'lg'} variant={'secondary'} className={'mt-auto'}>
+                Orderbook Settings
+              </Button>
+            ),
+            asChild: true,
+          }}
         />
-        <span className="sr-only">Krono</span>
-        <OrderbookSymbolCombobox.Root>
-          <OrderbookSymbolCombobox.Trigger className={'w-40'} />
-          <OrderbookSymbolCombobox.Content />
-        </OrderbookSymbolCombobox.Root>
-      </div>
-      <div className={'flex justify-end items-center gap-6'}>
-        <Link
-          href={'/about'}
-          className={
-            'text-sm text-foreground/60 transition-color ease-in-out duration-200 font-medium hover:text-foreground visited:text-foreground'
-          }
-        >
-          About
-        </Link>
-        <Link
-          href={'/docs'}
-          className={
-            'text-sm text-foreground/60 transition-color ease-in-out duration-200 font-medium hover:text-foreground visited:text-foreground'
-          }
-        >
-          Documentation
-        </Link>
-        <OrderbookSettingsPopover.Root>
-          <OrderbookSettingsPopover.Trigger />
-
-          <OrderbookSettingsPopover.Content className={'mr-4'}>
-            <div>
-              <h3 className="font-semibold">Feed Settings</h3>
-              <p className={'text-muted-foreground text-sm'}>
-                Configure orderbook behavior and display options
-              </p>
-            </div>
-
-            <OrderbookSettings.Separator className="my-2" />
-
-            <OrderbookSettings.HistorySwitch />
-            <OrderbookSettings.DebugSwitch />
-
-            <OrderbookSettings.Separator className="my-2" />
-
-            <OrderbookSettings.DepthSelect />
-            <OrderbookSettings.SpreadSelect />
-
-            <OrderbookSettings.Separator className="my-2" />
-
-            <OrderbookSettings.ThrottleInput />
-            <OrderbookSettings.DebounceInput />
-          </OrderbookSettingsPopover.Content>
-        </OrderbookSettingsPopover.Root>
-      </div>
-
-      {children}
-    </header>
+      </SheetContent>
+    </Sheet>
   );
 }
