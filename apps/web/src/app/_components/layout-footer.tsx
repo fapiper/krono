@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@krono/ui/src/components/ui/button';
-import { Separator } from '@krono/ui/src/components/ui/separator';
-import { cn } from '@krono/ui/src/lib';
+import { Button } from '@krono/ui/components/ui/button';
+import { Separator } from '@krono/ui/components/ui/separator';
+import { cn } from '@krono/ui/lib';
 import { Github, Globe, Linkedin } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';

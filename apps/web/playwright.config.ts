@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const config = defineConfig({
   testDir: path.join(__dirname, 'tests/e2e'),
-  testMatch: '**/*.spec.ts',
+  testMatch: '**/*.spec.{ts,tsx}',
   outputDir: path.join(__dirname, 'tests/e2e/coverage'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,

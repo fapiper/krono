@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@krono/ui/src/components/ui/select';
+} from '@krono/ui/components/ui/select';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 

@@ -48,6 +48,7 @@ export function OrderbookTableRoot({
   return (
     <OrderbookTableColumn
       className={cn(
+        'krono-orderbook-table',
         direction === 'ltr' ? 'md:text-left' : 'md:text-right',
         className,
       )}

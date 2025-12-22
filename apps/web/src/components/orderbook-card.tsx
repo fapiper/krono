@@ -7,7 +7,7 @@ import {
   OrderbookControls,
   OrderbookTable,
 } from '@krono/kit';
-import { Card, CardContent } from '@krono/ui/src/components/ui/card';
+import { Card, CardContent } from '@krono/ui/components/ui/card';
 
 export function OrderbookCard() {
   return (
