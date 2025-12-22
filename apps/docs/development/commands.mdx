@@ -1,0 +1,38 @@
+---
+title: 'Commands'
+description: 'Reference for CLI scripts and utilities'
+---
+
+The following commands handle everything from starting development servers and running tests to building production assets and linting.
+
+## Core Commands
+
+These are the most frequently used commands for daily development.
+
+| Command      | Description                                                    |
+|:-------------|:---------------------------------------------------------------|
+| `bun dev`    | Starts all applications in development mode with hot-reloading |
+| `bun dev:ui` | Starts the dev server with Turbo's experimental UI dashboard   |
+| `bun build`  | Builds all packages and apps for production                    |
+| `bun clean`  | Removes `node_modules` and `dist` folders for a clean slate    |
+
+## Testing & Quality
+
+Ensure your code meets quality standards before submitting contributions.
+
+| Command        | Description                                       |
+|:---------------|:--------------------------------------------------|
+| `bun test`     | Runs all unit tests across the monorepo           |
+| `bun test:cov` | Runs unit tests and generates a coverage report   |
+| `bun test:e2e` | Runs end-to-end tests using Playwright            |
+| `bun lint`     | Checks code for linting and formatting errors     |
+| `bun lint:fix` | Automatically fixes linting and formatting errors |
+
+## Components
+
+Utilities for working with the UI library and design system.
+
+| Command         | Description                                       |
+|:----------------|:--------------------------------------------------|
+| `bun storybook` | Launches the Storybook component explorer         |
+| `bun ui:add`    | Adds a new shadcn/ui component to the kit package |

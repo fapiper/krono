@@ -1,13 +1,36 @@
 ---
-title: "TypeScript"
+title: 'TypeScript'
+description: 'Krono is built with TypeScript from the ground up, providing comprehensive type safety across all packages. Every API, hook, and component is fully typed to give you the best developer experience.'
 ---
 
-## Requirements
-Krono is designed to be as type-safe as possible! Things to keep in mind:
+<Info>
+    All packages export complete type definitions out of the box
+</Info>
 
-- Types currently require using TypeScript >=5.7.3.
-- TypeScript doesn't follow semver and often introduces breaking changes in minor releases.
-- Changes to types in this repository are considered non-breaking and are usually released as patch changes (otherwise every type enhancement would be a major version!).
-- It is highly recommended that you lock your `@krono/core` and `typescript` versions to specific patch releases and upgrade with the expectation that types may be fixed or upgraded between any release.
-- The non-type-related public API of Krono still follows semver very strictly.
+## Requirements
+
+Krono is designed to be as type-safe as possible!
+Every function, hook, and component has complete type definitions.
+Things to keep in mind:
+
+- Krono requires TypeScript 5.0 or higher
+- TypeScript doesn't follow semver and often introduces breaking changes in minor releases
 - To ensure everything works correctly, make sure your `tsconfig.json` has strict mode set to true.
+- Best Practice: Lock your `typescript` package to a specific patch version.
+
+## Resources
+
+<CardGroup cols={2}>
+    <Card title="TypeScript Handbook" icon="book" href="https://www.typescriptlang.org/docs/">
+        Official TypeScript documentation
+    </Card>
+    <Card title="Type Challenges" icon="graduation-cap" href="https://github.com/type-challenges/type-challenges">
+        Practice advanced TypeScript patterns
+    </Card>
+    <Card title="API Reference" icon="code" href="/docs/core/api-reference">
+        Explore Krono's complete API
+    </Card>
+    <Card title="GitHub Discussions" icon="comments" href="https://github.com/fapiper/krono/discussions">
+        Ask questions and share tips
+    </Card>
+</CardGroup>

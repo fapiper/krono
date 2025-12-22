@@ -1,94 +1,147 @@
 ---
-title: "Introduction"
-description: "Welcome to Krono"
+title: 'Introduction'
+description: 'A type-safe, modular toolkit for building high-performance orderbook visualizations with Kraken WebSocket API'
 ---
 
-## Overview
+<Note>
+    A project built for the [Kraken Forge Hackathon](https://taikai.network/kraken/hackathons/kraken-forge) (Track #2: Orderbook Visualizer) by [Fabian Piper](https://fabianpiper.com)
+</Note>
+
+<img
+    className="block dark:hidden rounded-lg h-32 w-auto"
+    src="/logo/light.png"
+    alt="Krono Hero Light"
+/>
+<img
+    className="hidden dark:block rounded-lg h-32 w-auto"
+    src="/logo/dark.png"
+    alt="Krono Hero Dark"
+/>
+
+# Krono
 
 Krono provides a complete solution for visualizing cryptocurrency orderbook data from Kraken's WebSocket API.
-It is built with three layers that work independently or together:
+Built with a modular architecture, it consists of three packages:
 
-- **Core**: Framework-agnostic orderbook logic with WebSocket management
-- **Hooks**: React integration library
-- **Kit**: Pre-built UI components using shadcn/ui and Tailwind CSS
-
-## Features
-
-<Check>Real-time orderbook updates via WebSocket</Check>
-<Check>Accurate time travel through historical states</Check>
-<Check>Optimized performance with throttling and debouncing</Check>
-<Check>Customizable depth levels (10, 25, 100, 500, 1000)</Check>
-<Check>Automatic live tracking with manual playback controls</Check>
-<Check>Framework-agnostic core (React, Vue, Svelte support possible)</Check>
-
-## Architecture
-
-The three-layer architecture ensures you can use only what you need:
-
-<Columns cols={2}>
-    <Card
-        title="Core"
-        icon="toy-brick"
-        href="/essentials/markdown"
-    >
-        Use Core alone for custom implementations in any framework.
+<Columns cols={1}>
+    <Card title="Core" icon="toy-brick" href={"/core/getting-started"} horizontal>
+        The `@krono/core` package provides framework-agnostic orderbook logic with WebSocket management.
     </Card>
-    <Card
-        title="Hooks"
-        icon="code"
-        href="/essentials/code"
-    >
-        Add Hooks for React state management and event handling.
+    <Card title="Hooks" icon="square-function" href={"/hooks/getting-started"} horizontal>
+        The `@krono/hooks` package provides a react integration library with composable hooks.
     </Card>
-    <Card
-        title="Kit"
-        icon="image"
-        href="/essentials/images"
-    >
-        Include Kit for ready-to-use components with built-in styling.
+    <Card title="Kit" icon="puzzle" href={"/kit/getting-started"} horizontal>
+        The `@krono/kit` package provides pre-built UI components using shadcn/ui and Tailwind CSS.
     </Card>
 </Columns>
 
-## Quick Example
+<Tip>For a deeper look at Krono’s architecture, such as the update pipeline and design patterns, see the [Architecture guide](/architecture/overview)</Tip>
+
+## Features
+
+- **Ready-to-use components:** Pre-built UI based on [shadcn/ui](https://ui.shadcn.com/) and [Tailwind CSS](https://tailwindcss.com/) for orderbook visualization, configuration panels, and asset pair selection
+- **Time travel playback:** Replay historical orderbook states with frame-accurate precision for debugging, backtesting, and market analysis
+- **High-performance WebSocket:** Optimized Kraken WebSocket integration with intelligent throttling and debouncing to keep your UI responsive
+- **7+ React hooks:** Composable hooks for orderbook data, subscriptions, and state management with full control over data flow
+- **Framework-agnostic:** Core package works with any framework, including React, Vue, Svelte, Angular, or vanilla JavaScript
+- **TypeScript first:** End-to-end type safety with excellent IDE autocomplete and compile-time error detection
+
+## Usage
+
+Use the following code snippet to get a live orderbook with time travel capabilities:
+
 ```tsx
-import { OrderbookVisualizer } from '@krono/kit';
+import {
+  formatDigits,
+  formatUSD,
+  Orderbook,
+  OrderbookControls,
+  OrderbookTable,
+} from '@krono/kit';
 
-export default function App() {
+export function OrderbookPanel() {
   return (
-
+      <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+        <Orderbook.Panel
+          renderTable={(props) => (
+            <OrderbookTable.Root
+              columns={{
+                total: {
+                  label: 'Total',
+                  children: ({ value }) => formatDigits(value.total),
+                },
+                quantity: {
+                  label: 'Quantity',
+                  children: ({ value }) => formatDigits(value.quantity),
+                },
+                price: {
+                  label: 'Price',
+                  className: 'font-semibold',
+                  children: ({ value }) => formatUSD(value.price, 4),
+                },
+              }}
+              {...props}
+            />
+          )}
+        >
+          <OrderbookControls.Root>
+            <OrderbookControls.LiveBadge />
+            <OrderbookControls.Toolbar>
+              <OrderbookControls.PlaybackButtons />
+              <OrderbookControls.Timeline />
+            </OrderbookControls.Toolbar>
+          </OrderbookControls.Root>
+        </Orderbook.Panel>
+    </Orderbook.Root>
   );
 }
 ```
 
-That's it. You now have a live orderbook with time travel capabilities.
+<Warning>
+    The examples above assume local packages. Krono is not yet available on the npm registry.
+    See the <a href="/development/getting-started">development guide</a> for setup instructions.
+</Warning>
 
 ## Browser Support
 
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-- Modern mobile browsers
+<Info>
+    Krono works in all modern browsers that support WebSocket and ES2020+ features:
+</Info>
 
-## Getting Started
+- **Chrome/Edge** 90+
+- **Firefox** 88+
+- **Safari** 14+
+- Modern mobile browsers (iOS Safari 14+, Chrome Mobile)
 
-Ready to build?
-Get up and running in minutes.
+## What's Next?
 
-<Card
-    title="Follow our installation guide"
-    icon="rocket"
-    href="/quickstart"
-    horizontal
->
-    Follow our installation guide.
-</Card>
-
-## Need inspiration?
-
-<Card
-  title="See examples"
-  icon="stars"
-  href="/examples"
->
-  Browse our examples.
-</Card>
+<CardGroup cols={2}>
+    <Card
+        title="Development Guide"
+        icon="tv-minimal-play"
+        href="/development/getting-started"
+    >
+        Follow our step-by-step local installation guide
+    </Card>
+    <Card
+        title="Browse Examples"
+        icon="folder-code"
+        href="/examples"
+    >
+        See implementation examples
+    </Card>
+    <Card
+        title="Architecture Overview"
+        icon="blocks"
+        href="/architecture/overview"
+    >
+        Explore Krono's core architecture
+    </Card>
+    <Card
+        title="View Source"
+        icon="github"
+        href="https://github.com/fapiper/krono"
+    >
+        Check out the code on GitHub
+    </Card>
+</CardGroup>

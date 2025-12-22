@@ -19,11 +19,34 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
-        "pages": ["index", "examples", "development", "typescript"]
+        "tab": "Guide",
+        "icon": "hammer",
+        "pages": [
+          "index",
+          "examples",
+          "typescript",
+          {
+            "group": "Architecture",
+            "pages": [
+              "architecture/overview",
+              "architecture/data-flow",
+              "architecture/design-principles"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/getting-started",
+              "development/structure",
+              "development/commands",
+              "development/contributing"
+            ]
+          }
+        ]
       },
       {
         "tab": "Kit",
+        "icon": "puzzle",
         "groups": [
           {
             "group": "Introduction",
@@ -52,6 +75,7 @@
       },
       {
         "tab": "Hooks",
+        "icon": "square-function",
         "groups": [
           {
             "group": "Introduction",
@@ -81,6 +105,7 @@
       },
       {
         "tab": "Core",
+        "icon": "toy-brick",
         "groups": [
           {
             "group": "Introduction",
@@ -141,6 +166,11 @@
     ],
     "global": {
       "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/fapiper/krono",
+          "icon": "github"
+        },
         {
           "anchor": "Storybook",
           "href": "https://krono-storybook.vercel.app",

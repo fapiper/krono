@@ -1,0 +1,40 @@
+---
+title: 'Project Structure'
+description: 'Overview of the monorepo layout and technology stack'
+---
+
+Krono organizes its applications and shared logic into distinct packages to promote code reuse and separation of concerns.
+
+## Directory Layout
+
+We use a standard Turborepo structure where shared libraries live in `packages/` and deployable applications live in `apps/`.
+
+```txt
+krono/
+├── apps/
+│   ├── web/          # The main Next.js demo application
+│   ├── docs/         # This documentation site (Mintlify)
+│   └── storybook/    # Component development environment
+├── packages/
+│   ├── core/         # Vanilla TS business logic (WebSocket, Orderbook)
+│   ├── hooks/        # React hooks wrapping the core logic
+│   ├── kit/          # UI components (shadcn/ui + Tailwind)
+│   ├── ui/           # Shared internal UI utilities
+│   └── tsconfig/     # Shared TypeScript configurations
+├── examples/         # Implementation examples for users
+└── package.json      # Root configuration
+```
+
+## Technology Stack
+
+Krono is built on a modern, type-safe stack designed for performance and developer experience.
+
+| Tool                                          | Category     | Purpose                                          |
+|:----------------------------------------------|:-------------|:-------------------------------------------------|
+| [TypeScript](https://www.typescriptlang.org/) | Language     | Static type checking for safer code              |
+| [Turborepo](https://turbo.build/repo)         | Build System | High-performance monorepo management             |
+| [Bun](https://bun.sh/)                        | Runtime      | Fast installation, testing, and script execution |
+| [Biome](https://biomejs.dev/)                 | Quality      | Lightning-fast linting and formatting            |
+| [Vitest](https://vitest.dev/)                 | Testing      | Unit and integration testing framework           |
+| [Playwright](https://playwright.dev/)         | Testing      | Reliable end-to-end testing                      |
+| [shadcn/ui](https://ui.shadcn.com/)           | UI           | Accessible, unstyled component primitives        |

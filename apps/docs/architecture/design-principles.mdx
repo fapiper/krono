@@ -1,0 +1,36 @@
+---
+title: 'Design Principles'
+description: 'Core concepts driving the architectural decisions'
+---
+
+## Modular Configuration
+
+Krono separates configuration from execution.
+Configuration changes are reactive—updating a setting immediately triggers the necessary internal logic (e.g., reconnecting the socket or clearing buffers).
+
+## Event-Driven State
+
+State management in Krono relies on a strict unidirectional data flow.
+
+1.  **Status Events:** The connection state (`connecting`, `connected`, `error`) is tracked separately from data.
+2.  **Config Events:** Changing `depth` or `symbol` triggers a soft reset of the pipeline without destroying the instance.
+
+## Performance First
+
+Performance is the primary constraint for a websocket-based orderbook visualizer.
+Krono implements several improvements to ensure low-latency updates and minimal CPU usage:
+
+* **Mutation-free Updates:** Data passed to the UI is immutable to ensure predictable React rendering behavior.
+* **History Storage:** The history buffer uses an associative array to handle the sparsity of orderbook price levels.
+* **Lazy Calculation:** Derived metrics (like total liquidity or spread percentage) are calculated only when requested or when the specific data point changes.
+
+<Note>
+    The architecture is designed to handle the full throughput of Kraken's WebSocket feed, which can burst to hundreds of messages per second during high volatility.
+</Note>
+
+### Distinct Asset Pairs
+
+Managing available trading pairs is handled by the `AssetPairs` entity, distinct from the `Orderbook`.
+* **Separation:** You don't need an active Orderbook connection to fetch available symbols.
+* **Caching:** Symbol metadata (tick size, display names) is cached to minimize API calls.
+* **Validation:** Ensures the Orderbook is only initialized with valid, tradeable pairs.
