@@ -16,69 +16,69 @@
 <p align="center">
   <a href="https://github.com/fapiper/krono/blob/main/LICENSE">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/license-MIT-21262d?colorA=21262d&colorB=21262d">
-      <img src="https://img.shields.io/badge/license-MIT-4329A6?colorA=4329A6&colorB=4329A6" alt="MIT License">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/license-MIT-21262d?style=flat&colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/license-MIT-4329A6?style=flat&colorA=4329A6&colorB=4329A6" alt="MIT License">
     </picture>
   </a>
   <a href="https://github.com/fapiper/krono/actions/workflows/ci.yml">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/fapiper/krono/ci.yml?colorA=21262d&colorB=21262d&label=CI">
-      <img src="https://img.shields.io/github/actions/workflow/status/fapiper/krono/ci.yml?colorA=4329A6&colorB=4329A6&label=CI" alt="CI Status">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/fapiper/krono/ci.yml?style=flat&colorA=21262d&colorB=21262d&label=CI&labelColor=21262d">
+      <img src="https://img.shields.io/badge/CI-passing-4329A6?style=flat&colorA=4329A6&colorB=4329A6" alt="CI Status">
     </picture>
   </a>
   <a href="https://snyk.io/test/github/fapiper/krono">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://snyk.io/test/github/fapiper/krono/badge.svg?style=flat&colorA=21262d&colorB=21262d">
-      <img src="https://snyk.io/test/github/fapiper/krono/badge.svg?style=flat&colorA=4329A6&colorB=4329A6" alt="Known Vulnerabilities">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Snyk_security-monitored-21262d?style=flat&colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/Snyk_security-monitored-4329A6?style=flat&colorA=4329A6&colorB=4329A6" alt="Snyk Security">
     </picture>
   </a>
   <a href="https://www.typescriptlang.org/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/TypeScript-5.0+-21262d?colorA=21262d&colorB=21262d&logo=typescript&logoColor=white">
-      <img src="https://img.shields.io/badge/TypeScript-5.0+-4329A6?colorA=4329A6&colorB=4329A6&logo=typescript&logoColor=white" alt="TypeScript">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/TypeScript-5.0+-21262d?style=flat&colorA=21262d&colorB=21262d&logo=typescript&logoColor=white">
+      <img src="https://img.shields.io/badge/TypeScript-5.0+-4329A6?style=flat&colorA=4329A6&colorB=4329A6&logo=typescript&logoColor=white" alt="TypeScript">
     </picture>
   </a>
   <br />
   <a href="https://krono.fabianpiper.com/docs">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/docs-krono.fabianpiper.com-21262d?colorA=21262d&colorB=21262d">
-      <img src="https://img.shields.io/badge/docs-krono.fabianpiper.com-4329A6?colorA=4329A6&colorB=4329A6" alt="Documentation">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/docs-krono.fabianpiper.com-21262d?style=flat&colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/docs-krono.fabianpiper.com-4329A6?style=flat&colorA=4329A6&colorB=4329A6" alt="Documentation">
     </picture>
   </a>
   <a href="https://turbo.build/repo">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Turborepo-latest-21262d?colorA=21262d&colorB=21262d&logo=turborepo&logoColor=white">
-      <img src="https://img.shields.io/badge/Turborepo-latest-4329A6?colorA=4329A6&colorB=4329A6&logo=turborepo&logoColor=white" alt="Turborepo">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Turborepo-latest-21262d?style=flat&colorA=21262d&colorB=21262d&logo=turborepo&logoColor=white">
+      <img src="https://img.shields.io/badge/Turborepo-latest-4329A6?style=flat&colorA=4329A6&colorB=4329A6&logo=turborepo&logoColor=white" alt="Turborepo">
     </picture>
   </a>
   <a href="https://ui.shadcn.com/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/shadcn/ui-0.8.0-21262d?colorA=21262d&colorB=21262d">
-      <img src="https://img.shields.io/badge/shadcn/ui-0.8.0-4329A6?colorA=4329A6&colorB=4329A6" alt="shadcn/ui">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/shadcn/ui-0.8.0-21262d?style=flat&colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/shadcn/ui-0.8.0-4329A6?style=flat&colorA=4329A6&colorB=4329A6" alt="shadcn/ui">
     </picture>
   </a>
   <a href="https://docs.kraken.com/websockets/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Kraken-WebSocket_API-21262d?colorA=21262d&colorB=21262d&logo=kraken&logoColor=white">
-      <img src="https://img.shields.io/badge/Kraken-WebSocket_API-4329A6?colorA=4329A6&colorB=4329A6&logo=kraken&logoColor=white" alt="Kraken WebSocket API">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Kraken-WebSocket_API-21262d?style=flat&colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/Kraken-WebSocket_API-4329A6?style=flat&colorA=4329A6&colorB=4329A6" alt="Kraken WebSocket API">
     </picture>
   </a>
   <a href="https://bun.sh/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Bun-runtime-21262d?colorA=21262d&colorB=21262d&logo=bun&logoColor=white">
-      <img src="https://img.shields.io/badge/Bun-runtime-4329A6?colorA=4329A6&colorB=4329A6&logo=bun&logoColor=white" alt="Bun">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Bun-runtime-21262d?style=flat&colorA=21262d&colorB=21262d&logo=bun&logoColor=white">
+      <img src="https://img.shields.io/badge/Bun-runtime-4329A6?style=flat&colorA=4329A6&colorB=4329A6&logo=bun&logoColor=white" alt="Bun">
     </picture>
   </a>
 </p>
 
 ## Features
 
-- **Ready-to-use Components** - Based on shadcn/ui and Tailwind CSS for orderbook visualization, configuration, and asset pair selection
-- **Time Travel Playback** - Replay and analyze historical orderbook states
-- **High-Performance WebSocket** - Optimized Kraken WS integration with throttling and debouncing
-- **7+ React Hooks** - Composable hooks for orderbook data, subscriptions, and state management
-- **Framework Agnostic** - Use with React, or build for vanilla JS and your favorite framework
-- **TypeScript First** - Full type safety across core, hooks, and UI kit
+- **Ready-to-use Components:** Based on shadcn/ui and Tailwind CSS for orderbook visualization, configuration, and asset pair selection
+- **Time Travel Playback:** Replay and analyze historical orderbook states
+- **High-Performance WebSocket:** Optimized Kraken WS integration with throttling and debouncing
+- **7+ React Hooks:** Composable hooks for orderbook data, subscriptions, and state management
+- **Framework Agnostic:** Use with React, or build for vanilla JS and your favorite framework
+- **TypeScript First:** Full type safety across core, hooks, and UI kit
 
 ## Getting Started
 
