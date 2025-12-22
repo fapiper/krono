@@ -1,41 +1,93 @@
-# Krono
+<p align="center">
+  <a href="https://krono.fabianpiper.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="krono.png">
+      <img alt="Krono logo" src="krono.png" width="auto" height="120">
+    </picture>
+  </a>
+</p>
 
-![Static Badge](https://img.shields.io/badge/shadcn%2Fui-0.8.0-blue?link=https%3A%2F%2Fgithub.com%2Fshadcn%2Fui)
+<h1 align="center">Krono</h1>
 
-[![CI](https://github.com/fapiper/krono/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/krono/actions/workflows/ci.yml)
-[![Known Vulnerabilities](https://snyk.io/test/github/fapiper/krono/badge.svg)](https://snyk.io/test/github/fapiper/krono)
-[![License](https://img.shields.io/github/license/fapiper/krono.svg)](https://github.com/fapiper/krono/blob/main/LICENSE)
+<p align="center">
+  A type-safe, modular toolkit for building high-performance orderbook visualizations with Kraken's WebSocket API.
+</p>
 
-![Bun](https://img.shields.io/badge/Bun-%23000000.svg?&logo=bun&logoColor=white)
-
-A powerful monorepo starter template featuring Next.js, Nextra, and a shared pre-configured shadcn/ui package, powered by Bun, Vitest, Playwright, Storybook, and Biome.
-
-* [Features](#-features)
-* [Quick Start](#-quick-start)
-* [What's Inside?](#-whats-inside)
-* [Useful Commands](#️-useful-commands)
-* [Development Tools](#-development-tools)
-* [Deployment](#-deployment)
-* [Useful Links](#-useful-links)
-* [Contributors](#-contributors)
+<p align="center">
+  <a href="https://github.com/fapiper/krono/blob/main/LICENSE">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/license-MIT-21262d?colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/license-MIT-4329A6?colorA=4329A6&colorB=4329A6" alt="MIT License">
+    </picture>
+  </a>
+  <a href="https://github.com/fapiper/krono/actions/workflows/ci.yml">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/github/actions/workflow/status/fapiper/krono/ci.yml?colorA=21262d&colorB=21262d&label=CI">
+      <img src="https://img.shields.io/github/actions/workflow/status/fapiper/krono/ci.yml?colorA=4329A6&colorB=4329A6&label=CI" alt="CI Status">
+    </picture>
+  </a>
+  <a href="https://snyk.io/test/github/fapiper/krono">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://snyk.io/test/github/fapiper/krono/badge.svg?style=flat&colorA=21262d&colorB=21262d">
+      <img src="https://snyk.io/test/github/fapiper/krono/badge.svg?style=flat&colorA=4329A6&colorB=4329A6" alt="Known Vulnerabilities">
+    </picture>
+  </a>
+  <a href="https://www.typescriptlang.org/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/TypeScript-5.0+-21262d?colorA=21262d&colorB=21262d&logo=typescript&logoColor=white">
+      <img src="https://img.shields.io/badge/TypeScript-5.0+-4329A6?colorA=4329A6&colorB=4329A6&logo=typescript&logoColor=white" alt="TypeScript">
+    </picture>
+  </a>
+  <br />
+  <a href="https://krono.fabianpiper.com/docs">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/docs-krono.fabianpiper.com-21262d?colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/docs-krono.fabianpiper.com-4329A6?colorA=4329A6&colorB=4329A6" alt="Documentation">
+    </picture>
+  </a>
+  <a href="https://turbo.build/repo">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Turborepo-latest-21262d?colorA=21262d&colorB=21262d&logo=turborepo&logoColor=white">
+      <img src="https://img.shields.io/badge/Turborepo-latest-4329A6?colorA=4329A6&colorB=4329A6&logo=turborepo&logoColor=white" alt="Turborepo">
+    </picture>
+  </a>
+  <a href="https://ui.shadcn.com/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/shadcn/ui-0.8.0-21262d?colorA=21262d&colorB=21262d">
+      <img src="https://img.shields.io/badge/shadcn/ui-0.8.0-4329A6?colorA=4329A6&colorB=4329A6" alt="shadcn/ui">
+    </picture>
+  </a>
+  <a href="https://docs.kraken.com/websockets/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Kraken-WebSocket_API-21262d?colorA=21262d&colorB=21262d&logo=kraken&logoColor=white">
+      <img src="https://img.shields.io/badge/Kraken-WebSocket_API-4329A6?colorA=4329A6&colorB=4329A6&logo=kraken&logoColor=white" alt="Kraken WebSocket API">
+    </picture>
+  </a>
+  <a href="https://bun.sh/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Bun-runtime-21262d?colorA=21262d&colorB=21262d&logo=bun&logoColor=white">
+      <img src="https://img.shields.io/badge/Bun-runtime-4329A6?colorA=4329A6&colorB=4329A6&logo=bun&logoColor=white" alt="Bun">
+    </picture>
+  </a>
+</p>
 
 ## Features
 
-* Monorepo structure with Turborepo for efficient build system and caching
-* Next.js for fast, server-side rendered React applications
-* Nextra for easy-to-create documentation sites
-* shadcn/ui for beautiful, customizable UI components
-* Bun as a fast, all-in-one JavaScript runtime
-* Vitest for speedy unit testing
-* Playwright for reliable end-to-end testing
-* Storybook for isolated component development and documentation
-* Biome for fast, opinionated linting and formatting
-* Automated dependency management with Dependabot
-* Automated contributor recognition
-* CI/CD setup with GitHub Actions
+- **Ready-to-use Components** - Based on shadcn/ui and Tailwind CSS for orderbook visualization, configuration, and asset pair selection
+- **Time Travel Playback** - Replay and analyze historical orderbook states
+- **High-Performance WebSocket** - Optimized Kraken WS integration with throttling and debouncing
+- **7+ React Hooks** - Composable hooks for orderbook data, subscriptions, and state management
+- **Framework Agnostic** - Use with React, or build for vanilla JS and your favorite framework
+- **TypeScript First** - Full type safety across core, hooks, and UI kit
 
-## Quick Start
+## Getting Started
 
+### Prerequisites
+
+- Node.js 20+
+- [Bun](https://bun.sh) (or npm/yarn/pnpm)
+
+### Quick Start
 ```sh
 # Clone the repository
 git clone https://github.com/fapiper/krono.git
@@ -50,245 +102,86 @@ bun install
 bun dev
 ```
 
-### Add UI Components
+For detailed setup instructions, read the [documentation](https://krono.fabianpiper.com/docs).
 
-```sh
-bun ui:add:component <component-name>
+## Documentation
+
+Full documentation is available at [krono.fabianpiper.com/docs](https://krono.fabianpiper.com/docs).
+
+## Project Structure
+
+Krono uses a monorepo structure managed by Turborepo:
+```
+krono/
+├── apps/           # Deployable applications
+│   ├── web/        # Showcase app
+│   ├── docs/       # Documentation
+│   └── storybook/  # Component library
+├── examples/       # Example integrations
+│   ├── react/      # React integration
+│   └── nextjs/     # Next.js integration
+└── packages/       # Shared packages
+    ├── core/       # Core orderbook logic
+    ├── hooks/      # React hooks
+    ├── kit/        # UI components
+    ├── tsconfig/   # Shared TypeScript configs
+    └── ui/         # Base UI primitives
 ```
 
-> This works just like the add command in the `shadcn/ui` CLI.
+Each app is self-contained and independently deployable. Packages are shared across apps for consistency and maintainability.
 
-## What's inside?
+## Development
 
-```mermaid
-graph TD
-    A[Turborepo] --> B[Apps]
-    A --> C[Packages]
-    B --> D[@krono/docs]
-    B --> E[@krono/web]
-    B --> F[@krono/storybook]
-    C --> G[@krono/ui]
-    C --> H[@krono/sdk]
-    C --> I[@krono/tsconfig]
-```
+### Tools & Stack
 
-| App/Package | Description |
-|-------------|-------------|
-| `@krono/docs` | Documentation site powered by [Nextra 3 alpha](https://the-guild.dev/blog/nextra-3) |
-| `@krono/web` | Main Next.js web application |
-| `@krono/ui` | Core React components and design system shared by both `web` and `docs` applications (powered by shadcn/ui) |
-| `@krono/sdk` | Shared React utilities |
-| `@krono/tsconfig` | Shared `tsconfig.json` configurations |
+- [TypeScript](https://www.typescriptlang.org/) - Static type checking
+- [Biome](https://biomejs.dev/) - Code linting, formatting, and fixing
+- [Vitest](https://vitest.dev/) - Unit testing
+- [Playwright](https://playwright.dev/) - End-to-end testing
+- [Changesets](https://github.com/changesets/changesets) - Version management and publishing
+- [Storybook](https://storybook.js.org/) - Component development and documentation
 
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Useful Commands
 
-### Utilities
+- `bun build` - Build all apps and packages
+- `bun dev` - Develop all apps and packages
+- `bun dev:ui` - Develop with Turbo's experimental UI
+- `bun test` - Run all tests with Vitest
+- `bun test:cov` - Run tests with coverage report
+- `bun test:cov:ui` - Run tests with Vitest UI
+- `bun test:e2e` - Run end-to-end tests with Playwright
+- `bun lint` - Lint and format all packages
+- `bun lint:fix` - Lint, format, and fix all packages
+- `bun changeset` - Generate a changeset 🧑‍🔧 (WIP)
+- `bun clean` - Clean up all `node_modules` and `dist` folders
+- `bun ui:add:component` - Add a shadcn/ui component to `@krono/ui`
+- `bun storybook` - Run Storybook for component development
 
-This Turborepo has some additional tools already set up for you:
+## CI/CD
 
-* [TypeScript](https://www.typescriptlang.org/) for static type checking
-* [Biome](https://biomejs.dev/) for code linting, formatting, and fixing
-* [Vitest](https://vitest.dev/) for unit tests
-* [Playwright](https://playwright.dev/) for end-to-end tests
-* [Changesets](https://github.com/changesets/changesets) for managing versioning, changelogs, and publishing
-* [Storybook](https://storybook.js.org/) for component development and documentation
+We use [GitHub Actions](https://github.com/features/actions) for continuous integration. Every push or pull request to the `main` branch runs:
 
-### Storybook
-
-This Turborepo includes Storybook for component development and documentation. Storybook is set up for both the `@krono/web` and `@krono/ui` packages, allowing the development and showcasing of components from both your main application and your shared UI library.
-
-To run Storybook:
-
-```sh
-bun storybook
-```
-
-This will start Storybook and open it in your default browser.
-
-#### Story Location
-
-Storybook is configured to find stories in the following locations:
-
-* `apps/storybook/src/**/*.mdx`
-* `apps/storybook/src/**/*.stories.@(js|jsx|mjs|ts|tsx)`
-* `apps/web/src/**/*.stories.@(js|jsx|mjs|ts|tsx)`
-* `packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)`
-
-This configuration allows you to write stories for components in both your web application and your shared UI library.
-
-#### Storybook Addons
-
-This setup includes several useful Storybook addons:
-
-* `@storybook/addon-links`: For linking between stories
-* `@storybook/addon-essentials`: A curated set of addons for a great developer experience
-* `@storybook/addon-onboarding`: For onboarding new users
-* `@storybook/addon-interactions`: For testing component interactions
-* `@storybook/addon-themes`: For theme switching in Storybook
-* `@storybook/addon-styling-webpack`: For handling CSS and PostCSS in Storybook
-
-### Useful commands
-
-* `bun build` - Build all apps and packages
-* `bun dev` - Develop all apps and packages
-* `bun dev:ui` - Develop all apps and packages and display the output in Turbo's new experimental UI
-* `bun test` - Run all tests with vitest
-* `bun test:cov` - Run all unit tests with vitest and generate a coverage report
-* `bun test:cov:ui` - Run all unit tests with vitest and display the vitest UI
-* `bun test:e2e` - Run all end-to-end tests with playwright
-* `bun lint` - Lint and format all packages
-* `bun lint:fix` - Lint, format, and fix all packages
-* `bun changeset` - Generate a changeset 🧑‍🔧 - WIP
-* `bun clean` - Clean up all `node_modules` and `dist` folders (runs each package's clean script)
-* `bun ui:add:component` - Add a shadcn/ui component to the `@krono/ui` package
-* `bun storybook` - Run Storybook for component development and documentation
-
-### Add a new app or package
-
-Turborepo offers a simple command to add new apps or packages to the monorepo. To add a new app, run the following command:
-
-```sh
-bun turbo gen workspace [--name <app-name>]
-```
-
-You will be prompted to choose the name and workspace type (app or package) to use.
-
-You can copy an existing app or package with:
-
-```sh
-bun turbo gen workspace [--name <app-name>] --copy
-```
-
-You will be prompted to choose the name and workspace type (app or package) of the new app and which app or package to copy.
-
-> [! NOTE]
-> Remember to run `bun install` after copying an app.
-
-### CI
+1. **Setup** - Checks out code and sets up Bun
+2. **Install** - Installs dependencies
+3. **Build** - Builds all apps and packages
+4. **Unit Tests** - Runs tests with Vitest
+5. **E2E Tests** - Runs tests with Playwright
+6. **Lint** - Performs linting and formatting checks with Biome
 
 [![CI](https://github.com/fapiper/krono/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/krono/actions/workflows/ci.yml)
 
-This Turborepo uses [GitHub Actions](https://github.com/features/actions) for CI.
+## Contributing
 
-It comes preconfigured with the following workflow that runs on every push or pull request to the `main` branch:
-
-1. **Setup**: Checks out the code and sets up Bun.
-2. **Install**: Installs all dependencies using Bun.
-3. **Build**: Builds all apps and packages in the monorepo.
-4. **Unit Tests**: Runs all unit tests using [Vitest](https://vitest.dev/).
-5. **E2E Tests**: Installs Playwright browsers and runs end-to-end tests using [Playwright](https://playwright.dev/).
-6. **Lint**: Performs linting and formatting checks using [Biome](https://biomejs.dev/).
-
-### Automated Dependency Management & Contributor Recognition
-
-This template includes some useful automation tools:
-
-#### 1. Dependabot Configuration
-
-Keeps dependencies up-to-date automatically with daily checks and update rules.
-
-[View Dependabot Config](.github/dependabot.yml)
-
-#### 2. Auto-merge for Dependabot PRs
-
-Can automatically merges patch updates from Dependabot to reduce manual work.
-
-[View Auto-merge Workflow](.github/workflows/auto-merge-dependabot.yml)
-
-For the auto-merge workflow:
-
-* Go to your repository's Settings > Actions > General.
-* Under "Workflow permissions", select "Read and write permissions".
-* Check "Allow GitHub Actions to create and approve pull requests".
-* Save the changes.
-* Optionally, create a Personal Access Token (PAT) with `repo` scope and add it as a repository secret named `GITHUB_TOKEN` for enhanced security.
-
-#### 3. Automated Contributors List
-
-Maintains an up-to-date list of contributors in your README.
-
-[View Contributors Workflow](.github/workflows/contributors.yml)
-
-### Getting Started
-
-1. Dependabot is active out-of-the-box. Review and adjust the config as needed.
-2. Ensure proper permissions for the auto-merge workflow.
-3. To read more about the contributors list, see the [contributors-readme-action](https://github.com/akhilmhdh/contributors-readme-action) README.
-
-## Versioning and Publishing packages
-
-WIP
-
-For more information, refer to the official [Changesets documentation](https://github.com/changesets/changesets/blob/main/docs/automating-changesets.md).
-
-## Deployment
-
-This Turborepo is set up for easy deployment of its various applications.
-
-### Vercel Deployment
-
-The `docs` and `web` apps can be deployed to Vercel without any additional configuration. This allows for quick and easy deployment of your Next.js applications.
-
-#### Test Deployments
-
-You can view the test deployments for these apps:
-
-* `apps/web`: [https://krono-web.vercel.app/](https://krono-web.vercel.app/)
-* `apps/docs`: [https://krono-docs.vercel.app/](https://krono-docs.vercel.app/)
-
-### Storybook Deployment
-
-The `apps/storybook` is automatically deployed to GitHub Pages using a custom workflow.
-
-* **Workflow File**: You can find the deployment workflow at `.github/workflows/storybook-deploy.yml`
-* **Deployment URL**: The deployed Storybook can be accessed at [https://fapiper.github.io/krono/](https://fapiper.github.io/krono/)
-
-## Useful Links and Thanks
-
-### Build Tools and Configuration
-
-* [Turborepo Documentation](https://turbo.build/repo/docs)
-  + [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-  + [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-  + [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-  + [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-  + [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-  + [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
-* [Bun Documentation](https://bun.sh/docs)
-* [Biome Documentation](https://biomejs.dev/guides/getting-started/)
-
-### Frameworks and Libraries
-
-* [Next.js Documentation](https://nextjs.org/docs)
-* [Nextra Documentation](https://nextra.site/docs)
-* [shadcn/ui Documentation](https://ui.shadcn.com/docs)
-
-### Testing Tools
-
-* [Vitest Documentation](https://vitest.dev/guide/)
-* [Playwright Documentation](https://playwright.dev/docs/intro)
-
-### Development Tools
-
-* [Storybook Documentation](https://storybook.js.org/docs)
-* [Changesets Documentation](https://github.com/changesets/changesets)
+We welcome contributions! See the [contributing guide](https://github.com/fapiper/krono/blob/main/.github/CONTRIBUTING.md) for details.
 
 ## Contributors
 
-<!-- readme: collaborators, contributors -start -->
-<table>
+<a href="https://github.com/fapiper/krono/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=fapiper/krono" alt="Contributors" />
+</a>
 
-	<tbody>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/fapiper">
-                    <img src="https://avatars.githubusercontent.com/u/139907?v=4" width="100;" alt="fapiper"/>
-                    <br />
-                    <sub><b>Gordon Mickel</b></sub>
-                </a>
-            </td>
-		</tr>
-	<tbody>
+Made with [contrib.rocks](https://contrib.rocks).
 
-</table>
-<!-- readme: collaborators, contributors -end -->
+## License
+
+MIT © [Fabian Piper](https://fabianpiper.com)
