@@ -1,26 +1,18 @@
 'use client';
 
-import {
-  OrderbookSettings,
-  OrderbookSettingsPopover,
-  OrderbookSymbolCombobox,
-} from '@krono/kit';
+import { OrderbookSymbolCombobox } from '@krono/kit';
 import { Button } from '@krono/ui/components/ui/button';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from '@krono/ui/components/ui/sheet';
-import { cn } from '@krono/ui/lib';
+import { cn } from '@krono/ui/src/lib';
 import { Menu } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { HTMLAttributes } from 'react';
+import LayoutHeaderContent from '@/app/_components/layout-header-content';
 import kronoImage from '@/assets/krono.png';
-import LayoutHeaderContent from '@/components/layout/Header/Content';
 
 export type LayoutHeaderProps = HTMLAttributes<HTMLDivElement>;
 

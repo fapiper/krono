@@ -1,5 +1,5 @@
-import { OrderbookPanel } from '@/components/orderbook/Panel';
+import { OrderbookCard } from '@/components/orderbook-card';
 
 export default function HomePage() {
-  return <OrderbookPanel />;
+  return <OrderbookCard />;
 }

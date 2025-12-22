@@ -7,9 +7,9 @@ import {
   OrderbookControls,
   OrderbookTable,
 } from '@krono/kit';
-import { Card, CardContent } from '@krono/ui/components/ui/card';
+import { Card, CardContent } from '@krono/ui/src/components/ui/card';
 
-export function OrderbookPanel() {
+export function OrderbookCard() {
   return (
     <Card className={'flex flex-1 overflow-hidden'}>
       <CardContent className="flex flex-1 px-0 pb-px pt-2 ">

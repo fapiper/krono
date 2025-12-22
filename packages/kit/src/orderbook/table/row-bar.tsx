@@ -1,3 +1,5 @@
+'use client';
+
 import type { OrderbookTableDirection } from '@krono/kit';
 import type { CSSProperties } from 'react';
 
@@ -11,15 +13,25 @@ export type OrderbookTableRowBarProps = {
 export const getStyles = ({
   enabled = true,
   ...props
-}: OrderbookTableRowBarProps = {}): CSSProperties => {
+}: OrderbookTableRowBarProps = {}): CSSProperties | undefined => {
   if (!enabled) return {};
 
-  return {
-    ['--bar' as string]: props.color,
-    ['--depth' as string]: String(props.depth),
-    ['--origin' as string]:
-      props.direction === 'ltr' ? 'left center' : 'right center',
-  };
+  const styles: CSSProperties & Record<string, string> = {};
+
+  if (props.color !== undefined) {
+    styles['--bar'] = props.color;
+  }
+
+  if (props.depth !== undefined) {
+    styles['--depth'] = String(props.depth);
+  }
+
+  if (props.direction !== undefined) {
+    styles['--origin'] =
+      props.direction === 'ltr' ? 'left center' : 'right center';
+  }
+
+  return Object.keys(styles).length > 0 ? styles : undefined;
 };
 
 export const getClassName = ({

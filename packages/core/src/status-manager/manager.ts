@@ -26,7 +26,7 @@ export class OrderbookStatusManager
   }
 
   get status(): ConnectionStatus {
-    if (!this._error) return 'error';
+    if (this._error) return 'error';
     return this._status;
   }
 

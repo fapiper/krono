@@ -6,23 +6,20 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@krono/ui/components/ui/select';
+} from '@krono/ui/src/components/ui/select';
 import { Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-app-theme/use-theme';
+import { useTheme } from 'next-themes';
 
 export default function ThemeSwitcher() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme = 'dark', setTheme } = useTheme();
 
   const themeOptions = [
     { value: 'light', label: 'Light', icon: Sun },
     { value: 'dark', label: 'Dark', icon: Moon },
   ];
 
-  const currentTheme = themeOptions.find((option) => option.value === theme);
-  const IconComponent = currentTheme?.icon || Sun;
-
   return (
-    <Select value={theme} onValueChange={() => toggleTheme()}>
+    <Select value={theme} onValueChange={(newValue) => setTheme(newValue)}>
       <SelectTrigger className="w-24 h-7">
         <SelectValue placeholder="Select a theme" />
       </SelectTrigger>

@@ -5,7 +5,7 @@ import {
   OrderbookSettingsPopover,
   type OrderbookSettingsPopoverTriggerProps,
 } from '@krono/kit';
-import { cn } from '@krono/ui/lib';
+import { cn } from '@krono/ui/src/lib';
 import Link from 'next/link';
 import type { HTMLAttributes } from 'react';
 

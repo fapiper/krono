@@ -26,7 +26,7 @@ export function OrderbookControlsLiveBadge({
       variant="outline"
       size="xs"
       className={cn(
-        'absolute right-4 lg:right-6 top-3 bg-background',
+        'absolute right-1 lg:right-6 top-1 lg:top-1 bg-background',
         !isLive &&
           'opacity-50 hover:opacity-100 cursor-pointer transition-opacity',
         className,

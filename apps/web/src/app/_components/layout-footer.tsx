@@ -1,14 +1,14 @@
 'use client';
 
-import { Button } from '@krono/ui/components/ui/button';
-import { Separator } from '@krono/ui/components/ui/separator';
-import { cn } from '@krono/ui/lib';
+import { Button } from '@krono/ui/src/components/ui/button';
+import { Separator } from '@krono/ui/src/components/ui/separator';
+import { cn } from '@krono/ui/src/lib';
 import { Github, Globe, Linkedin } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { HTMLAttributes } from 'react';
 
-const ThemeSwitcher = dynamic(() => import('./ThemeSwitcher'), {
+const ThemeSwitcher = dynamic(() => import('./theme-switcher'), {
   ssr: false,
   loading: () => <div className="w-6 h-6" />,
 });
