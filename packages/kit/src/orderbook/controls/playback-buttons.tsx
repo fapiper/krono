@@ -1,3 +1,5 @@
+'use client';
+
 import { useOrderbookPlaybackContext } from '@krono/hooks';
 import { Badge } from '@krono/ui/components/ui/badge';
 import { Button } from '@krono/ui/components/ui/button';
@@ -5,6 +7,7 @@ import { cn } from '@krono/ui/lib';
 import { format } from 'date-fns';
 import { Pause, Play, StepBack, StepForward } from 'lucide-react';
 import type { ComponentPropsWithoutRef } from 'react';
+import { useMountedState } from 'react-use';
 import { formatDistanceInterval } from './utils';
 
 export type OrderbookControlsPlaybackButtonsProps =
@@ -34,6 +37,7 @@ export function OrderbookControlsPlaybackButtons({
 
   const now = Date.now();
   const currentTimestamp = currentData?.timestamp ?? now;
+  const isMounted = useMountedState();
 
   if (children) {
     return (
@@ -65,7 +69,7 @@ export function OrderbookControlsPlaybackButtons({
           onClick={goBack}
           disabled={!canGoBack}
         >
-          <StepBack className="h-4 w-4" />
+          <StepBack />
         </Button>
 
         <Button
@@ -74,11 +78,7 @@ export function OrderbookControlsPlaybackButtons({
           variant="default"
           onClick={togglePaused}
         >
-          {isPlaying ? (
-            <Pause className="h-4 w-4" />
-          ) : (
-            <Play className="h-4 w-4" />
-          )}
+          {isPlaying ? <Pause /> : <Play />}
         </Button>
 
         <Button
@@ -88,11 +88,11 @@ export function OrderbookControlsPlaybackButtons({
           onClick={goForward}
           disabled={!canGoForward}
         >
-          <StepForward className="h-4 w-4" />
+          <StepForward />
         </Button>
       </div>
 
-      {showTimestamp && (
+      {isMounted() && showTimestamp && (
         <Badge
           size="sm"
           className="font-normal hover:bg-primary bg-primary tabular-nums"

@@ -53,7 +53,7 @@ function OrderbookControlsLiveBadgeDefaultContent({
   const dotClassName = 'relative inline-flex size-1.5 rounded-full';
   return (
     <>
-      <span className="relative flex size-1.5 mr-1.5">
+      <span className="relative flex size-1.5 mr-1">
         {isLive ? (
           <>
             <span className={cn(ringClassName, 'animate-ping bg-red-500')} />

@@ -12,7 +12,7 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import { createBreakpoint } from 'react-use';
+import { createBreakpoint, useMountedState } from 'react-use';
 import { OrderbookPanelSkeleton } from './panel-skeleton';
 import type { OrderbookTableRootProps } from './table';
 
@@ -57,11 +57,13 @@ export function OrderbookPanel({
   const controls = useOrderbookPlaybackContext();
   const { currentData } = controls;
   const { setLimit, limit } = useOrderbookConfig();
+  const isMounted = useMountedState();
 
   const breakpoint = useBreakpoint();
-  const rowCount = enableResponsive
-    ? (breakpointMap[breakpoint] ?? defaultRowCount)
-    : defaultRowCount;
+  const rowCount =
+    enableResponsive && isMounted()
+      ? (breakpointMap[breakpoint] ?? defaultRowCount)
+      : defaultRowCount;
 
   useEffect(() => {
     if (enableResponsive && limit !== rowCount) {

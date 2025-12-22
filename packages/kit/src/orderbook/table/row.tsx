@@ -1,3 +1,5 @@
+'use client';
+
 import type { OrderbookTableDirection } from '@krono/kit';
 import { cn } from '@krono/ui/lib';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
@@ -21,9 +23,14 @@ export function OrderbookTableRow({
   direction,
   ...props
 }: OrderbookTableRowProps) {
+  const barStyles = getBarStyles(barProps);
+
+  const combinedStyles =
+    barStyles || style ? { ...barStyles, ...style } : undefined;
+
   return (
     <div
-      style={{ ...getBarStyles(barProps), ...style }}
+      {...(combinedStyles && { style: combinedStyles })}
       className={cn(
         'relative flex shrink-0 grow px-3 py-2 items-center',
         direction === 'ltr' ? 'md:flex-row-reverse' : 'md:flex-row',
