@@ -1,83 +1,85 @@
 ---
-title: 'Getting Started'
-description: 'Set up your local development environment and install Krono packages'
+title: "Getting started"
+description: "Getting started with Krono Core - A facade and utilities for managing Kraken WebSocket connections and orderbook state."
 ---
 
-Krono utilizes a modern toolchain powered by Bun and Turborepo to ensure a fast, consistent, and efficient workflow for all developers. Whether you are contributing to the core library or integrating the kit into your own project, these steps will get you up and running in minutes.
-
-## Prerequisites
-
-Before you begin, ensure you have the following installed on your machine:
-
-* [Node.js 20+](https://nodejs.org/) - JavaScript runtime
-* [Bun](https://bun.sh/) - Fast all-in-one JavaScript runtime (Recommended)
-* [Git](https://git-scm.com/) - Version control
-
-## Installation
-
-Follow these steps to get the project running locally for development.
-
-<Steps>
-    <Step title="Clone the Repository">
-        Clone the Krono repository to your local machine:
-
-        ```bash
-        git clone [https://github.com/fapiper/krono.git](https://github.com/fapiper/krono.git)
-        cd krono
-        ```
-    </Step>
-
-    <Step title="Install Dependencies">
-        Install all dependencies across the monorepo using your preferred package manager.
-
-        <CodeGroup>
-            ```bash Bun
-            bun install
-            ```
-            ```bash npm
-            npm install
-            ```
-            ```bash pnpm
-            pnpm install
-            ```
-            ```bash yarn
-            yarn install
-            ```
-        </CodeGroup>
-    </Step>
-
-    <Step title="Start Development Server">
-        Run the development server to watch for changes and start all applications:
-
-        ```bash
-        bun dev
-        ```
-
-        This command initializes:
-        * **Web app:** `http://localhost:3000`
-        * **Documentation:** `http://localhost:3001`
-        * **Storybook:** `http://localhost:6006`
-    </Step>
-</Steps>
-
-## Adding to Your Project
-
-If you are looking to add Krono packages to an existing project, use the following commands:
+The `@krono/core` SDK makes it easier to connect to the Kraken Websocket API and store / retrieve historical data for time traveling.
+You can find the `@krono/core` SDK source code on Github.
+To get started, install the required packages.
 
 <CodeGroup>
-    ```bash bun
-    bun add @krono/core
-    ```
 
-    ```bash npm
-    npm install @krono/core
-    ```
-
-    ```bash pnpm
+    ```pnpm pnpm
     pnpm add @krono/core
     ```
 
-    ```bash yarn
+    ```npm npm
+    npm install @krono/core
+    ```
+
+    ```yarn yarn
     yarn add @krono/core
     ```
+
+    ```bun bun
+    bun add @krono/core
+    ```
 </CodeGroup>
+
+## Orderbook
+
+The `Orderbook` class is the main entry point for real-time market data.
+
+```typescript create-orderbook.ts
+import { Orderbook } from '@krono/core'
+
+export const orderbook = new Orderbook({
+    symbol: "BTC/USD",
+    limit: 25,
+    depth: 500,
+    debug: true
+})
+```
+
+<ParamField body="config" type="OrderbookConfigOptions" required={true}>
+    The configuration object to initialize the orderbook.
+
+    [View full Orderbook Configuration](/core/configuration/orderbook)
+
+    ```ts
+    type OrderbookConfigOptions = {
+    symbol: string;
+    limit?: number;
+    depth?: 10 | 25 | 100 | 500 | 1000;
+    // ... other partial options
+}
+    ```
+</ParamField>
+
+## AssetPairs
+
+The `AssetPairs` class handles fetching available trading pairs and their metadata (like icons and display names).
+
+```typescript create-assets.ts
+import { AssetPairs } from '@krono/core'
+
+export const assetPairs = new AssetPairs({
+    topN: 50,
+    autoFetch: true,
+    debug: false
+})
+```
+
+<ParamField body="config" type="AssetPairsConfig" required={false}>
+    Configuration for the asset fetcher.
+
+    [View full AssetPairs Configuration](/core/configuration/asset-pairs)
+
+    ```ts
+    type AssetPairsConfig = {
+    topN?: number;
+    autoFetch?: boolean;
+    debug?: boolean;
+}
+    ```
+</ParamField>

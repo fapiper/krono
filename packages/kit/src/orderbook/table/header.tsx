@@ -23,7 +23,7 @@ export function OrderbookTableHeader({
 
   return (
     <OrderbookTableRow
-      className={cn('font-bold text-foreground uppercase', className)}
+      className={cn('font-semibold text-foreground/50 uppercase', className)}
       barProps={{ enabled: false }}
       {...props}
     >

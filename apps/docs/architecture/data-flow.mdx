@@ -44,11 +44,11 @@ Raw WebSocket data is often too fast for the human eye and the browser's renderi
 * **Debouncing:** In high-volatility bursts, the system can wait for the dust to settle before triggering a render (configurable via `debounceMs`).
 
 ### 3. History & Time Travel
-Unlike standard WebSocket libraries that discard data immediately after display, Krono maintains a **Circular History Buffer**.
+Unlike standard WebSocket libraries that discard data immediately after display, Krono maintains a [Circular History Buffer](https://en.wikipedia.org/wiki/Circular_buffer).
 
 * **Storage:** Processed snapshots are stored in memory up to a configurable limit.
 * **Playback:** The "Time Travel" feature simply moves a pointer along this buffer, allowing the user to pause and scrub through recent market activity.
-* **Replay:** This architecture allows the `useOrderbookPlayback` hook to replay market movements frame-by-frame with exact precision.
+* **Replay:** This architecture allows the [useOrderbookPlayback](/hooks/api/useOrderbookPlayback) hook to replay market movements frame-by-frame with exact precision.
 
 ### 4. Consumption
 Finally, the data is exposed via typed events. The architecture follows a unidirectional flow where the UI is a pure reflection of the current state in the history buffer.
