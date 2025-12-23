@@ -7,15 +7,6 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-/**
- * General connection lifecycle state.
- */
-export type ConnectionStatus =
-  | 'disconnected'
-  | 'connecting'
-  | 'connected'
-  | 'error';
-
 // Asset pairs
 
 /**

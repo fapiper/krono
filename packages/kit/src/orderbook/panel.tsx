@@ -53,7 +53,7 @@ export function OrderbookPanel({
   children,
   ...props
 }: OrderbookPanelProps) {
-  const status = useOrderbookStatus();
+  const { reconnecting, idle } = useOrderbookStatus();
   const controls = useOrderbookPlaybackContext();
   const { currentData } = controls;
   const { setLimit, limit } = useOrderbookConfig();
@@ -91,22 +91,22 @@ export function OrderbookPanel({
     };
   }, [currentData, rowCount]);
 
-  const loading = status !== 'connected' || !currentData;
-
   return (
     <div
       className={cn(
         'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-px shrink grow overflow-hidden',
-        !loading && 'group',
+        !idle && 'group',
         className,
       )}
       {...props}
     >
-      {loading ? (
+      {idle ? (
         (renderLoading?.() ?? (
           <OrderbookPanelSkeleton rows={rowCount}>
             <span className="text-foreground text-lg p-4">
-              Connecting to feed...
+              {reconnecting
+                ? 'Reconnecting to feed...'
+                : 'Connecting to feed...'}
             </span>
           </OrderbookPanelSkeleton>
         ))

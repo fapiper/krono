@@ -37,6 +37,16 @@ export class OrderbookStatusManager
    */
   set status(value: ConnectionStatus) {
     if (this._status !== value && value !== 'error') {
+      const prevIdle =
+        this._status === 'reconnecting' || this._status === 'connecting';
+
+      if (prevIdle && value === 'disconnected') {
+        this.log.debug(
+          `Ignoring disconnected event during ${this._status} state.`,
+        );
+        return;
+      }
+
       this._status = value;
       this.log.debug(`Status updated to ${value}.`);
       this.emitStatusUpdate(value);
@@ -53,6 +63,10 @@ export class OrderbookStatusManager
 
   get connecting() {
     return this._status === 'connecting';
+  }
+
+  get reconnecting() {
+    return this._status === 'reconnecting';
   }
 
   get error() {
@@ -75,6 +89,12 @@ export class OrderbookStatusManager
   private emitStatusUpdate(value: ConnectionStatus) {
     this.emit(OrderbookStatusEventKey.StatusUpdate, value);
     switch (value) {
+      case 'reconnecting':
+        this.emit(
+          OrderbookStatusEventKey.StatusReconnectingUpdate,
+          this.reconnecting,
+        );
+        break;
       case 'connecting':
         this.emit(
           OrderbookStatusEventKey.StatusConnectingUpdate,
@@ -107,6 +127,9 @@ export class OrderbookStatusManager
   );
   onUpdateStatusConnecting = this.createListener(
     OrderbookStatusEventKey.StatusConnectingUpdate,
+  );
+  onUpdateStatusReconnecting = this.createListener(
+    OrderbookStatusEventKey.StatusReconnectingUpdate,
   );
   onError = this.createListener(OrderbookStatusEventKey.Error);
 }

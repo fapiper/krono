@@ -1,10 +1,10 @@
 import {
-  type ColumnDef,
   formatDigits,
   formatPrice,
   Orderbook,
   OrderbookControls,
   OrderbookTable,
+  type OrderbookTableColumns,
 } from '@krono/kit';
 import { Card, CardContent } from '@krono/ui/components/ui/card';
 import type { Meta, StoryObj } from '@storybook/react';
@@ -12,10 +12,21 @@ import type { ReactNode } from 'react';
 
 // --- Shared Setup ---
 
-const simpleColumns: ColumnDef[] = [
-  { id: 'p', header: 'Price', cell: ({ value }) => formatPrice(value.price) },
-  { id: 'q', header: 'Qty', cell: ({ value }) => formatDigits(value.quantity) },
-];
+const simpleColumns: OrderbookTableColumns = {
+  total: {
+    label: 'Total',
+    children: ({ value }) => formatDigits(value.total),
+  },
+  quantity: {
+    label: 'Quantity',
+    children: ({ value }) => formatDigits(value.quantity),
+  },
+  price: {
+    label: 'Price',
+    className: 'font-semibold',
+    children: ({ value }) => formatPrice(value.price, 4),
+  },
+};
 
 /**
  * A shared wrapper to give controls a realistic environment.

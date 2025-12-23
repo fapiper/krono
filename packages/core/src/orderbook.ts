@@ -10,10 +10,11 @@ import { TypedEventEmitter } from './events';
 import { OrderbookEventKey, type OrderbookEventMap } from './orderbook-events';
 import { DebounceStrategy, ThrottleStrategy, UpdatePipeline } from './pipeline';
 import {
+  type ConnectionStatus,
   type IOrderbookStatus,
   OrderbookStatusManager,
 } from './status-manager';
-import type { ConnectionStatus, OrderbookData } from './types';
+import type { OrderbookData } from './types';
 
 /**
  * Orderbook facade.
@@ -72,9 +73,9 @@ export class Orderbook
    * Connection → Price maps → Pipeline → Public events
    */
   private setupInternalEvents() {
-    this.statusManager.onUpdateStatus((val) =>
-      this.emit(OrderbookEventKey.StatusUpdate, val),
-    );
+    this.statusManager.onUpdateStatus((val) => {
+      this.emit(OrderbookEventKey.StatusUpdate, val);
+    });
     this.statusManager.onError(
       (e) => e && this.emit(OrderbookEventKey.Error, e),
     );
@@ -89,13 +90,16 @@ export class Orderbook
    * Reacts to config changes and orchestrates side effects.
    */
   private setupInternalConfigEvents() {
-    this.configManager.onUpdateConfigSymbol(() => {
+    this.configManager.onUpdateConfigSymbol(async () => {
+      this.pipeline.clear();
+      console.log('clear symbol', this.history, this.pipeline);
       this.asksMap.clear();
       this.bidsMap.clear();
       this.historyManager.clear();
-      this.pipeline.clear();
+      console.log('clear historyManager', this.history, this.historyManager);
+
       if (this.statusManager.connected || this.statusManager.connecting) {
-        void this.connectionManager.connect();
+        await this.connectionManager.connect();
       }
     });
 
@@ -390,6 +394,11 @@ export class Orderbook
   /** @inheritdoc */
   get connecting() {
     return this.statusManager.connecting;
+  }
+
+  /** @inheritdoc */
+  get reconnecting() {
+    return this.statusManager.reconnecting;
   }
 
   /** @inheritdoc */

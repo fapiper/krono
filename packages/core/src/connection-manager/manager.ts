@@ -47,7 +47,9 @@ export class OrderbookConnectionManager
    * Opens websocket and subscribes to orderbook feed
    */
   async connect(): Promise<void> {
-    this.statusManager.status = 'connecting';
+    const initialConnect =
+      this.statusManager.disconnected || this.statusManager.status === 'error';
+    this.statusManager.status = initialConnect ? 'connecting' : 'reconnecting';
 
     const subscription: KrakenSubscription = {
       method: 'subscribe',

@@ -1,6 +1,7 @@
 export type ConnectionStatus =
   | 'disconnected'
   | 'connecting'
+  | 'reconnecting'
   | 'connected'
   | 'error';
 
@@ -22,6 +23,11 @@ export interface IOrderbookStatus {
    * An active connection attempt.
    */
   connecting: boolean;
+
+  /**
+   * An active reconnect attempt.
+   */
+  reconnecting: boolean;
 
   /**
    * An established connection.

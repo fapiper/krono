@@ -3,10 +3,11 @@ import {
   type OrderbookConfigEventMap,
 } from './config-manager';
 import {
+  type ConnectionStatus,
   OrderbookStatusEventKey,
   type OrderbookStatusEventMap,
 } from './status-manager';
-import type { ConnectionStatus, OrderbookData } from './types';
+import type { OrderbookData } from './types';
 
 export const OrderbookEventKey = {
   Data: 'data',

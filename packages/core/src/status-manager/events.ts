@@ -3,6 +3,7 @@ import type { IOrderbookStatus } from './types';
 export const OrderbookStatusEventKey = {
   StatusUpdate: 'update:status',
   StatusConnectingUpdate: 'update:status:connecting',
+  StatusReconnectingUpdate: 'update:status:reconnecting',
   StatusConnectedUpdate: 'update:status:connected',
   StatusDisconnectedUpdate: 'update:status:disconnected',
   Error: 'error',
@@ -14,6 +15,7 @@ export type OrderbookStatusEventKey =
 export type OrderbookStatusEventMap = {
   [OrderbookStatusEventKey.StatusUpdate]: IOrderbookStatus['status'];
   [OrderbookStatusEventKey.StatusConnectingUpdate]: IOrderbookStatus['connecting'];
+  [OrderbookStatusEventKey.StatusReconnectingUpdate]: IOrderbookStatus['reconnecting'];
   [OrderbookStatusEventKey.StatusConnectedUpdate]: IOrderbookStatus['connected'];
   [OrderbookStatusEventKey.StatusDisconnectedUpdate]: IOrderbookStatus['disconnected'];
   [OrderbookStatusEventKey.Error]: IOrderbookStatus['error'] | null;
