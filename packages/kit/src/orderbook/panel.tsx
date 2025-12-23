@@ -55,7 +55,7 @@ export function OrderbookPanel({
 }: OrderbookPanelProps) {
   const { reconnecting, idle } = useOrderbookStatus();
   const controls = useOrderbookPlaybackContext();
-  const { currentData } = controls;
+  const { currentData, historyLength } = controls;
   const { setLimit, limit } = useOrderbookConfig();
   const isMounted = useMountedState();
 
@@ -91,16 +91,18 @@ export function OrderbookPanel({
     };
   }, [currentData, rowCount]);
 
+  const loading = idle || historyLength <= 0;
+
   return (
     <div
       className={cn(
         'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-px shrink grow overflow-hidden',
-        !idle && 'group',
+        !loading && 'group',
         className,
       )}
       {...props}
     >
-      {idle ? (
+      {loading ? (
         (renderLoading?.() ?? (
           <OrderbookPanelSkeleton rows={rowCount}>
             <span className="text-foreground text-lg p-4">

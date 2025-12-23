@@ -92,14 +92,11 @@ export class Orderbook
   private setupInternalConfigEvents() {
     this.configManager.onUpdateConfigSymbol(async () => {
       this.pipeline.clear();
-      console.log('clear symbol', this.history, this.pipeline);
       this.asksMap.clear();
       this.bidsMap.clear();
       this.historyManager.clear();
-      console.log('clear historyManager', this.history, this.historyManager);
-
       if (this.statusManager.connected || this.statusManager.connecting) {
-        await this.connectionManager.connect();
+        void this.connectionManager.connect();
       }
     });
 
@@ -113,7 +110,7 @@ export class Orderbook
 
     this.configManager.onUpdateConfigDepth(() => {
       if (this.statusManager.connected || this.statusManager.connecting) {
-        this.connectionManager.connect();
+        void this.connectionManager.connect();
       }
     });
 
@@ -197,7 +194,7 @@ export class Orderbook
   private handleSnapshot(data: KrakenBookMessageDataItem) {
     this.asksMap.clear();
     this.bidsMap.clear();
-    this.processMessageData(data);
+    this.processMessageData(data, true);
   }
 
   /**
@@ -205,14 +202,18 @@ export class Orderbook
    * @param data Update payload from Kraken
    */
   private handleUpdate(data: KrakenBookMessageDataItem) {
-    this.processMessageData(data);
+    this.processMessageData(data, false);
   }
 
   /**
    * Applies message data to price maps and emits updates.
    * @param messageData Raw Kraken book message
+   * @param shouldEmit Whether this message should emit immediately
    */
-  private processMessageData(messageData: KrakenBookMessageDataItem) {
+  private processMessageData(
+    messageData: KrakenBookMessageDataItem,
+    shouldEmit = false,
+  ) {
     if (messageData.asks) this.asksMap.batchUpdate(messageData.asks);
     if (messageData.bids) this.bidsMap.batchUpdate(messageData.bids);
 
@@ -220,7 +221,29 @@ export class Orderbook
     if (!data) return;
 
     this.emit(OrderbookEventKey.RawDataUpdate, data);
+
+    if (shouldEmit) {
+      this.logger.debug(
+        'First snapshot after connection, emitting immediately',
+      );
+      this.processDataUpdate(data);
+      return;
+    }
+
+    // Push to pipeline for normal throttled/debounced flow (if update)
     this.pipeline.push(data);
+  }
+
+  /**
+   * Pushes data to history and emits updates.
+   * @param data Orderbook data
+   */
+  private processDataUpdate(data: OrderbookData) {
+    if (this.configManager.historyEnabled) {
+      this.historyManager.push(data);
+      this.emit(OrderbookEventKey.HistoryUpdate, this.historyManager.getAll());
+    }
+    this.emit(OrderbookEventKey.DataUpdate, data);
   }
 
   /**
@@ -237,14 +260,7 @@ export class Orderbook
     }
 
     this.pipeline.on('update', (data) => {
-      if (this.configManager.historyEnabled) {
-        this.historyManager.push(data);
-        this.emit(
-          OrderbookEventKey.HistoryUpdate,
-          this.historyManager.getAll(),
-        );
-      }
-      this.emit(OrderbookEventKey.DataUpdate, data);
+      this.processDataUpdate(data);
     });
   }
 
