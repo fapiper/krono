@@ -1,6 +1,6 @@
 ---
 title: "Overview"
-description: "Configure the `Orderbook.Root` provider with orderbook settings, asset pairs, and performance options."
+description: "Reference for configuring Orderbook.Root with detailed explanations of all available settings and their interactions."
 ---
 
 The `Orderbook.Root` component serves as the context provider for all orderbook-related components in `@krono/kit`. It wraps the core `@krono/core` functionality and provides React hooks and components with access to orderbook data, asset pairs, and playback features.
@@ -69,120 +69,25 @@ export const App = () => {
 }
 ```
 
-## Configuration Sections
-
-<CardGroup cols={2}>
-    <Card title="Orderbook Settings" icon="chart-line" href="/kit/configuration/orderbook">
-        Core settings for symbol, depth, limits, and reconnection
-    </Card>
-    <Card title="Performance Settings" icon="gauge-high" href="/kit/configuration/performance">
-        Throttling and debouncing for optimal performance
-    </Card>
-    <Card title="History Configuration" icon="clock-rotate-left" href="/kit/configuration/history">
-        Enable snapshot tracking and playback features
-    </Card>
-    <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
-        Configure trading pair metadata fetching
-    </Card>
-</CardGroup>
-
-## Quick Reference
-
-<AccordionGroup>
-    <Accordion title="Essential Settings">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',     // Trading pair (required)
-                depth: 100,            // API subscription depth
-                limit: 50              // Client-side max levels
-            }}
-        >
-            <Orderbook.Panel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Performance Tuning">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                throttleMs: 100,       // Update frequency (ms)
-                debounceMs: 0,         // Debounce delay (ms)
-                depth: 25,             // Lower depth = faster
-                limit: 10              // Fewer levels = less memory
-            }}
-        >
-            <Orderbook.Panel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Production Setup">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 100,
-                limit: 50,
-                reconnect: {
-                    enabled: true,
-                    maxAttempts: 5,
-                    delayMs: 1000
-                },
-                assetPairs: {
-                    autoFetch: true,
-                    topN: 100
-                },
-                debug: false
-            }}
-        >
-            <Orderbook.Panel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Development Setup">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 100,
-                limit: 50,
-                historyEnabled: true,
-                debug: true,
-                assetPairs: {
-                    autoFetch: true,
-                    debug: true
-                }
-            }}
-        >
-            <Orderbook.Panel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-</AccordionGroup>
-
 ## Context Providers
 
-The `Orderbook.Root` component automatically provides three context providers:
+The `Orderbook.Root` component automatically provides the context providers, defined by `@krono/hooks`:
 
-<Steps>
-    <Step title="Orderbook Context">
-        Provides live orderbook data, connection state, and control methods via `useOrderbook()`.
-    </Step>
-
-    <Step title="Asset Pairs Context">
-        Manages trading pair metadata via `useAssetPairs()`.
-    </Step>
-
-    <Step title="Playback Context">
-        Enables historical playback features via `useOrderbookPlayback()`.
-    </Step>
-</Steps>
+* [Orderbook Context](/hooks/providers/orderbook-provider): Core settings for symbol, depth, limits, and reconnection
+* [AssetPairs Context](/hooks/providers/asset-pairs-provider): Manages trading pair metadata via `useAssetPairs()`
 
 All child components can access these contexts through the provided hooks.
+
+<Note>
+    The `Orderbook.Root` component must wrap all components that need access to orderbook data. It cannot be nested.
+</Note>
+
+## Configuration Sections
+
+* [Orderbook Settings](/kit/configuration/orderbook): Core settings for symbol, depth, limits, and reconnection
+* [Performance Settings](/kit/configuration/performance): Throttling and debouncing for optimal performance
+* [History Configuration](/kit/configuration/history): Enable snapshot tracking and playback features
+* [Asset Pairs](/kit/configuration/asset-pairs): Configure trading pair metadata fetching
 
 ## Props
 
@@ -272,16 +177,23 @@ All child components can access these contexts through the provided hooks.
     Child components that will have access to orderbook context.
 </ParamField>
 
-## Notes
-
-<Note>
-    The `Orderbook.Root` component must wrap all components that need access to orderbook data. It cannot be nested.
-</Note>
-
-<Tip>
-    For optimal performance, keep the `config` object stable. Use `useMemo` or define it outside the component to prevent unnecessary re-initializations.
-</Tip>
-
 <Warning>
     Changes to the `config` prop will reinitialize the orderbook connection. Use stable configuration objects to avoid unnecessary reconnections.
 </Warning>
+
+## Related
+
+<CardGroup cols={2}>
+    <Card title="Performance" icon="gauge" href="/kit/configuration/performance">
+        Fine-tune update frequency with throttling and debouncing options.
+    </Card>
+    <Card title="History" icon="history" href="/kit/configuration/history">
+        Enable snapshot tracking and playback features for historical analysis and debugging.
+    </Card>
+    <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
+        Configure how trading pair metadata is fetched and cached. Required for auto-populating `tickSize`.
+    </Card>
+    <Card title="Orderbook" icon="chart-candlestick" href="/kit/configuration/orderbook">
+        Configure the core orderbook behavior.
+    </Card>
+</CardGroup>

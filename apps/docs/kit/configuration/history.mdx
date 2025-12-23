@@ -67,166 +67,26 @@ Maximum number of snapshots to retain.
 </Orderbook.Root>
 ```
 
-**Memory Impact:**
+| Snapshots | Memory Impact |
+|-----------|---------------|
+| 10        | ≈ 50KB        |
+| 50        | ≈ 250KB       |
+| 100       | ≈ 500KB       |
+| 1000      | ≈ 5MB         |
 
-- 10 snapshots ≈ 50KB
-- 50 snapshots ≈ 250KB
-- 100 snapshots ≈ 500KB
-- 1000 snapshots ≈ 5MB
+## Related
 
-## Using Playback
-```tsx
-import { useOrderbookPlayback } from '@krono/hooks'
-
-const PlaybackControls = () => {
-  const {
-    history,
-    currentIndex,
-    isPlaying,
-    play,
-    pause,
-    reset
-  } = useOrderbookPlayback()
-
-  return (
-    <div className="flex gap-2">
-      <button onClick={play} disabled={isPlaying}>Play</button>
-      <button onClick={pause} disabled={!isPlaying}>Pause</button>
-      <button onClick={reset}>Reset</button>
-      <span>{currentIndex + 1} / {history.length}</span>
-    </div>
-  )
-}
-```
-
-## Configuration Examples
-
-<AccordionGroup>
-    <Accordion title="Basic Playback">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                historyEnabled: true,
-                maxHistoryLength: 100
-            }}
-        >
-            <OrderbookPanel />
-            <PlaybackControls />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Short-Term Analysis">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                historyEnabled: true,
-                maxHistoryLength: 20,
-                throttleMs: 500
-            }}
-        >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Extended History">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                historyEnabled: true,
-                maxHistoryLength: 500,
-                throttleMs: 100
-            }}
-        >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Production Without History">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                historyEnabled: false
-            }}
-        >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-</AccordionGroup>
-
-## Complete Example
-```tsx
-import { Orderbook, OrderbookPanel } from '@krono/kit'
-import { useOrderbookPlayback } from '@krono/hooks'
-import { Play, Pause, RotateCcw } from 'lucide-react'
-
-const PlaybackUI = () => {
-  const {
-    history,
-    currentIndex,
-    isPlaying,
-    play,
-    pause,
-    reset,
-    goToIndex
-  } = useOrderbookPlayback()
-
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <button onClick={isPlaying ? pause : play}>
-          {isPlaying ? <Pause /> : <Play />}
-        </button>
-        <button onClick={reset}>
-          <RotateCcw />
-        </button>
-        <span>{currentIndex + 1} / {history.length}</span>
-      </div>
-
-      <input
-        type="range"
-        min={0}
-        max={history.length - 1}
-        value={currentIndex}
-        onChange={(e) => goToIndex(Number(e.target.value))}
-      />
-    </div>
-  )
-}
-
-export const App = () => {
-  return (
-    <Orderbook.Root
-      config={{
-        symbol: 'BTC/USD',
-        historyEnabled: true,
-        maxHistoryLength: 100
-      }}
-    >
-      <OrderbookPanel />
-      <PlaybackUI />
-    </Orderbook.Root>
-  )
-}
-```
-
-## Notes
-
-<Note>
-    Snapshots are captured after throttling. Lower `throttleMs` = more snapshots.
-</Note>
-
-<Tip>
-    Set `maxHistoryLength` to only what you need. 50-100 works for most use cases.
-</Tip>
-
-<Warning>
-    Very large `maxHistoryLength` (>1000) can impact performance on mobile.
-</Warning>
+<CardGroup cols={2}>
+    <Card title="Orderbook" icon="chart-candlestick" href="/kit/configuration/orderbook">
+        Configure the core orderbook behavior.
+    </Card>
+    <Card title="Performance" icon="gauge" href="/kit/configuration/performance">
+        Fine-tune update frequency with throttling and debouncing options.
+    </Card>
+    <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
+        Configure how trading pair metadata is fetched and cached. Required for auto-populating `tickSize`.
+    </Card>
+    <Card title="Overview" icon="cog" href="/kit/configuration/overview">
+        See all configuration options in one place with complete TypeScript types and defaults.
+    </Card>
+</CardGroup>

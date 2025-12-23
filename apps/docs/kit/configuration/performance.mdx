@@ -73,92 +73,35 @@ Delays processing of rapid updates.
     High `debounceMs` values introduce latency. Use sparingly.
 </Warning>
 
-## Configuration Examples
-
-<AccordionGroup>
-    <Accordion title="High-Frequency Trading">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 25,
-                limit: 10,
-                throttleMs: 50,
-                debounceMs: 0
-            }}
-        >
-            <OrderbookTable.Root data={data} type="bids" />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Standard Interface">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 100,
-                limit: 50,
-                throttleMs: 100,
-                debounceMs: 0
-            }}
-        >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Resource-Constrained">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 25,
-                limit: 25,
-                throttleMs: 250,
-                debounceMs: 100
-            }}
-        >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-</AccordionGroup>
-
 ## Performance Comparison
 
-| Use Case | throttleMs | debounceMs | Updates/sec | Latency |
-|----------|------------|------------|-------------|---------|
-| HFT | 50 | 0 | 20 | ~50ms |
-| Standard | 100 | 0 | 10 | ~100ms |
-| Low Priority | 250 | 100 | 4 | ~350ms |
+| Use Case     | throttleMs | debounceMs | Updates/sec | Latency |
+|--------------|------------|------------|-------------|---------|
+| HFT          | 50         | 0          | 20          | ~50ms   |
+| Standard     | 100        | 0          | 10          | ~100ms  |
+| Low Priority | 250        | 100        | 4           | ~350ms  |
 
 ## Optimization Tips
 
-<Steps>
-    <Step title="Profile Your App">
-        Use DevTools to measure render performance.
-    </Step>
+* **Profile Your App:** Use DevTools to measure render performance
+* **Match Update Frequency:** Trading: 50-100ms. Monitoring: 250-500ms
+* **Reduce Depth:** Lower `depth` and `limit` improve performance
+* **Use Throttle Over Debounce:** Throttle provides predictable intervals
 
-    <Step title="Match Update Frequency">
-        Trading: 50-100ms. Monitoring: 250-500ms.
-    </Step>
+## Related
 
-    <Step title="Reduce Depth">
-        Lower `depth` and `limit` improve performance.
-    </Step>
+<CardGroup cols={2}>
+    <Card title="Orderbook" icon="chart-candlestick" href="/kit/configuration/orderbook">
+        Configure the core orderbook behavior.
+    </Card>
+    <Card title="History" icon="history" href="/kit/configuration/history">
+        Enable snapshot tracking and playback features for historical analysis and debugging.
+    </Card>
+    <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
+        Configure how trading pair metadata is fetched and cached. Required for auto-populating `tickSize`.
+    </Card>
+    <Card title="Overview" icon="cog" href="/kit/configuration/overview">
+        See all configuration options in one place with complete TypeScript types and defaults.
+    </Card>
+</CardGroup>
 
-    <Step title="Use Throttle Over Debounce">
-        Throttle provides predictable intervals.
-    </Step>
-</Steps>
-
-## Notes
-
-<Note>
-    Lower `throttleMs` increases CPU usage and re-renders.
-</Note>
-
-<Tip>
-    For most apps, `throttleMs: 100` and `debounceMs: 0` is optimal.
-</Tip>

@@ -39,6 +39,7 @@ Returns a `ConnectionStatus` string literal:
 <ResponseField name="status" type="'disconnected' | 'connecting' | 'connected' | 'error'">
     * `disconnected`: The socket is idle or manually closed
     * `connecting`: A connection or subscription is in progress
+    * `reconnecting`: Reconnect after connection closed
     * `connected`: The socket is open and actively receiving heartbeat/data
     * `error`: The connection failed or encountered an error
 </ResponseField>

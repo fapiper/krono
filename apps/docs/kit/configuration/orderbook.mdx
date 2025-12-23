@@ -1,288 +1,237 @@
 ---
 title: "Orderbook"
-description: "Configure orderbook behavior, depth, limits, and reconnection strategy."
+description: "Configure core orderbook behavior including symbol subscription, data depth, price level limits, and automatic reconnection strategy."
 ---
 
-The orderbook configuration controls how the `Orderbook.Root` component connects to the Kraken WebSocket, manages price levels, and handles reconnections.
+The orderbook configuration forms the foundation of the `Orderbook.Root` component.
+It controls how the component connects to the Kraken WebSocket API, manages incoming price level data, and handles connection failures gracefully.
 
-## Basic Configuration
-```tsx
-import { Orderbook } from '@krono/kit'
+## Properties
 
-export const App = () => {
-  return (
-    <Orderbook.Root
-      config={{
-        symbol: 'BTC/USD',
-        depth: 100,
-        limit: 50
-      }}
-    >
-      {/* Components */}
+<ParamField path="symbol" type="string" required>
+    The trading pair symbol to subscribe to. Must match Kraken's WebSocket symbol format.
+
+    **Examples:** `BTC/USD`, `ETH/EUR`, `XRP/GBP`, `SOL/USDT`
+
+    ```tsx
+    <Orderbook.Root config={{ symbol: 'ETH/USD' }}>
+        <Orderbook.Panel />
     </Orderbook.Root>
-  )
-}
-```
+    ```
 
-## Core Settings
+    <Note>
+        Changing the symbol at runtime will close the existing WebSocket connection and establish a new subscription. Use stable state management to avoid unnecessary reconnections.
+    </Note>
+</ParamField>
 
-### symbol
+<ParamField path="depth" type="number" default="1000">
+    The subscription depth requested from Kraken's WebSocket API. This determines how many price levels the exchange will send in the initial snapshot and maintain throughout the session.
 
-The trading pair symbol to subscribe to.
+    **Allowed values:** `10`, `25`, `100`, `500`, `1000`
 
-**Type:** `string` (required)
+    ```tsx
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            depth: 100
+        }}
+    >
+        <Orderbook.Panel />
+    </Orderbook.Root>
+    ```
 
-**Examples:** `BTC/USD`, `ETH/EUR`, `XRP/GBP`
-```tsx
-<Orderbook.Root config={{ symbol: 'ETH/USD' }}>
-  {/* Components */}
-</Orderbook.Root>
-```
+    **Impact on performance:**
 
-### depth
+    * **Lower depth (10-25):** Minimal network traffic, fastest updates, suitable for high-frequency trading interfaces
+    * **Medium depth (100):** Balanced approach for most applications
+    * **Higher depth (500-1000):** More complete market view, increased bandwidth usage
 
-The subscription depth requested from the Kraken WebSocket API.
+    <Tip>
+        Choose the lowest depth value that satisfies your UI requirements. If you're only displaying 25 rows per side, requesting `depth: 1000` wastes bandwidth and processing time.
+    </Tip>
+</ParamField>
 
-**Type:** `number`
+<ParamField path="limit" type="number" default="100">
+    Maximum number of price levels to keep in memory and make available to your components, per side (bids and asks are counted separately).
 
-**Default:** `1000`
+    This acts as a client-side filter on top of the `depth` setting. Even if you subscribe to `depth: 1000`, setting `limit: 50` will only retain the top 50 price levels.
 
-**Allowed values:** `10`, `25`, `100`, `500`, `1000`
-```tsx
-<Orderbook.Root
-  config={{
-    symbol: 'BTC/USD',
-    depth: 100
-  }}
->
-  {/* Components */}
-</Orderbook.Root>
-```
+    ```tsx
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            depth: 100,
+            limit: 50
+        }}
+    >
+        <Orderbook.Panel />
+    </Orderbook.Root>
+    ```
 
-<Note>
-    Higher depth values increase network traffic. Choose the lowest value that satisfies your needs.
-</Note>
+    **Memory considerations:**
 
-### limit
+    * Each price level stores: price (number), quantity (number), and timestamp
+    * 50 levels ≈ 2KB per side
+    * 100 levels ≈ 4KB per side
+    * 500 levels ≈ 20KB per side
 
-Maximum number of price levels (per side) to keep in memory and display.
+    <Tip>
+        Set `limit` to match your UI's maximum displayed rows. If your table shows 25 rows, use `limit: 25` for optimal memory usage.
+    </Tip>
+</ParamField>
 
-**Type:** `number`
+<ParamField path="tickSize" type="number">
+    The minimum price increment (tick size) for the trading pair. This value is used for price rounding and validation throughout the orderbook.
 
-**Default:** `100`
-```tsx
-<Orderbook.Root
-  config={{
-    symbol: 'BTC/USD',
-    depth: 100,
-    limit: 50
-  }}
->
-  {/* Components */}
-</Orderbook.Root>
-```
+    If not provided, the component will automatically fetch this value from Kraken's asset pairs metadata endpoint. However, explicitly setting it can reduce initialization time.
 
-<Tip>
-    Set `limit` to match your UI's maximum displayed rows for optimal memory usage.
-</Tip>
+    ```tsx
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            tickSize: 0.1  // BTC/USD trades in $0.10 increments
+        }}
+    >
+        <Orderbook.Panel />
+    </Orderbook.Root>
+    ```
 
-### tickSize
+    **Common tick sizes:**
 
-The minimum price increment for the asset pair.
+    * **BTC/USD:** `0.1` ($0.10)
+    * **ETH/USD:** `0.01` ($0.01)
+    * **XRP/USD:** `0.0001` ($0.0001)
 
-**Type:** `number`
+    <Note>
+        When `tickSize` is not provided, the component will show a brief loading state while fetching asset pair metadata.
+    </Note>
+</ParamField>
 
-**Default:** Fetched from asset pairs metadata
-```tsx
-<Orderbook.Root
-  config={{
-    symbol: 'BTC/USD',
-    tickSize: 0.1
-  }}
->
-  {/* Components */}
-</Orderbook.Root>
-```
+<ParamField path="spreadGrouping" type="number" default="0.1">
+    Groups adjacent price levels into buckets of this size, reducing visual noise and improving performance when displaying deep orderbooks.
 
-### spreadGrouping
+    A value of `0` (default) disables grouping.
 
-Groups price levels into buckets of this size.
+    ```tsx
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            tickSize: 0.1,
+            spreadGrouping: 1  // Group by 1 increments
+        }}
+    >
+        <Orderbook.Panel />
+    </Orderbook.Root>
+    ```
 
-**Type:** `number`
+    **Grouping examples for BTC/USD at $45,678:**
 
-**Default:** `0` (no grouping)
-```tsx
-<Orderbook.Root
-  config={{
-    symbol: 'BTC/USD',
-    tickSize: 0.1,
-    spreadGrouping: 1
-  }}
->
-  {/* Components */}
-</Orderbook.Root>
-```
+    * `spreadGrouping: 0` - Individual levels: $45,678.10, $45,678.20, $45,678.30...
+    * `spreadGrouping: 1` - Grouped by $1: $45,678.00-45,679.00, $45,679.00-45,680.00...
+    * `spreadGrouping: 10` - Grouped by $10: $45,670.00-45,680.00, $45,680.00-45,690.00...
+    * `spreadGrouping: 100` - Grouped by $100: $45,600.00-45,700.00, $45,700.00-45,800.00...
 
-**Grouping Examples:**
+    **Benefits:**
 
-- `spreadGrouping: 0` - No grouping (default)
-- `spreadGrouping: 1` - Group by $1
-- `spreadGrouping: 10` - Group by $10
-- `spreadGrouping: 100` - Group by $100
+    * Reduces number of rendered rows
+    * Smooths out micro-fluctuations
+    * Improves rendering performance
+    * Better overview of market depth
 
-## Reconnection Settings
+    <Warning>
+        Grouping aggregates quantities but may hide important price level details. Use with caution for precision-critical trading interfaces.
+    </Warning>
+</ParamField>
 
-### reconnect
+<ParamField path="reconnect" type="object">
+    Configuration for automatic reconnection behavior when the WebSocket connection is lost or encounters an error.
 
-Configuration for automatic reconnection on disconnect or error.
+    ```tsx
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            reconnect: {
+                enabled: true,
+                maxAttempts: 5,
+                delayMs: 2000
+            }
+        }}
+    >
+        <Orderbook.Panel />
+    </Orderbook.Root>
+    ```
 
-**Type:** `object`
-```tsx
-<Orderbook.Root
-  config={{
-    symbol: 'BTC/USD',
-    reconnect: {
-      enabled: true,
-      maxAttempts: 5,
-      delayMs: 2000
-    }
-  }}
->
-  {/* Components */}
-</Orderbook.Root>
-```
+    <Expandable title="reconnect properties">
+        <ParamField path="enabled" type="boolean" default="true">
+            Enables or disables automatic reconnection attempts. When enabled, the component will automatically try to reconnect after connection failures.
 
-#### reconnect.enabled
+            **Use cases for disabling:**
+            * Manual connection control required
+            * Implementing custom reconnection logic
+            * Testing disconnect scenarios
+        </ParamField>
 
-Enable automatic reconnection attempts.
+        <ParamField path="maxAttempts" type="number" default="Infinity">
+            Maximum number of consecutive reconnection attempts before giving up. Once this limit is reached, the component will stop trying and emit an error event.
 
-**Type:** `boolean`
+            **Recommended values:**
+            * **Development:** `3-5` attempts (fail fast)
+            * **Production:** `10` or `Infinity` (persistent connection)
 
-**Default:** `true`
+            <Tip>
+                Set a finite value in production to prevent infinite retry loops. Monitor the `status` to detect when max attempts are reached.
+            </Tip>
+        </ParamField>
 
-#### reconnect.maxAttempts
+        <ParamField path="delayMs" type="number" default="1000">
+            Delay in milliseconds between reconnection attempts. This prevents aggressive reconnection that could overload the server or trigger rate limits.
 
-Maximum number of consecutive reconnection attempts.
+            **Strategy:**
+            * First attempt: immediate
+            * Subsequent attempts: wait `delayMs`
+            * Each attempt uses the same delay (no exponential backoff)
 
-**Type:** `number`
+            **Recommended values:**
+            * **Fast retry:** `500-1000ms`
+            * **Conservative:** `2000-5000ms`
+        </ParamField>
+    </Expandable>
+</ParamField>
 
-**Default:** `Infinity`
+<ParamField path="debug" type="boolean" default="false">
+    Enables verbose console logging for debugging purposes. When enabled, the component logs connection events, data updates, errors, and internal state changes.
 
-#### reconnect.delayMs
+    ```tsx
+    <Orderbook.Root
+        config={{
+            symbol: 'BTC/USD',
+            debug: true
+        }}
+    >
+        <Orderbook.Panel />
+    </Orderbook.Root>
+    ```
 
-Delay in milliseconds between reconnection attempts.
+    **Logged information includes:**
+    * WebSocket connection state changes
+    * Received message payloads
+    * Pipeline processing steps
+    * Error details and stack traces
+</ParamField>
 
-**Type:** `number`
-
-**Default:** `1000`
-
-### debug
-
-Enable verbose logging to console.
-
-**Type:** `boolean`
-
-**Default:** `false`
-```tsx
-<Orderbook.Root
-  config={{
-    symbol: 'BTC/USD',
-    debug: true
-  }}
->
-  {/* Components */}
-</Orderbook.Root>
-```
-
-## Configuration Examples
-
-<AccordionGroup>
-    <Accordion title="Minimal Configuration">
-        ```tsx
-        <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
-            <OrderbookTable.Root data={data} type="bids" />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="High-Frequency Trading">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 25,
-                limit: 10,
-                throttleMs: 50
-            }}
-        >
-            <OrderbookTable.Root data={data} type="bids" />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Deep Book Analysis">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 1000,
-                limit: 500,
-                spreadGrouping: 100
-            }}
-        >
-            <OrderbookTable.Root data={data} type="bids" />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-
-    <Accordion title="Production Setup">
-        ```tsx
-        <Orderbook.Root
-            config={{
-                symbol: 'BTC/USD',
-                depth: 100,
-                limit: 50,
-                reconnect: {
-                    enabled: true,
-                    maxAttempts: 5,
-                    delayMs: 1000
-                },
-                debug: false
-            }}
-        >
-            <OrderbookPanel />
-        </Orderbook.Root>
-        ```
-    </Accordion>
-</AccordionGroup>
-
-## Related Configuration
+## Related
 
 <CardGroup cols={2}>
-    <Card title="Performance Settings" icon="gauge-high" href="/kit/configuration/performance">
-        Throttling and debouncing options
+    <Card title="Performance" icon="gauge" href="/kit/configuration/performance">
+        Fine-tune update frequency with throttling and debouncing options.
     </Card>
-    <Card title="History Configuration" icon="clock-rotate-left" href="/kit/configuration/history">
-        Snapshot tracking and playback
+    <Card title="History" icon="history" href="/kit/configuration/history">
+        Enable snapshot tracking and playback features for historical analysis and debugging.
     </Card>
     <Card title="Asset Pairs" icon="coins" href="/kit/configuration/asset-pairs">
-        Trading pair metadata
+        Configure how trading pair metadata is fetched and cached. Required for auto-populating `tickSize`.
     </Card>
-    <Card title="Configuration Overview" icon="cog" href="/kit/configuration/overview">
-        Complete configuration reference
+    <Card title="Overview" icon="cog" href="/kit/configuration/overview">
+        See all configuration options in one place with complete TypeScript types and defaults.
     </Card>
 </CardGroup>
-
-## Notes
-
-<Note>
-    The orderbook will automatically reconnect on network failures unless `reconnect.enabled` is set to `false`.
-</Note>
-
-<Tip>
-    Use `depth: 25` and `limit: 10` for the lowest latency. Higher values increase network traffic and processing time.
-</Tip>
-
-<Warning>
-    Changing the `symbol` will close the current connection and establish a new subscription. Store the symbol in stable state to avoid unnecessary reconnections.
-</Warning>
