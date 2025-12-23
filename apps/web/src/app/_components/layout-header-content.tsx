@@ -22,14 +22,6 @@ export default function LayoutHeaderContent({
   return (
     <div className={cn(className)} {...props}>
       <Link
-        href={'/about'}
-        className={
-          'text-foreground/60 transition-color ease-in-out duration-200 font-medium hover:text-foreground visited:text-foreground'
-        }
-      >
-        About
-      </Link>
-      <Link
         href={'/docs'}
         className={
           'text-foreground/60 transition-color ease-in-out duration-200 font-medium hover:text-foreground visited:text-foreground'
