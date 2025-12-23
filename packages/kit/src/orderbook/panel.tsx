@@ -97,9 +97,10 @@ export function OrderbookPanel({
     <div
       className={cn(
         'relative grid grid-cols-1 md:grid-cols-2 text-xs gap-px shrink grow overflow-hidden',
-        !loading && 'group',
+        !loading && 'group/krono-orderbook-panel',
         className,
       )}
+      data-loading={loading ? 'true' : 'false'}
       {...props}
     >
       {loading ? (

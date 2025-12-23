@@ -29,6 +29,7 @@ export function OrderbookControlsLiveBadge({
         'absolute right-1 lg:right-6 top-1 lg:top-1 bg-background',
         !isLive &&
           'opacity-50 hover:opacity-100 cursor-pointer transition-opacity',
+        'hidden group-data-[loading=false]/krono-orderbook-panel:flex',
         className,
       )}
       onClick={() => !isLive && goToLive()}
@@ -53,7 +54,7 @@ function OrderbookControlsLiveBadgeDefaultContent({
   const dotClassName = 'relative inline-flex size-1.5 rounded-full';
   return (
     <>
-      <span className="relative flex size-1.5 mr-1">
+      <span className="relative flex size-1.5 mr-0">
         {isLive ? (
           <>
             <span className={cn(ringClassName, 'animate-ping bg-red-500')} />

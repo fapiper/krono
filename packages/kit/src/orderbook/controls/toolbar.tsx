@@ -28,7 +28,7 @@ export function OrderbookControlsToolbar({
           ? 'opacity-0 invisible'
           : isPaused
             ? 'opacity-100 visible'
-            : 'opacity-0 invisible group-hover:visible group-hover:opacity-100',
+            : 'opacity-0 invisible group-hover/krono-orderbook-panel:visible group-hover/krono-orderbook-panel:opacity-100',
         className,
       )}
       {...props}
