@@ -1,7 +1,7 @@
 import {
   type ColumnDef,
   formatDigits,
-  formatUSD,
+  formatPrice,
   Orderbook,
   OrderbookControls,
   OrderbookTable,
@@ -13,7 +13,7 @@ import type { ReactNode } from 'react';
 // --- Shared Setup ---
 
 const simpleColumns: ColumnDef[] = [
-  { id: 'p', header: 'Price', cell: ({ value }) => formatUSD(value.price) },
+  { id: 'p', header: 'Price', cell: ({ value }) => formatPrice(value.price) },
   { id: 'q', header: 'Qty', cell: ({ value }) => formatDigits(value.quantity) },
 ];
 

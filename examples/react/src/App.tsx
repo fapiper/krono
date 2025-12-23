@@ -1,6 +1,6 @@
 import {
   formatDigits,
-  formatUSD,
+  formatPrice,
   Orderbook,
   OrderbookControls,
   OrderbookTable,
@@ -31,7 +31,7 @@ function App() {
                         props.type === 'bids'
                           ? 'font-semibold text-green-500 dark:text-green-600'
                           : 'font-semibold text-red-500 dark:text-red-600',
-                      children: ({ value }) => formatUSD(value.price, 4),
+                      children: ({ value }) => formatPrice(value.price, 4),
                     },
                   }}
                   {...props}

@@ -9,7 +9,7 @@ import { OrderbookCard } from '@/components/orderbook-card';
 
 vi.mock('@krono/kit', () => ({
   formatDigits: vi.fn((value) => value.toString()),
-  formatUSD: vi.fn((value) => `$${value}`),
+  formatPrice: vi.fn((value) => `$${value}`),
   Orderbook: {
     Panel: ({ children, renderTable }: OrderbookPanelProps) => (
       <div data-testid="orderbook-panel">

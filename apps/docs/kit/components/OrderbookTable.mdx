@@ -44,13 +44,13 @@ import { OrderbookTable } from '@krono/kit'
 Define how each column renders and formats data.
 
 ```tsx
-import { OrderbookTable, formatDigits, formatUSD } from '@krono/kit'
+import { OrderbookTable, formatDigits, formatPrice } from '@krono/kit'
 
 export const TableCustomColumns = () => {
   const columns = {
     price: {
       label: 'Price (USD)',
-      children: ({ value }) => formatUSD(value.price),
+      children: ({ value }) => formatPrice(value.price),
       className: 'font-bold',
     },
     quantity: {
@@ -427,15 +427,15 @@ export const CustomTable = () => {
 
 The `OrderbookTable` includes utility functions for formatting numeric values.
 
-### formatUSD
+### formatPrice
 
 Format numbers as USD currency.
 
 ```tsx
-import { formatUSD } from '@krono/kit'
+import { formatPrice } from '@krono/kit'
 
-formatUSD(1234.56) // "$1,234.56"
-formatUSD(0.99, 4) // "$0.9900"
+formatPrice(1234.56) // "$1,234.56"
+formatPrice(0.99, 4) // "$0.9900"
 ```
 
 **Parameters:**

@@ -1,7 +1,7 @@
 import {
   type ColumnDef,
   formatDigits,
-  formatUSD,
+  formatPrice,
   Orderbook,
   OrderbookControls,
   OrderbookTable,
@@ -23,7 +23,7 @@ const columnsStandard: ColumnDef[] = [
   {
     id: 'price',
     header: 'Price',
-    cell: ({ value }) => formatUSD(value.price),
+    cell: ({ value }) => formatPrice(value.price),
     cellClassName: ({ type }) =>
       type === 'bids'
         ? 'font-medium text-green-500 dark:text-green-600'
@@ -40,7 +40,7 @@ const columnsCompact: ColumnDef[] = [
   {
     id: 'price',
     header: 'Price',
-    cell: ({ value }) => formatUSD(value.price),
+    cell: ({ value }) => formatPrice(value.price),
     cellClassName: ({ type }) =>
       type === 'bids' ? 'text-green-600 font-bold' : 'text-red-600 font-bold',
   },
@@ -51,7 +51,7 @@ const columnsDetailed: ColumnDef[] = [
   {
     id: 'value',
     header: 'Value',
-    cell: ({ value }) => formatUSD(value.price * value.quantity),
+    cell: ({ value }) => formatPrice(value.price * value.quantity),
     cellClassName: 'text-muted-foreground',
   },
 ];

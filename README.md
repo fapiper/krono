@@ -10,7 +10,7 @@
 <h1 align="center">Krono</h1>
 
 <p align="center">
-  A type-safe, modular toolkit for building high-performance orderbook visualizations with Kraken's WebSocket API.
+    A modular toolkit for building high-performance orderbook visualizations with time travel playback using Kraken's WebSocket API. TypeScript-first, framework-agnostic, production-ready.
 </p>
 
 <p align="center">

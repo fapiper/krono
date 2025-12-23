@@ -1,11 +1,9 @@
 import type { OrderbookType } from './types';
 
-export const formatUSD = (value: number, decimals = 2) => {
+export const formatPrice = (value: number, decimals = 2) => {
   if (!Number.isFinite(value)) return String(value);
 
   return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(value);

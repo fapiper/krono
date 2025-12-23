@@ -53,7 +53,7 @@ Use the following code snippet to get a live orderbook with time travel capabili
 ```tsx
 import {
   formatDigits,
-  formatUSD,
+  formatPrice,
   Orderbook,
   OrderbookControls,
   OrderbookTable,
@@ -77,7 +77,7 @@ export function OrderbookPanel() {
                 price: {
                   label: 'Price',
                   className: 'font-semibold',
-                  children: ({ value }) => formatUSD(value.price, 4),
+                  children: ({ value }) => formatPrice(value.price, 4),
                 },
               }}
               {...props}
