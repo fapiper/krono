@@ -5,6 +5,15 @@
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/storybook/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/tests/e2e/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/web/tests/unit/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/examples/react/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/core/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/hooks/.turbo" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/ui/.turbo" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

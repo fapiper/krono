@@ -10,6 +10,7 @@ node_modules
 **/tests/unit/coverage
 **/tests/e2e/coverage
 .last-run.json
+**/playwright-report/
 
 # storybook
 storybook-static/
