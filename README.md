@@ -138,7 +138,6 @@ Each app is self-contained and independently deployable. Packages are shared acr
 - [Biome](https://biomejs.dev/) - Code linting, formatting, and fixing
 - [Vitest](https://vitest.dev/) - Unit testing
 - [Playwright](https://playwright.dev/) - End-to-end testing
-- [Changesets](https://github.com/changesets/changesets) - Version management and publishing
 - [Storybook](https://storybook.js.org/) - Component development and documentation
 
 ### Useful Commands
@@ -152,7 +151,6 @@ Each app is self-contained and independently deployable. Packages are shared acr
 - `bun test:e2e` - Run end-to-end tests with Playwright
 - `bun lint` - Lint and format all packages
 - `bun lint:fix` - Lint, format, and fix all packages
-- `bun changeset` - Generate a changeset 🧑‍🔧 (WIP)
 - `bun clean` - Clean up all `node_modules` and `dist` folders
 - `bun ui:add:component` - Add a shadcn/ui component to `@krono/ui`
 - `bun storybook` - Run Storybook for component development
