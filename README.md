@@ -168,8 +168,6 @@ We use [GitHub Actions](https://github.com/features/actions) for continuous inte
 5. **E2E Tests** - Runs tests with Playwright
 6. **Lint** - Performs linting and formatting checks with Biome
 
-[![CI](https://github.com/fapiper/krono/actions/workflows/ci.yml/badge.svg)](https://github.com/fapiper/krono/actions/workflows/ci.yml)
-
 ## Contributing
 
 We welcome contributions! See the [contributing guide](https://github.com/fapiper/krono/blob/main/.github/CONTRIBUTING.md) for details.
