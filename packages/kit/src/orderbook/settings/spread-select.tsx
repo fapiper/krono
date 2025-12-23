@@ -23,7 +23,7 @@ export function OrderbookSettingsSpreadSelect(
 
   return (
     <OrderbookSettingsRow
-      label="Grouping"
+      label="Spread Grouping"
       description="Price aggregation level"
       control={
         <Select

@@ -47,6 +47,7 @@ export default function LayoutHeaderContent({
 
           <OrderbookSettings.Separator className="my-2" />
 
+          <OrderbookSettings.MaxHistoryInput />
           <OrderbookSettings.DepthSelect />
           <OrderbookSettings.SpreadSelect />
 
