@@ -1,3 +1,8 @@
+import type {
+  OrderbookControlsRootProps,
+  OrderbookControlsToolbarProps,
+  OrderbookPanelProps,
+} from '@krono/kit';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { OrderbookCard } from '@/components/orderbook-card';
@@ -6,24 +11,26 @@ vi.mock('@krono/kit', () => ({
   formatDigits: vi.fn((value) => value.toString()),
   formatUSD: vi.fn((value) => `$${value}`),
   Orderbook: {
-    Panel: ({ children, renderTable }: any) => (
+    Panel: ({ children, renderTable }: OrderbookPanelProps) => (
       <div data-testid="orderbook-panel">
-        {renderTable({ type: 'bids' })}
+        {renderTable?.({ data: [], type: 'bids' })}
         {children}
       </div>
     ),
   },
   OrderbookControls: {
-    Root: ({ children }: any) => (
+    Root: ({ children }: OrderbookControlsRootProps) => (
       <div data-testid="orderbook-controls">{children}</div>
     ),
     LiveBadge: () => <div data-testid="live-badge">Live</div>,
-    Toolbar: ({ children }: any) => <div data-testid="toolbar">{children}</div>,
+    Toolbar: ({ children }: OrderbookControlsToolbarProps) => (
+      <div data-testid="toolbar">{children}</div>
+    ),
     PlaybackButtons: () => <div data-testid="playback-buttons">Playback</div>,
     Timeline: () => <div data-testid="timeline">Timeline</div>,
   },
   OrderbookTable: {
-    Root: ({ columns }: any) => <div data-testid="orderbook-table">Table</div>,
+    Root: () => <div data-testid="orderbook-table">Table</div>,
   },
 }));
 

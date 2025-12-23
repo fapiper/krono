@@ -1,11 +1,9 @@
 import { BaseManager, type Logger } from '../../base';
-import { mergeDeep } from '../../utils';
 import {
   KrakenWebsocketEventKey,
   type KrakenWebsocketEventMap,
 } from './events';
 import type {
-  InternalKrakenWebsocketConfig,
   KrakenMessage,
   KrakenSubscription,
   KrakenWebsocketConfig,
@@ -13,16 +11,11 @@ import type {
 } from './types';
 import { WebsocketConnection } from './websocket-connection';
 
-const defaultConfig: InternalKrakenWebsocketConfig = {
-  debug: false,
-};
-
 export class KrakenWSManager
   extends BaseManager<KrakenWebsocketEventMap>
   implements WebsocketManager
 {
   private readonly connection: WebsocketConnection;
-  private readonly config: InternalKrakenWebsocketConfig;
   private _subscription?: KrakenSubscription;
   private _connected = false;
 
@@ -32,7 +25,6 @@ export class KrakenWSManager
     subscription?: KrakenSubscription,
   ) {
     super(logger, 'KrakenWS');
-    this.config = mergeDeep(defaultConfig, config ?? {});
     this._subscription = subscription;
 
     this.connection = new WebsocketConnection(

@@ -1,4 +1,3 @@
-import { OrderbookEventKey } from '../orderbook-events';
 import type { DeepPartial } from '../types';
 
 export interface IOrderbookConfig {

@@ -19,7 +19,7 @@ export function useBufferedSetting<T extends string | number | undefined>(
   }, [localValue, setGlobalValue, transform]);
 
   const isDirty = String(globalValue ?? '') !== localValue;
-  const isValid = localValue !== '' && !isNaN(Number(localValue));
+  const isValid = localValue !== '' && !Number.isNaN(Number(localValue));
 
   return {
     localValue,

@@ -1,4 +1,3 @@
-import type { HistoryBuffer } from './base';
 import {
   OrderbookConfigEventKey,
   type OrderbookConfigEventMap,

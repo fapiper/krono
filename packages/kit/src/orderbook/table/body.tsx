@@ -30,7 +30,7 @@ function renderCell(
   type: OrderbookType,
   index: number,
 ) {
-  const { children, label, ...props } = columnProps || {};
+  const { children, label: _, ...props } = columnProps || {};
 
   const content =
     typeof children === 'function'
