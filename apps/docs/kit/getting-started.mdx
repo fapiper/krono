@@ -1,72 +1,202 @@
 ---
-title: "Getting started"
-description: "Getting started with Krono Kit."
+title: "Getting Started"
+description: "Get up and running with Krono Kit"
 ---
 
 The `@krono/kit` SDK is a React component library built around the `@krono/hooks` and `@krono/core` SDK.
 It provides components for displaying orderbook data, time travel controls and many more.
 You can find the `@krono/kit` SDK source code on Github.
 
-You can get an interactive demo of the components by visiting the Storybook.
+You can get an interactive demo of the components by visiting the [Storybook](https://krono-storybook.vercel.app).
 
 To get started, install the required packages.
 
-<CodeGroup>
-
-    ```bash bun
-    bun add @krono/kit
-    ```
-
-    ```bash pnpm
-    pnpm add @krono/kit
-    ```
-
-    ```bash npm
-    npm install @krono/kit
-    ```
-
-    ```bash yarn
-    yarn add @krono/kit
-    ```
-</CodeGroup>
-
 <Warning>
-    The Krono packages are not yet published to the npm registry.
-    To use them, you’ll need to install and link the packages locally by following the
-    <a href="../development/getting-started">development guide</a>.
+    The Krono packages are not yet published to npm. Follow the [development guide](/development/getting-started) to install and link the packages locally.
 </Warning>
 
-## Create Config
+<Steps>
+    <Step title="Install Dependencies">
+        Install the required dependencies:
 
-Create and export a new Krono config.
+        <CodeGroup>
+            ```bash bun
+            bun add @krono/kit @krono/ui tailwindcss lucide-react
+            ```
 
-```typescript create-config.ts
-import { OrderbookConfig } from '@krono/hooks'
+            ```bash pnpm
+            pnpm add @krono/kit @krono/ui tailwindcss lucide-react
+            ```
 
-export const config = new OrderbookConfig({
-    symbol: "BTC/USD",
-})
-```
-In this example, Krono is configured to use the BTC/USD pair. Check out the config docs for more configuration options.
+            ```bash npm
+            npm install @krono/kit @krono/ui tailwindcss lucide-react
+            ```
 
+            ```bash yarn
+            yarn add @krono/kit @krono/ui tailwindcss lucide-react
+            ```
+        </CodeGroup>
+    </Step>
 
-## Wrap Component in Context Provider
+    <Step title="Setup Styles">
+        Import the required CSS files in your global stylesheet:
 
-Wrap your component in the `OrderbookProvider` React Context Provider and pass the config you created earlier to the config property.
+        ```css globals.css
+        @import "@krono/ui/globals.css";
+        @import "@krono/kit/globals.css";
+        ```
+    </Step>
+
+    <Step title="Configure Path Aliases">
+        Add path aliases to your `tsconfig.json`:
+        ```json tsconfig.json
+        {
+            "compilerOptions": {
+                "baseUrl": ".",
+                    "paths": {
+                        "@/*": ["./src/*"],
+                        "@krono/ui/*": ["../../packages/ui/src/*"],
+                        "@ui/*": ["../../packages/ui/src/*"]
+                }
+            }
+        }
+        ```
+
+        <Info>
+            Some bundlers (like Vite) require additional alias configuration in their config files. Next.js resolves these paths automatically from `tsconfig.json`.
+        </Info>
+    </Step>
+</Steps>
+
+## Basic Usage
+
+Krono Kit provides two approaches for integrating orderbook components:
+
+### Option 1: Standalone Root Component
+
+Wrap your components with `Orderbook.Root` for a self-contained orderbook instance:
+This pattern is used in the [React example](https://github.com/fapiper/krono/blob/main/examples/react/src/App.tsx).
 
 ```tsx App.tsx
-import { OrderbookProvider  } from '@krono/hooks'
-import { config } from './config'
+import { Orderbook } from '@krono/kit';
 
 function App() {
   return (
-    <OrderbookProvider config={config}>
-      {/** ... */}
-    </OrderbookProvider>
-  )
+    <Orderbook.Root config={{ symbol: 'BTC/USD' }}>
+        {/* Your orderbook UI */}
+    </Orderbook.Root>
+  );
 }
 ```
 
-## Use Krono
+### Option 2: Provider Pattern
 
-Now that everything is set up, every component inside `OrderbookProvider` can use Krono Kit.
+Use `Orderbook.RootProvider` with `Orderbook.Panel` when you need to access orderbook state across multiple components:
+This pattern is used in the [Next.js example](https://github.com/fapiper/krono/blob/main/apps/web/src/components/orderbook-card.tsx).
+
+```tsx layout.tsx
+import { Orderbook } from '@krono/kit';
+
+export default function Layout({ children }) {
+  return (
+    <Orderbook.RootProvider config={{ symbol: 'BTC/USD', debug: true }}>
+      {/* Other components that consume orderbook state */}
+      <Orderbook.Panel>
+        {/* Your orderbook UI */}
+      </Orderbook.Panel>
+    </Orderbook.RootProvider>
+  );
+}
+```
+
+<Info>
+    The provider pattern is useful when you need to split orderbook-related components across your layout. For single-component use cases, `Orderbook.Root` is simpler.
+</Info>
+
+## Complete Example
+
+Here's a full orderbook implementation with table and playback controls:
+
+```tsx OrderbookCard.tsx
+import {
+  formatDigits,
+  formatPrice,
+  Orderbook,
+  OrderbookControls,
+  OrderbookTable,
+} from '@krono/kit';
+import { Card, CardContent } from '@krono/ui/components/ui/card';
+
+export function OrderbookCard() {
+  return (
+      <Card className="flex flex-1 overflow-hidden">
+        <CardContent className="flex flex-1 px-0 pb-px pt-2">
+          <Orderbook.Root
+            config={{ symbol: 'BTC/USD' }}
+            renderTable={(props) => (
+              <OrderbookTable.Root
+                columns={{
+                  total: {
+                    label: 'Total',
+                    children: ({ value }) => formatDigits(value.total),
+                  },
+                  quantity: {
+                    label: 'Quantity',
+                    children: ({ value }) => formatDigits(value.quantity),
+                  },
+                  price: {
+                    label: 'Price',
+                    className:
+                      props.type === 'bids'
+                        ? 'font-semibold text-green-500 dark:text-green-600'
+                        : 'font-semibold text-red-500 dark:text-red-600',
+                    children: ({ value }) => formatPrice(value.price, 4),
+                  },
+                }}
+                {...props}
+              />
+            )}
+          >
+            <OrderbookControls.Root>
+              <OrderbookControls.LiveBadge />
+              <OrderbookControls.Toolbar>
+                <OrderbookControls.PlaybackButtons />
+                <OrderbookControls.Timeline />
+              </OrderbookControls.Toolbar>
+            </OrderbookControls.Root>
+          </Orderbook.Root>
+        </CardContent>
+      </Card>
+  );
+}
+```
+
+## Reference Implementations
+
+Check out these example projects for complete setup references:
+
+<CardGroup cols={2}>
+    <Card title="React Example" icon="react" href="https://github.com/fapiper/krono/tree/main/examples/react">
+        Vite + React implementation
+    </Card>
+    <Card title="Next.js Example" icon="arrow-up-right-from-square" href="https://github.com/fapiper/krono/tree/main/apps/web">
+        Production app with advanced features
+    </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+    <Card title="Components" icon="puzzle" href="/kit/components/OrderbookTable">
+        Explore available components
+    </Card>
+    <Card title="Configuration" icon="gear" href="/kit/configuration/overview">
+        Configure orderbook behavior
+    </Card>
+    <Card title="Hooks" icon="square-function" href="/hooks/getting-started">
+        Learn about the underlying hooks
+    </Card>
+    <Card title="Providers" icon="layer-group" href="/hooks/providers/orderbook-provider">
+        Understand provider architecture
+    </Card>
+</CardGroup>
