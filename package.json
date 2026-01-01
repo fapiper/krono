@@ -44,7 +44,7 @@
     "@vitest/ui": "4.0.15",
     "lefthook": "2.0.10",
     "turbo": "2.6.3",
-    "vitest": "4.0.15"
+    "vitest": "4.0.16"
   },
   "engines": {
     "node": ">=20"
