@@ -42,7 +42,7 @@
     "@playwright/test": "1.57.0",
     "@vitest/coverage-v8": "4.0.15",
     "@vitest/ui": "4.0.15",
-    "lefthook": "2.0.10",
+    "lefthook": "2.0.13",
     "turbo": "2.6.3",
     "vitest": "4.0.15"
   },
