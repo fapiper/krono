@@ -41,7 +41,7 @@
     "@changesets/cli": "2.29.8",
     "@playwright/test": "1.57.0",
     "@vitest/coverage-v8": "4.0.15",
-    "@vitest/ui": "4.0.15",
+    "@vitest/ui": "4.0.16",
     "lefthook": "2.0.10",
     "turbo": "2.6.3",
     "vitest": "4.0.15"
