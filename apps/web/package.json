@@ -21,7 +21,7 @@
     "@krono/kit": "workspace:*",
     "@krono/ui": "workspace:*",
     "@storybook/react": "^10.1.7",
-    "@t3-oss/env-nextjs": "0.13.8",
+    "@t3-oss/env-nextjs": "0.13.10",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
